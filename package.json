@@ -11,9 +11,6 @@
     "format:fix": "prettier --write .",
     "prepare": "husky install"
   },
-  "lint-staged": {
-    "./src/**/*.{ts,tsx}": "npx eslint --fix"
-  },
   "dependencies": {
     "react": "^18.3.1",
     "react-dom": "^18.3.1"
