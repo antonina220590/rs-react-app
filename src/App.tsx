@@ -1,10 +1,10 @@
 import './App.css';
+import Input from './components/input/input';
 
 function App() {
   return (
-    <div className="text-3xl font-bold caret-amber-700">
-      I am your page
-      <span className="text-3xl font-bold text-amber-500"> 1</span>
+    <div className="min-h-screen flex flex-col items-center bg-[#bab2b5] bg-cover ">
+      <Input />
     </div>
   );
 }

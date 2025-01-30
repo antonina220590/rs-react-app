@@ -1,1 +1,20 @@
 @import 'tailwindcss';
+
+/* * {
+  margin: 0;
+  padding: 0;
+} */
+
+html {
+  font-size: 10px;
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: system-ui, sans-serif;
+  font-weight: normal;
+  font-size: 1.6rem;
+  line-height: 1.5;
+  flex-direction: column;
+  min-height: 100vh;
+}
