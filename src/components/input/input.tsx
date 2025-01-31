@@ -23,7 +23,6 @@ class Input extends Component<InputProps, InputState> {
     if (target) {
       const newSearchQuery = target.value.trim() || '';
       this.setState({ searchQuery: newSearchQuery });
-      this.props.onSearch(newSearchQuery);
     } else {
       new Error('event target is null');
     }

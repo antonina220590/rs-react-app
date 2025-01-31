@@ -1,8 +1,64 @@
 import { Component } from 'react';
+import { Character } from '../../utils/interface';
+import { getApiData } from '../../utils/api';
+import Input from '../input/input';
+import { getFromLocalStorage } from '../../utils/localStorage';
 
-class SearchPage extends Component {
+interface AppState {
+  characters: Character[];
+  isLoading: boolean;
+  errorMessage: null | string;
+  searchQuery: string;
+}
+
+class SearchPage extends Component<object, AppState> {
+  constructor(props: object) {
+    super(props);
+    const initialSearchQuery = getFromLocalStorage();
+    this.state = {
+      characters: [],
+      isLoading: true,
+      errorMessage: null,
+      searchQuery: initialSearchQuery || '',
+    };
+  }
+  componentDidMount(): void {
+    this.fetchData(this.state.searchQuery);
+  }
+
+  fetchData = async (searchQuery: string = '') => {
+    try {
+      const data = await getApiData(searchQuery);
+      this.setState({
+        characters: data.results || [],
+        isLoading: false,
+        searchQuery,
+      });
+    } catch (error: unknown) {
+      const errorMessage =
+        error instanceof Error ? error.message : String(error);
+      this.setState({ errorMessage, isLoading: false });
+    } finally {
+      this.setState({ isLoading: false });
+    }
+  };
+
+  handleSearch = (searchQuery: string) => {
+    this.fetchData(searchQuery);
+  };
   render() {
-    return <div></div>;
+    const { characters } = this.state;
+    return (
+      <div>
+        <Input onSearch={this.handleSearch} />
+        {characters.map((character) => (
+          <div key={character.id}>
+            {character.name} - {character.image}
+            <img src={character.image} alt="planet" />
+          </div>
+        ))}
+      </div>
+    );
   }
 }
 
