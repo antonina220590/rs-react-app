@@ -3,6 +3,7 @@ import { Character } from '../../utils/interface';
 import { getApiData } from '../../utils/api';
 import Input from '../input/input';
 import { getFromLocalStorage } from '../../utils/localStorage';
+import Cards from '../cards/cards';
 
 interface AppState {
   characters: Character[];
@@ -51,12 +52,9 @@ class SearchPage extends Component<object, AppState> {
     return (
       <div>
         <Input onSearch={this.handleSearch} />
-        {characters.map((character) => (
-          <div key={character.id}>
-            {character.name} - {character.image}
-            <img src={character.image} alt="planet" />
-          </div>
-        ))}
+        <div className="flex flex-wrap">
+          <Cards characters={characters} />
+        </div>
       </div>
     );
   }
