@@ -11,6 +11,7 @@ interface AppState {
   isLoading: boolean;
   errorMessage: null | string;
   searchQuery: string;
+  counter: number;
 }
 
 class SearchPage extends Component<object, AppState> {
@@ -22,7 +23,9 @@ class SearchPage extends Component<object, AppState> {
       isLoading: true,
       errorMessage: null,
       searchQuery: initialSearchQuery || '',
+      counter: 0,
     };
+    this.handleClick = this.handleClick.bind(this);
   }
   componentDidMount(): void {
     this.fetchData(this.state.searchQuery);
@@ -50,11 +53,23 @@ class SearchPage extends Component<object, AppState> {
   handleSearch = (searchQuery: string) => {
     this.fetchData(searchQuery);
   };
+
+  handleClick() {
+    this.setState(({ counter }) => ({
+      counter: counter + 1,
+    }));
+  }
+
   render() {
-    const { characters, isLoading } = this.state;
+    const { characters, isLoading, counter } = this.state;
+    if (counter === 1) {
+      throw new Error('Something went wrong!');
+    }
+
     return (
       <div>
         <Input onSearch={this.handleSearch} />
+        <button onClick={this.handleClick}>Trigger Error</button>
         <div className="flex flex-wrap">
           {isLoading ? <Spinner /> : <Cards characters={characters} />}
         </div>

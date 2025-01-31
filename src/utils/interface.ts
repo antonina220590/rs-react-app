@@ -1,3 +1,5 @@
+import { ReactElement } from 'react';
+
 export interface Character {
   id?: number;
   name: string;
@@ -14,4 +16,14 @@ export interface ApiResponse {
     prev: string | null;
   };
   results: Character[];
+}
+
+export interface IProps {
+  children: React.ReactNode;
+  fallback?: ReactElement;
+}
+
+export interface IState {
+  hasError: boolean;
+  errorMessage: string;
 }
