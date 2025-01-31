@@ -4,6 +4,7 @@ import { getApiData } from '../../utils/api';
 import Input from '../input/input';
 import { getFromLocalStorage } from '../../utils/localStorage';
 import Cards from '../cards/cards';
+import Spinner from '../spinner/spinners';
 
 interface AppState {
   characters: Character[];
@@ -26,10 +27,11 @@ class SearchPage extends Component<object, AppState> {
   componentDidMount(): void {
     this.fetchData(this.state.searchQuery);
   }
-
+  delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
   fetchData = async (searchQuery: string = '') => {
     try {
       const data = await getApiData(searchQuery);
+      await this.delay(300);
       this.setState({
         characters: data.results || [],
         isLoading: false,
@@ -48,11 +50,12 @@ class SearchPage extends Component<object, AppState> {
     this.fetchData(searchQuery);
   };
   render() {
-    const { characters } = this.state;
+    const { characters, isLoading } = this.state;
     return (
       <div>
         <Input onSearch={this.handleSearch} />
         <div className="flex flex-wrap">
+          {isLoading && <Spinner />}
           <Cards characters={characters} />
         </div>
       </div>
