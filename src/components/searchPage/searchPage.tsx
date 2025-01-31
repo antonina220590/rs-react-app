@@ -43,7 +43,9 @@ class SearchPage extends Component<object, AppState> {
       });
     } catch (error: unknown) {
       const errorMessage =
-        error instanceof Error ? error.message : String(error);
+        error instanceof Error
+          ? error.message
+          : 'An unexpected error occurred.';
       this.setState({ errorMessage, isLoading: false });
     } finally {
       this.setState({ isLoading: false });
@@ -61,7 +63,7 @@ class SearchPage extends Component<object, AppState> {
   }
 
   render() {
-    const { characters, isLoading, counter } = this.state;
+    const { characters, isLoading, counter, errorMessage } = this.state;
     if (counter === 1) {
       throw new Error('Something went wrong!');
     }
@@ -71,7 +73,15 @@ class SearchPage extends Component<object, AppState> {
         <Input onSearch={this.handleSearch} />
         <button onClick={this.handleClick}>Trigger Error</button>
         <div className="flex flex-wrap">
-          {isLoading ? <Spinner /> : <Cards characters={characters} />}
+          {isLoading ? (
+            <Spinner />
+          ) : errorMessage ? (
+            <p>Error: {errorMessage}</p>
+          ) : characters.length === 0 ? (
+            <p>No results found for your search.</p>
+          ) : (
+            <Cards characters={characters} />
+          )}
         </div>
       </div>
     );
