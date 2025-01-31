@@ -29,6 +29,7 @@ class SearchPage extends Component<object, AppState> {
   }
   delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
   fetchData = async (searchQuery: string = '') => {
+    this.setState({ isLoading: true, errorMessage: null });
     try {
       const data = await getApiData(searchQuery);
       await this.delay(300);
@@ -55,8 +56,7 @@ class SearchPage extends Component<object, AppState> {
       <div>
         <Input onSearch={this.handleSearch} />
         <div className="flex flex-wrap">
-          {isLoading && <Spinner />}
-          <Cards characters={characters} />
+          {isLoading ? <Spinner /> : <Cards characters={characters} />}
         </div>
       </div>
     );

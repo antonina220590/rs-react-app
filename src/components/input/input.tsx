@@ -45,6 +45,7 @@ class Input extends Component<InputProps, InputState> {
         <button
           className="bg-[#ac3b61] text-amber-50 p-5 rounded-[5px]"
           onClick={this.handleSearchClick}
+          style={{ cursor: 'pointer' }}
         >
           Search
         </button>
