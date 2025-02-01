@@ -81,13 +81,21 @@ class SearchPage extends Component<object, AppState> {
           <Input onSearch={this.handleSearch} />
         </div>
 
-        <div className="w-[95%] m-10 bg-[#123c69] backdrop-blur-2xl border rounded-xl mb-8 gap-15 justify-center items-center flex flex-wrap">
+        <div className="w-[95%] min-h-dvh m-10 bg-[#123c69] backdrop-blur-2xl border rounded-xl mb-8 gap-15 justify-center items-center flex flex-wrap">
           {isLoading ? (
             <Spinner />
           ) : errorMessage ? (
-            <p>Error: {errorMessage}</p>
+            <div className="bg-gray-500/70 backdrop-blur-lg border border-white/18 rounded-xl shadow-xl h-[200px] flex items-center">
+              <p className="text-amber-50 text-4xl p-5">
+                Error: {errorMessage}
+              </p>
+            </div>
           ) : characters.length === 0 ? (
-            <p>No results found for your search.</p>
+            <div className="bg-gray-500/70 backdrop-blur-lg border border-white/18 rounded-xl shadow-xl h-[200px] flex items-center">
+              <p className="text-amber-50 text-4xl p-5">
+                No results found for your search.
+              </p>
+            </div>
           ) : (
             <div className="w-50% flex flex-wrap">
               <Cards characters={characters} />
