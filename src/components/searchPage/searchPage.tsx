@@ -69,10 +69,19 @@ class SearchPage extends Component<object, AppState> {
     }
 
     return (
-      <div>
-        <Input onSearch={this.handleSearch} />
-        <button onClick={this.handleClick}>Trigger Error</button>
-        <div className="flex flex-wrap">
+      <div className="w-[90%] flex flex-col items-center">
+        <div className="w-[95%] m-10 bg-[#123c69] backdrop-blur-2xl border rounded-xl items-center justify-center mb-8 gap-15 flex flex-wrap">
+          <button
+            className="p-5 rounded-[5px] bg-[#edc787] mr-[30px]"
+            onClick={this.handleClick}
+            style={{ cursor: 'pointer' }}
+          >
+            Trigger Error
+          </button>
+          <Input onSearch={this.handleSearch} />
+        </div>
+
+        <div className="w-[95%] m-10 bg-[#123c69] backdrop-blur-2xl border rounded-xl mb-8 gap-15 justify-center items-center flex flex-wrap">
           {isLoading ? (
             <Spinner />
           ) : errorMessage ? (
@@ -80,7 +89,9 @@ class SearchPage extends Component<object, AppState> {
           ) : characters.length === 0 ? (
             <p>No results found for your search.</p>
           ) : (
-            <Cards characters={characters} />
+            <div className="w-50% flex flex-wrap">
+              <Cards characters={characters} />
+            </div>
           )}
         </div>
       </div>

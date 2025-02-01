@@ -33,7 +33,7 @@ class Input extends Component<InputProps, InputState> {
   };
   render() {
     return (
-      <div className="w-[80%] m-10 bg-[#123c69] backdrop-blur-2xl border rounded-xl items-center justify-center mb-8 gap-10 flex">
+      <>
         <input
           className="my-[20px] px-5 py-[10px] w-[250px] text-[20px] rounded-[5px] bg-white"
           name="input"
@@ -49,7 +49,7 @@ class Input extends Component<InputProps, InputState> {
         >
           Search
         </button>
-      </div>
+      </>
     );
   }
 }
