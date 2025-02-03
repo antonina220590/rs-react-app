@@ -1,17 +1,12 @@
-import { ChangeEvent, useState } from 'react';
-import {
-  getFromLocalStorage,
-  saveToLocalStorage,
-} from '../../utils/localStorage';
+import { ChangeEvent } from 'react';
+import { saveToLocalStorage, useSearchQuery } from '../../utils/localStorage';
 
 interface InputProps {
   onSearch: (searchQuery: string) => void;
 }
 
 function Input({ onSearch }: InputProps) {
-  const [searchState, setSearchState] = useState<string>(
-    getFromLocalStorage() || ''
-  );
+  const [searchState, setSearchState] = useSearchQuery();
 
   const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
     const target = event.target;

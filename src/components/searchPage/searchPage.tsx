@@ -1,20 +1,17 @@
 import { useEffect, useState } from 'react';
 import { Character } from '../../utils/interface';
 import Input from '../input/input';
-import { getFromLocalStorage } from '../../utils/localStorage';
 import Cards from '../cards/cards';
 import Spinner from '../spinner/spinners';
 import fetchData from './helpers/fetchData';
 import handleSearch from './helpers/handleSearch';
+import { useSearchQuery } from '../../utils/localStorage';
 
 function SearchPage() {
   const [characters, setCharacters] = useState<Character[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
-  const [searchQuery, setSearchQuery] = useState<string>(
-    getFromLocalStorage() || ''
-  );
-
+  const [searchQuery, setSearchQuery] = useSearchQuery();
   useEffect(
     function () {
       fetchData(searchQuery, setCharacters, setIsLoading, setErrorMessage);
