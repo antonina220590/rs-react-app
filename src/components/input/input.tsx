@@ -1,4 +1,4 @@
-import { ChangeEvent, Component } from 'react';
+import { ChangeEvent, useState } from 'react';
 import {
   getFromLocalStorage,
   saveToLocalStorage,
@@ -8,50 +8,43 @@ interface InputProps {
   onSearch: (searchQuery: string) => void;
 }
 
-interface InputState {
-  searchQuery: string;
-}
+function Input({ onSearch }: InputProps) {
+  const [searchState, setSearchState] = useState<string>(
+    getFromLocalStorage() || ''
+  );
 
-class Input extends Component<InputProps, InputState> {
-  constructor(props: InputProps) {
-    super(props);
-    this.state = { searchQuery: getFromLocalStorage() || '' };
-  }
-
-  handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
+  const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
     const target = event.target;
     if (target) {
-      const newSearchQuery = target.value.trim() || '';
-      this.setState({ searchQuery: newSearchQuery });
+      setSearchState(target.value.trim() || '');
     } else {
       new Error('event target is null');
     }
   };
-  handleSearchClick = () => {
-    this.props.onSearch(this.state.searchQuery);
-    saveToLocalStorage(this.state.searchQuery);
+  const handleSearchClick = () => {
+    onSearch(searchState);
+    saveToLocalStorage(searchState);
   };
-  render() {
-    return (
-      <>
-        <input
-          className="my-[20px] px-5 py-[10px] w-[250px] text-[20px] rounded-[5px] bg-white"
-          name="input"
-          type="text"
-          placeholder="search....."
-          onChange={this.handleSearchChange}
-          value={this.state.searchQuery}
-        ></input>
-        <button
-          className="bg-[#ac3b61] text-amber-50 p-5 rounded-[5px]"
-          onClick={this.handleSearchClick}
-          style={{ cursor: 'pointer' }}
-        >
-          Search
-        </button>
-      </>
-    );
-  }
+
+  return (
+    <>
+      <input
+        className="my-[20px] px-5 py-[10px] w-[250px] text-[20px] rounded-[5px] bg-white"
+        name="input"
+        type="text"
+        placeholder="search....."
+        onChange={handleSearchChange}
+        value={searchState}
+      ></input>
+      <button
+        className="bg-[#ac3b61] text-amber-50 p-5 rounded-[5px]"
+        onClick={handleSearchClick}
+        style={{ cursor: 'pointer' }}
+      >
+        Search
+      </button>
+    </>
+  );
 }
 
 export default Input;
