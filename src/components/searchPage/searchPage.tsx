@@ -7,6 +7,7 @@ import fetchData from './helpers/fetchData';
 import handleSearch from './helpers/handleSearch';
 import { useSearchQuery } from '../../utils/localStorage';
 import Pagination from '../pagination/pagination';
+import { useSearchParams } from 'react-router';
 
 function SearchPage() {
   const [characters, setCharacters] = useState<Character[]>([]);
@@ -19,11 +20,14 @@ function SearchPage() {
     },
     [searchQuery, setCharacters, setIsLoading, setErrorMessage]
   );
-  const [currentPage, setCurrentPage] = useState(1);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const page = parseInt(searchParams.get('page') || '1', 10);
+  const [currentPage, setCurrentPage] = useState(page);
   const totalPages = 42;
 
-  const handlePageChange = (page: number) => {
-    setCurrentPage(page);
+  const handlePageChange = (newPage: number) => {
+    setCurrentPage(newPage);
+    setSearchParams({ page: newPage.toString() });
   };
 
   return (
