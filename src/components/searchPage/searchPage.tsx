@@ -1,10 +1,9 @@
 import { useEffect, useState } from 'react';
-import { Character } from '../../utils/interface';
+import { ApiResponse, Character } from '../../utils/interface';
 import Input from '../input/input';
 import Cards from '../cards/cards';
 import Spinner from '../spinner/spinners';
 import fetchData from './helpers/fetchData';
-import handleSearch from './helpers/handleSearch';
 import { useSearchQuery } from '../../utils/localStorage';
 import Pagination from '../pagination/pagination';
 import { useSearchParams } from 'react-router';
@@ -14,31 +13,84 @@ function SearchPage() {
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useSearchQuery();
-  useEffect(
-    function () {
-      fetchData(searchQuery, setCharacters, setIsLoading, setErrorMessage);
-    },
-    [searchQuery, setCharacters, setIsLoading, setErrorMessage]
-  );
   const [searchParams, setSearchParams] = useSearchParams();
-  const page = parseInt(searchParams.get('page') || '1', 10);
-  const [currentPage, setCurrentPage] = useState(page);
-  const totalPages = 42;
+  const [data, setData] = useState<ApiResponse | null>(null);
+
+  useEffect(() => {
+    if (searchQuery !== (searchParams.get('search') || '')) {
+      if (searchQuery.trim() !== '') {
+        setSearchParams({ page: '1', search: searchQuery });
+      } else {
+        setSearchParams({ page: '1' });
+      }
+    }
+  }, [searchParams, searchQuery, setSearchParams]);
+
+  useEffect(() => {
+    const fetchDataFromAPI = async () => {
+      setIsLoading(true);
+      setErrorMessage(null);
+
+      const currentQuery = searchParams.get('search') || '';
+      const currentPage = parseInt(searchParams.get('page') || '1', 10);
+
+      const apiResponse = await fetchData(
+        currentQuery,
+        currentPage,
+        setCharacters,
+        setIsLoading,
+        setErrorMessage
+      );
+
+      if (apiResponse) {
+        setData(apiResponse);
+        if (currentPage > apiResponse.info.pages) {
+          const newParams: { page: string; query?: string } = {
+            page: apiResponse.info.pages.toString(),
+          };
+          if (currentQuery) {
+            newParams.query = currentQuery;
+          }
+          setSearchParams(newParams);
+        }
+      } else {
+        setErrorMessage('No results found');
+      }
+    };
+
+    fetchDataFromAPI();
+  }, [searchParams, setSearchParams]);
 
   const handlePageChange = (newPage: number) => {
-    setCurrentPage(newPage);
-    setSearchParams({ page: newPage.toString() });
+    if (data && newPage <= data.info.pages) {
+      const newParams: { page: string; search?: string } = {
+        page: newPage.toString(),
+      };
+      if (searchQuery.trim() !== '') {
+        newParams.search = searchQuery;
+      }
+      setSearchParams(newParams);
+    }
+  };
+
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    if (query.trim() !== '') {
+      setSearchParams({ page: '1', query: query });
+    } else {
+      setSearchParams({ page: '1' });
+    }
   };
 
   return (
     <div className="w-[90%] flex flex-col items-center">
       <div className="w-[95%] m-10 bg-[#123c69] backdrop-blur-2xl border rounded-xl items-center justify-center mb-8 gap-15 flex flex-wrap">
-        <Input onSearch={(query) => handleSearch(query, setSearchQuery)} />
+        <Input onSearch={handleSearch} />
       </div>
       <div>
         <Pagination
-          currentPage={currentPage}
-          totalPages={totalPages}
+          currentPage={parseInt(searchParams.get('page') || '1', 10)}
+          totalPages={data ? data.info.pages : 42}
           changePage={handlePageChange}
         />
       </div>
