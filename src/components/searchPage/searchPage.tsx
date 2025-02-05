@@ -6,6 +6,7 @@ import Spinner from '../spinner/spinners';
 import fetchData from './helpers/fetchData';
 import handleSearch from './helpers/handleSearch';
 import { useSearchQuery } from '../../utils/localStorage';
+import Pagination from '../pagination/pagination';
 
 function SearchPage() {
   const [characters, setCharacters] = useState<Character[]>([]);
@@ -18,11 +19,24 @@ function SearchPage() {
     },
     [searchQuery, setCharacters, setIsLoading, setErrorMessage]
   );
+  const [currentPage, setCurrentPage] = useState(1);
+  const totalPages = 42;
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
 
   return (
     <div className="w-[90%] flex flex-col items-center">
       <div className="w-[95%] m-10 bg-[#123c69] backdrop-blur-2xl border rounded-xl items-center justify-center mb-8 gap-15 flex flex-wrap">
         <Input onSearch={(query) => handleSearch(query, setSearchQuery)} />
+      </div>
+      <div>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={totalPages}
+          changePage={handlePageChange}
+        />
       </div>
 
       <div className="w-[95%] min-h-dvh m-10 bg-[#123c69] backdrop-blur-2xl border rounded-xl mb-8 gap-15 justify-center items-center flex flex-wrap">
