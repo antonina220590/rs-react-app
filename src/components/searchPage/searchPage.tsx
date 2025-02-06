@@ -72,7 +72,7 @@ function SearchPage() {
 
   return (
     <div className="w-[90%] flex flex-col items-center">
-      <div className="w-[95%] m-10 bg-[#123c69] backdrop-blur-2xl border rounded-xl items-center justify-center mb-8 gap-15 flex flex-wrap">
+      <div className="w-[95%] m-10 bg-[#123c69] backdrop-blur-2xl border rounded-xl items-center justify-center mb-8 gap-15 flex flex-wrap relative">
         <Input onSearch={handleSearch} />
       </div>
       <div>
@@ -83,27 +83,32 @@ function SearchPage() {
         />
       </div>
 
-      <div className="w-[95%] min-h-dvh m-10 bg-[#123c69] backdrop-blur-2xl border rounded-xl mb-8 gap-15 justify-center items-center flex flex-wrap flex-row">
-        {isLoading ? (
-          <Spinner />
-        ) : errorMessage ? (
-          <div className="bg-gray-500/70 backdrop-blur-lg border border-white/18 rounded-xl shadow-xl h-[200px] flex items-center">
-            <p className="text-amber-50 text-4xl p-5">Error: {errorMessage}</p>
-          </div>
-        ) : characters.length === 0 ? (
-          <div className="bg-gray-500/70 backdrop-blur-lg border border-white/18 rounded-xl shadow-xl h-[200px] flex items-center">
-            <p className="text-amber-50 text-4xl p-5">
-              No results found for your search.
-            </p>
-          </div>
-        ) : (
-          <div className="flex">
-            <div className="w-50% flex flex-wrap">
-              <Cards characters={characters} />
+      <div className="flex flex-row w-[95%] relative">
+        <div className="w-[95%] min-h-dvh m-10 bg-[#123c69] backdrop-blur-2xl border rounded-xl mb-8 gap-15 justify-center items-center flex flex-wrap flex-row">
+          {isLoading ? (
+            <Spinner />
+          ) : errorMessage ? (
+            <div className="bg-gray-500/70 backdrop-blur-lg border border-white/18 rounded-xl shadow-xl h-[200px] flex items-center">
+              <p className="text-amber-50 text-4xl p-5">
+                Error: {errorMessage}
+              </p>
             </div>
-            <Outlet />
-          </div>
-        )}
+          ) : characters.length === 0 ? (
+            <div className="bg-gray-500/70 backdrop-blur-lg border border-white/18 rounded-xl shadow-xl h-[200px] flex items-center">
+              <p className="text-amber-50 text-4xl p-5">
+                No results found for your search.
+              </p>
+            </div>
+          ) : (
+            <div className="flex">
+              <div className="w-50% flex flex-wrap">
+                <Cards characters={characters} />
+              </div>
+            </div>
+          )}
+        </div>
+
+        <Outlet />
       </div>
     </div>
   );

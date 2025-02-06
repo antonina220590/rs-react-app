@@ -42,17 +42,9 @@ function DetailsPage() {
     navigate(`/${location.search}`);
   };
 
-  if (error) {
-    return (
-      <div className="flex justify-center items-center h-screen">
-        <p className="text-red-500 text-3xl">{error}</p>
-      </div>
-    );
-  }
-
   return (
-    <div className="flex flex-wrap gap-20 m-7 p-10 justify-evenly ">
-      <div className="flex flex-col items-center w-[500px] h-[700px] bg-gray-500/70 backdrop-blur-lg border border-white/18 rounded-xl shadow-xl relative">
+    <div className="flex flex-wrap gap-20 p-10 justify-evenly flex-1">
+      <div className="flex flex-col items-center w-[500px] h-[700px] bg-gray-500/70 backdrop-blur-lg border border-white/18 rounded-xl shadow-xl sticky top-0">
         {isLoading ? (
           <div className="h-[700px] inset-0 flex items-center justify-center bg-gray-500/50">
             <Spinner />
@@ -63,9 +55,9 @@ function DetailsPage() {
           </div>
         ) : (
           <>
-            <div className="pb-[20px]">
+            <div className="pb-[10px] pt-[20px]">
               <img
-                className="h-[350px] pt-[10px]"
+                className="h-[350px] pt-[20px]"
                 src={character?.image}
                 alt="image"
               />
