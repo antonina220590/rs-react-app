@@ -14,7 +14,12 @@ function Cards({ characters }: CardsProps) {
               <h3 className="font-bold text-4xl p-15">{character.name}</h3>
             </div>
             <div className="pb-[10px]">
-              <img className="h-[280px]" src={character.image} alt="image" />
+              <img
+                className="h-[280px]"
+                src={character.image}
+                alt={`${character.name} image`}
+                data-testid={`character-image-${character.id}`}
+              />
             </div>
           </div>
         </Link>
