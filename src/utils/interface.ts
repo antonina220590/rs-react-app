@@ -10,6 +10,10 @@ export interface Character {
   image: string;
 }
 
+export interface CardsProps {
+  characters: Character[];
+}
+
 export interface ApiResponse {
   info: {
     count: number;

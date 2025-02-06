@@ -6,7 +6,7 @@ import Spinner from '../spinner/spinners';
 import fetchData from './helpers/fetchData';
 import { useSearchQuery } from '../../utils/localStorage';
 import Pagination from '../pagination/pagination';
-import { useSearchParams } from 'react-router';
+import { Outlet, useSearchParams } from 'react-router';
 
 function SearchPage() {
   const [characters, setCharacters] = useState<Character[]>([]);
@@ -15,6 +15,8 @@ function SearchPage() {
   const [searchQuery, setSearchQuery] = useSearchQuery();
   const [searchParams, setSearchParams] = useSearchParams();
   const [data, setData] = useState<ApiResponse | null>(null);
+  const currentQuery = searchParams.get('search') || '';
+  const currentPage = parseInt(searchParams.get('page') || '1', 10);
 
   useEffect(() => {
     if (searchQuery !== (searchParams.get('search') || '')) {
@@ -31,9 +33,6 @@ function SearchPage() {
       setIsLoading(true);
       setErrorMessage(null);
 
-      const currentQuery = searchParams.get('search') || '';
-      const currentPage = parseInt(searchParams.get('page') || '1', 10);
-
       const apiResponse = await fetchData(
         currentQuery,
         currentPage,
@@ -44,22 +43,11 @@ function SearchPage() {
 
       if (apiResponse) {
         setData(apiResponse);
-        if (currentPage > apiResponse.info.pages) {
-          const newParams: { page: string; query?: string } = {
-            page: apiResponse.info.pages.toString(),
-          };
-          if (currentQuery) {
-            newParams.query = currentQuery;
-          }
-          setSearchParams(newParams);
-        }
-      } else {
-        setErrorMessage('No results found');
       }
     };
 
     fetchDataFromAPI();
-  }, [searchParams, setSearchParams]);
+  }, [currentPage, currentQuery]);
 
   const handlePageChange = (newPage: number) => {
     if (data && newPage <= data.info.pages) {
@@ -89,13 +77,13 @@ function SearchPage() {
       </div>
       <div>
         <Pagination
-          currentPage={parseInt(searchParams.get('page') || '1', 10)}
+          currentPage={currentPage}
           totalPages={data ? data.info.pages : 42}
           changePage={handlePageChange}
         />
       </div>
 
-      <div className="w-[95%] min-h-dvh m-10 bg-[#123c69] backdrop-blur-2xl border rounded-xl mb-8 gap-15 justify-center items-center flex flex-wrap">
+      <div className="w-[95%] min-h-dvh m-10 bg-[#123c69] backdrop-blur-2xl border rounded-xl mb-8 gap-15 justify-center items-center flex flex-wrap flex-row">
         {isLoading ? (
           <Spinner />
         ) : errorMessage ? (
@@ -109,8 +97,11 @@ function SearchPage() {
             </p>
           </div>
         ) : (
-          <div className="w-50% flex flex-wrap">
-            <Cards characters={characters} />
+          <div className="flex">
+            <div className="w-50% flex flex-wrap">
+              <Cards characters={characters} />
+            </div>
+            <Outlet />
           </div>
         )}
       </div>
