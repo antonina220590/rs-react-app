@@ -1,6 +1,6 @@
 function Error404Page() {
   const refreshPage = () => {
-    window.location.reload();
+    window.location.replace('/');
   };
 
   return (
