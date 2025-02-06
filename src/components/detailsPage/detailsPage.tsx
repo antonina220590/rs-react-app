@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { Character } from '../../utils/interface';
 import { fetchCharacter } from './helpers/fetchCharacter';
@@ -10,6 +10,7 @@ function DetailsPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const navigate = useNavigate();
+  const detailsRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     const fetchCharacterData = async () => {
@@ -38,13 +39,35 @@ function DetailsPage() {
     }
   }, [id, setCharacter, setError, setIsLoading]);
 
-  const closeCard = () => {
+  const closeCard = useCallback(() => {
     navigate(`/${location.search}`);
-  };
+  }, [navigate]);
+
+  const handleClickOutside = useCallback(
+    (event: MouseEvent) => {
+      if (
+        detailsRef.current &&
+        !detailsRef.current.contains(event.target as Node)
+      ) {
+        closeCard();
+      }
+    },
+    [closeCard]
+  );
+
+  useEffect(() => {
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [handleClickOutside]);
 
   return (
     <div className="flex flex-wrap gap-20 p-10 justify-evenly flex-1">
-      <div className="flex flex-col items-center w-[500px] h-[700px] bg-gray-500/70 backdrop-blur-lg border border-white/18 rounded-xl shadow-xl sticky top-0">
+      <div
+        ref={detailsRef}
+        className="flex flex-col items-center w-[500px] h-[700px] bg-gray-500/70 backdrop-blur-lg border border-white/18 rounded-xl shadow-xl sticky top-0"
+      >
         {isLoading ? (
           <div className="h-[700px] inset-0 flex items-center justify-center bg-gray-500/50">
             <Spinner />

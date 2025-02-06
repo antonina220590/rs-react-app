@@ -9,7 +9,7 @@ function Cards({ characters }: CardsProps) {
           to={`/character/${character.id}${window.location.search}`}
           key={character.id}
         >
-          <div className="flex flex-col items-center w-[300px] bg-gray-500/70 backdrop-blur-lg border border-white/18 rounded-xl shadow-xl">
+          <div className="flex flex-col items-center w-[300px] h-[400px] bg-gray-500/70 backdrop-blur-lg border border-white/18 rounded-xl shadow-xl justify-end">
             <div className="">
               <h3 className="font-bold text-4xl p-15">{character.name}</h3>
             </div>
