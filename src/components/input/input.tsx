@@ -1,9 +1,6 @@
 import { ChangeEvent } from 'react';
 import { saveToLocalStorage, useSearchQuery } from '../../utils/localStorage';
-
-interface InputProps {
-  onSearch: (searchQuery: string) => void;
-}
+import { InputProps } from '../../utils/interface';
 
 function Input({ onSearch }: InputProps) {
   const [searchState, setSearchState] = useSearchQuery();
@@ -30,11 +27,13 @@ function Input({ onSearch }: InputProps) {
         placeholder="search....."
         onChange={handleSearchChange}
         value={searchState}
+        data-testid="inputElement"
       ></input>
       <button
         className="bg-[#ac3b61] text-amber-50 p-5 rounded-[5px]"
         onClick={handleSearchClick}
         style={{ cursor: 'pointer' }}
+        data-testid="searchBtn"
       >
         Search
       </button>

@@ -39,3 +39,7 @@ export interface PaginationProps {
   totalPages: number;
   changePage: (page: number) => void;
 }
+
+export interface InputProps {
+  onSearch: (searchQuery: string) => void;
+}
