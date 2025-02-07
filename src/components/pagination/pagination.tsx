@@ -1,8 +1,4 @@
-interface PaginationProps {
-  currentPage: number;
-  totalPages: number;
-  changePage: (page: number) => void;
-}
+import { PaginationProps } from '../../utils/interface';
 
 export default function Pagination({
   currentPage,
@@ -27,6 +23,7 @@ export default function Pagination({
         style={{ cursor: 'pointer' }}
         onClick={handlePrevClick}
         disabled={currentPage === 1}
+        data-testid="prevBtn"
       >
         Prev
       </button>
@@ -36,12 +33,14 @@ export default function Pagination({
         name="page"
         value={currentPage}
         type="text"
+        data-testid="pageNum"
       ></input>
       <button
         className="bg-[#ac3b61] text-amber-50 px-14 rounded-[5px] hover:bg-[#123C69] disabled:bg-gray-500"
         style={{ cursor: 'pointer' }}
         onClick={handleNextClick}
         disabled={currentPage === totalPages}
+        data-testid="nextBtn"
       >
         Next
       </button>

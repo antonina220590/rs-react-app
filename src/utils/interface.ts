@@ -33,3 +33,9 @@ export interface IState {
   hasError: boolean;
   errorMessage: string;
 }
+
+export interface PaginationProps {
+  currentPage: number;
+  totalPages: number;
+  changePage: (page: number) => void;
+}
