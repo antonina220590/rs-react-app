@@ -102,6 +102,7 @@ function DetailsPage() {
               className="w-[150px] h-[50px] cursor-pointer rounded-md bg-[#ac3b61] text-white text-3xl border-none"
               type="button"
               onClick={closeCard}
+              data-testid="closeCardBtn"
             >
               Close
             </button>
