@@ -17,6 +17,7 @@ export default defineConfig({
         'tailwind.config.ts',
         'eslint.config.js',
         'vite-env.d.ts',
+        'App.tsx',
       ],
     },
     environment: 'jsdom',
