@@ -20,5 +20,9 @@ export const useSearchQuery = (): [
     return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
+  useEffect(() => {
+    saveToLocalStorage(searchQuery);
+  }, [searchQuery]);
+
   return [searchQuery, setSearchQuery];
 };

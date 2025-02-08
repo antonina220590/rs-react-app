@@ -23,16 +23,16 @@
         <div class='clearfix'>
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Statements</span>
-                <span class='fraction'>0/23</span>
+                <span class='fraction'>23/23</span>
             </div>
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">100% </span>
+                <span class="strong">88.88% </span>
                 <span class="quiet">Branches</span>
-                <span class='fraction'>1/1</span>
+                <span class='fraction'>8/9</span>
             </div>
         
             
@@ -44,9 +44,9 @@
         
             
             <div class='fl pad1y space-right2'>
-                <span class="strong">0% </span>
+                <span class="strong">100% </span>
                 <span class="quiet">Lines</span>
-                <span class='fraction'>0/23</span>
+                <span class='fraction'>23/23</span>
             </div>
         
             
@@ -61,7 +61,7 @@
             </div>
         </template>
     </div>
-    <div class='status-line low'></div>
+    <div class='status-line high'></div>
     <pre><table class="coverage">
 <tr><td class="line-count quiet"><a name='L1'></a><a href='#L1'>1</a>
 <a name='L2'></a><a href='#L2'>2</a>
@@ -91,59 +91,59 @@
 <a name='L26'></a><a href='#L26'>26</a>
 <a name='L27'></a><a href='#L27'>27</a>
 <a name='L28'></a><a href='#L28'>28</a></td><td class="line-coverage quiet"><span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">1x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">4x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">5x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
+<span class="cline-any cline-yes">2x</span>
 <span class="cline-any cline-neutral">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
-<span class="cline-any cline-no">&nbsp;</span>
+<span class="cline-any cline-yes">3x</span>
+<span class="cline-any cline-yes">3x</span>
 <span class="cline-any cline-neutral">&nbsp;</span></td><td class="text"><pre class="prettyprint lang-js">import { ApiResponse } from './interface';
-<span class="cstat-no" title="statement not covered" >const BASE_URL = 'https://rickandmortyapi.com/api/character';</span>
+const BASE_URL = 'https://rickandmortyapi.com/api/character';
 &nbsp;
-<span class="cstat-no" title="statement not covered" >export async function getApiData(</span>
-<span class="cstat-no" title="statement not covered" >  searchQuery?: string,</span>
-<span class="cstat-no" title="statement not covered" >  currentPage?: number</span>
-<span class="cstat-no" title="statement not covered" >): Promise&lt;ApiResponse&gt; {</span>
-<span class="cstat-no" title="statement not covered" >  let url = BASE_URL;</span>
-<span class="cstat-no" title="statement not covered" >  if (searchQuery) {</span>
-<span class="cstat-no" title="statement not covered" >    url += `/?name=${encodeURIComponent(searchQuery)}`;</span>
-<span class="cstat-no" title="statement not covered" >  }</span>
-<span class="cstat-no" title="statement not covered" >  if (currentPage) {</span>
-<span class="cstat-no" title="statement not covered" >    url += `${searchQuery ? '&amp;' : '?'}page=${currentPage}`;</span>
-<span class="cstat-no" title="statement not covered" >  }</span>
-<span class="cstat-no" title="statement not covered" >  const res = await fetch(url);</span>
-<span class="cstat-no" title="statement not covered" >  if (!res.ok) {</span>
-<span class="cstat-no" title="statement not covered" >    const errorData = await res.json();</span>
-<span class="cstat-no" title="statement not covered" >    const errorMessage =</span>
-<span class="cstat-no" title="statement not covered" >      errorData.message || res.statusText || 'An unexpected error occurred.';</span>
+export async function getApiData(
+  searchQuery?: string,
+  currentPage?: number
+): Promise&lt;ApiResponse&gt; {
+  let url = BASE_URL;
+  if (searchQuery) {
+    url += `/?name=${encodeURIComponent(searchQuery)}`;
+  }
+  if (currentPage) {
+    url += `${searchQuery ? '&amp;' : '?'}page=${currentPage}`;
+  }
+  const res = await fetch(url);
+  if (!res.ok) {
+    const errorData = await res.json();
+    const errorMessage =
+      errorData.message || res.<span class="branch-0 cbranch-no" title="branch not covered" >statusText || 'An unexpected error occurred.';</span>
 &nbsp;
-<span class="cstat-no" title="statement not covered" >    throw new Error(</span>
-<span class="cstat-no" title="statement not covered" >      `HTTP error! status: ${res.status}, message: ${errorMessage}`</span>
-<span class="cstat-no" title="statement not covered" >    );</span>
-<span class="cstat-no" title="statement not covered" >  }</span>
+    throw new Error(
+      `HTTP error! status: ${res.status}, message: ${errorMessage}`
+    );
+  }
 &nbsp;
-<span class="cstat-no" title="statement not covered" >  return res.json();</span>
-<span class="cstat-no" title="statement not covered" >}</span>
+  return res.json();
+}
 &nbsp;</pre></td></tr></table></pre>
 
                 <div class='push'></div><!-- for sticky footer -->
@@ -151,7 +151,7 @@
             <div class='footer quiet pad2 space-top1 center small'>
                 Code coverage generated by
                 <a href="https://istanbul.js.org/" target="_blank" rel="noopener noreferrer">istanbul</a>
-                at 2025-02-07T16:52:24.379Z
+                at 2025-02-08T16:35:17.903Z
             </div>
         <script src="../../prettify.js"></script>
         <script>

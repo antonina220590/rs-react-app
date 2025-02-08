@@ -69,6 +69,7 @@ function SearchPage() {
       setSearchParams({ page: '1' });
     }
   };
+  console.log(searchQuery);
 
   return (
     <div className="w-[90%] flex flex-col items-center">
