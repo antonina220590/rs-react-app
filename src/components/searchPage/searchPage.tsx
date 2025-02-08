@@ -4,7 +4,7 @@ import Input from '../input/input';
 import Cards from '../cards/cards';
 import Spinner from '../spinner/spinners';
 import fetchData from './helpers/fetchData';
-import { useSearchQuery } from '../../utils/localStorage';
+import { useSearchQuery } from '../../utils/localStorageHook';
 import Pagination from '../pagination/pagination';
 import { Outlet, useSearchParams } from 'react-router';
 

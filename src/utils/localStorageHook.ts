@@ -13,11 +13,7 @@ export const useSearchQuery = (): [
   );
 
   useEffect(() => {
-    const handleStorageChange = () => {
-      setSearchQuery(localStorage.getItem('searchQuery') || '');
-    };
-    window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
+    return () => {};
   }, []);
 
   useEffect(() => {

@@ -1,5 +1,8 @@
 import { ChangeEvent } from 'react';
-import { saveToLocalStorage, useSearchQuery } from '../../utils/localStorage';
+import {
+  saveToLocalStorage,
+  useSearchQuery,
+} from '../../utils/localStorageHook';
 import { InputProps } from '../../utils/interface';
 
 function Input({ onSearch }: InputProps) {

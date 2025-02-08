@@ -1,6 +1,6 @@
 import { renderHook, act } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { useSearchQuery, saveToLocalStorage } from './localStorage';
+import { useSearchQuery, saveToLocalStorage } from './localStorageHook';
 
 describe('useSearchQuery', () => {
   beforeEach(() => {
@@ -25,17 +25,5 @@ describe('useSearchQuery', () => {
     });
     expect(result.current[0]).toBe('Morty');
     expect(localStorage.getItem('searchQuery')).toBe('Morty');
-  });
-
-  it('should update search query on storage event', () => {
-    const { result } = renderHook(() => useSearchQuery());
-
-    saveToLocalStorage('Another Query');
-
-    act(() => {
-      window.dispatchEvent(new Event('storage'));
-    });
-
-    expect(result.current[0]).toBe('Another Query');
   });
 });
