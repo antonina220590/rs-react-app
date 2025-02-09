@@ -28,21 +28,48 @@ function SearchPage() {
     }
   }, [searchParams, searchQuery, setSearchParams]);
 
+  // useEffect(() => {
+  //   const fetchDataFromAPI = async () => {
+  //     // setIsLoading(true);
+  //     setErrorMessage(null);
+
+  //     const apiResponse = await fetchData(
+  //       currentQuery,
+  //       currentPage,
+  //       setCharacters,
+  //       setIsLoading,
+  //       setErrorMessage
+  //     );
+
+  //     if (apiResponse) {
+  //       setData(apiResponse);
+  //     }
+  //   };
+
+  //   fetchDataFromAPI();
+  // }, [currentPage, currentQuery]);
+
   useEffect(() => {
     const fetchDataFromAPI = async () => {
       setIsLoading(true);
       setErrorMessage(null);
 
-      const apiResponse = await fetchData(
-        currentQuery,
-        currentPage,
-        setCharacters,
-        setIsLoading,
-        setErrorMessage
-      );
+      try {
+        const apiResponse = await fetchData(
+          currentQuery,
+          currentPage,
+          setCharacters,
+          setIsLoading,
+          setErrorMessage
+        );
 
-      if (apiResponse) {
-        setData(apiResponse);
+        if (apiResponse) {
+          setData(apiResponse);
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -69,6 +96,11 @@ function SearchPage() {
       setSearchParams({ page: '1' });
     }
   };
+
+  // console.log('Loading:', isLoading);
+  // console.log('Characters:', characters);
+  // console.log('Data:', data);
+  // console.log('Error:', errorMessage);
   return (
     <div className="w-[90%] flex flex-col items-center">
       <div className="w-[95%] m-10 bg-[#123c69] backdrop-blur-2xl border rounded-xl items-center justify-center mb-8 gap-15 flex flex-wrap relative">
@@ -77,7 +109,7 @@ function SearchPage() {
       <div>
         <Pagination
           currentPage={currentPage}
-          totalPages={data ? data.info.pages : 42}
+          totalPages={data && data.info ? data.info.pages : 42}
           changePage={handlePageChange}
         />
       </div>

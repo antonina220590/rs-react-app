@@ -1,6 +1,6 @@
-import { render, screen, waitFor } from '@testing-library/react';
-import '@testing-library/jest-dom';
 import { vi } from 'vitest';
+import { fireEvent, render, screen, waitFor } from '@testing-library/react';
+import '@testing-library/jest-dom';
 import SearchPage from './searchPage';
 import { MemoryRouter } from 'react-router';
 import fetchData from './helpers/fetchData';
@@ -31,6 +31,7 @@ const mockApiResponse = {
     },
   ],
 };
+const mockSetSearchParams = vi.fn();
 
 vi.mock('../../utils/localStorage', () => ({
   useSearchQuery: vi.fn().mockReturnValue(['', vi.fn()]),
@@ -38,7 +39,7 @@ vi.mock('../../utils/localStorage', () => ({
 
 vi.mock('react-router-dom', () => ({
   ...vi.importActual('react-router-dom'),
-  useSearchParams: vi.fn(),
+  useSearchParams: vi.fn(() => [new URLSearchParams(), mockSetSearchParams]),
 }));
 
 vi.mock('./helpers/fetchData', () => {
@@ -96,5 +97,21 @@ describe('SearchPage', () => {
     await waitFor(() => {
       expect(screen.getByText('Loading...')).toBeInTheDocument();
     });
+  });
+
+  it('performs a search and updates the URL parameters', () => {
+    render(
+      <MemoryRouter>
+        <SearchPage />
+      </MemoryRouter>
+    );
+
+    const searchInput = screen.getByTestId('inputElement');
+    const searchButton = screen.getByTestId('searchBtn');
+    const searchQuery = 'Rick';
+
+    fireEvent.change(searchInput, { target: { value: searchQuery } });
+    fireEvent.click(searchButton);
+    expect(screen.getByDisplayValue(searchQuery)).toBeInTheDocument();
   });
 });

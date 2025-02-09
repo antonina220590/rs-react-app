@@ -8,6 +8,7 @@ export default defineConfig({
     globals: true,
     coverage: {
       reporter: ['html', 'text'],
+      include: ['**/*.tsx'],
       exclude: [
         'node_modules/',
         'dist',
@@ -17,7 +18,6 @@ export default defineConfig({
         'tailwind.config.ts',
         'eslint.config.js',
         'vite-env.d.ts',
-        'App.tsx',
       ],
     },
     environment: 'jsdom',
@@ -31,6 +31,7 @@ declare module 'vite' {
       coverage?: {
         reporter?: string[];
         exclude?: string[];
+        include?: string[];
       };
       environment?: string;
       globals?: boolean;
