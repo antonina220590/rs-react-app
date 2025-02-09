@@ -75,11 +75,6 @@ function SearchPage() {
       setSearchParams({ page: '1' });
     }
   };
-
-  // console.log('Loading:', isLoading);
-  // console.log('Characters:', characters);
-  // console.log('Data:', data);
-  // console.log('Error:', errorMessage);
   return (
     <div className="w-[90%] flex flex-col items-center">
       <div className="w-[95%] m-10 bg-[#123c69] backdrop-blur-2xl border rounded-xl items-center justify-center mb-8 gap-15 flex flex-wrap relative">
