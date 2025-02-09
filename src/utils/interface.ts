@@ -10,6 +10,10 @@ export interface Character {
   image: string;
 }
 
+export interface CardsProps {
+  characters: Character[];
+}
+
 export interface ApiResponse {
   info: {
     count: number;
@@ -28,4 +32,14 @@ export interface IProps {
 export interface IState {
   hasError: boolean;
   errorMessage: string;
+}
+
+export interface PaginationProps {
+  currentPage: number;
+  totalPages: number;
+  changePage: (page: number) => void;
+}
+
+export interface InputProps {
+  onSearch: (searchQuery: string) => void;
 }

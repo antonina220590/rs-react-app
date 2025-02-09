@@ -1,87 +1,95 @@
-import { Component } from 'react';
-import { Character } from '../../utils/interface';
-import { getApiData } from '../../utils/api';
+import { useEffect, useState } from 'react';
+import { ApiResponse, Character } from '../../utils/interface';
 import Input from '../input/input';
-import { getFromLocalStorage } from '../../utils/localStorage';
 import Cards from '../cards/cards';
 import Spinner from '../spinner/spinners';
+import fetchData from './helpers/fetchData';
+import { useSearchQuery } from '../../utils/localStorageHook';
+import Pagination from '../pagination/pagination';
+import { Outlet, useSearchParams } from 'react-router';
 
-interface AppState {
-  characters: Character[];
-  isLoading: boolean;
-  errorMessage: null | string;
-  searchQuery: string;
-  counter: number;
-}
+function SearchPage() {
+  const [characters, setCharacters] = useState<Character[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [searchQuery, setSearchQuery] = useSearchQuery();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [data, setData] = useState<ApiResponse | null>(null);
+  const currentQuery = searchParams.get('search') || '';
+  const currentPage = parseInt(searchParams.get('page') || '1', 10);
 
-class SearchPage extends Component<object, AppState> {
-  constructor(props: object) {
-    super(props);
-    const initialSearchQuery = getFromLocalStorage();
-    this.state = {
-      characters: [],
-      isLoading: true,
-      errorMessage: null,
-      searchQuery: initialSearchQuery || '',
-      counter: 0,
+  useEffect(() => {
+    if (searchQuery !== (searchParams.get('search') || '')) {
+      if (searchQuery.trim() !== '') {
+        setSearchParams({ page: '1', search: searchQuery });
+      } else {
+        setSearchParams({ page: '1' });
+      }
+    }
+  }, [searchParams, searchQuery, setSearchParams]);
+
+  useEffect(() => {
+    const fetchDataFromAPI = async () => {
+      setIsLoading(true);
+      setErrorMessage(null);
+
+      try {
+        const apiResponse = await fetchData(
+          currentQuery,
+          currentPage,
+          setCharacters,
+          setIsLoading,
+          setErrorMessage
+        );
+
+        if (apiResponse) {
+          setData(apiResponse);
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setIsLoading(false);
+      }
     };
-    this.handleClick = this.handleClick.bind(this);
-  }
-  componentDidMount(): void {
-    this.fetchData(this.state.searchQuery);
-  }
-  delay = (ms: number) => new Promise((res) => setTimeout(res, ms));
-  fetchData = async (searchQuery: string = '') => {
-    this.setState({ isLoading: true, errorMessage: null });
-    try {
-      const data = await getApiData(searchQuery);
-      await this.delay(300);
-      this.setState({
-        characters: data.results || [],
-        isLoading: false,
-        searchQuery,
-      });
-    } catch (error: unknown) {
-      const errorMessage =
-        error instanceof Error
-          ? error.message
-          : 'An unexpected error occurred.';
-      this.setState({ errorMessage, isLoading: false });
-    } finally {
-      this.setState({ isLoading: false });
+
+    fetchDataFromAPI();
+  }, [currentPage, currentQuery]);
+
+  const handlePageChange = (newPage: number) => {
+    if (data && newPage <= data.info.pages) {
+      const newParams: { page: string; search?: string } = {
+        page: newPage.toString(),
+      };
+      if (searchQuery.trim() !== '') {
+        newParams.search = searchQuery;
+      }
+      setSearchParams(newParams);
     }
   };
 
-  handleSearch = (searchQuery: string) => {
-    this.fetchData(searchQuery);
-  };
-
-  handleClick() {
-    this.setState(({ counter }) => ({
-      counter: counter + 1,
-    }));
-  }
-
-  render() {
-    const { characters, isLoading, counter, errorMessage } = this.state;
-    if (counter === 1) {
-      throw new Error('Something went wrong!');
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    if (query.trim() !== '') {
+      setSearchParams({ page: '1', query: query });
+    } else {
+      setSearchParams({ page: '1' });
     }
+  };
+  return (
+    <div className="w-[90%] flex flex-col items-center">
+      <div className="w-[95%] m-10 bg-[#123c69] backdrop-blur-2xl border rounded-xl items-center justify-center mb-8 gap-15 flex flex-wrap relative">
+        <Input onSearch={handleSearch} />
+      </div>
+      <div>
+        <Pagination
+          currentPage={currentPage}
+          totalPages={data && data.info ? data.info.pages : 42}
+          changePage={handlePageChange}
+        />
+      </div>
 
-    return (
-      <div className="w-[90%] flex flex-col items-center">
-        <div className="w-[95%] m-10 bg-[#123c69] backdrop-blur-2xl border rounded-xl items-center justify-center mb-8 gap-15 flex flex-wrap">
-          <button
-            className="p-5 rounded-[5px] bg-[#edc787] mr-[30px]"
-            onClick={this.handleClick}
-            style={{ cursor: 'pointer' }}
-          >
-            Trigger Error
-          </button>
-          <Input onSearch={this.handleSearch} />
-        </div>
-
-        <div className="w-[95%] min-h-dvh m-10 bg-[#123c69] backdrop-blur-2xl border rounded-xl mb-8 gap-15 justify-center items-center flex flex-wrap">
+      <div className="flex flex-row w-[95%] relative">
+        <div className="w-[95%] min-h-dvh m-10 bg-[#123c69] backdrop-blur-2xl border rounded-xl mb-8 gap-15 justify-center items-center flex flex-wrap flex-row">
           {isLoading ? (
             <Spinner />
           ) : errorMessage ? (
@@ -97,14 +105,18 @@ class SearchPage extends Component<object, AppState> {
               </p>
             </div>
           ) : (
-            <div className="w-50% flex flex-wrap">
-              <Cards characters={characters} />
+            <div className="flex">
+              <div className="w-50% flex flex-wrap">
+                <Cards characters={characters} />
+              </div>
             </div>
           )}
         </div>
+
+        <Outlet />
       </div>
-    );
-  }
+    </div>
+  );
 }
 
 export default SearchPage;
