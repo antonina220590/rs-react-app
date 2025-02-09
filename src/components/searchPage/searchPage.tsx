@@ -28,27 +28,6 @@ function SearchPage() {
     }
   }, [searchParams, searchQuery, setSearchParams]);
 
-  // useEffect(() => {
-  //   const fetchDataFromAPI = async () => {
-  //     // setIsLoading(true);
-  //     setErrorMessage(null);
-
-  //     const apiResponse = await fetchData(
-  //       currentQuery,
-  //       currentPage,
-  //       setCharacters,
-  //       setIsLoading,
-  //       setErrorMessage
-  //     );
-
-  //     if (apiResponse) {
-  //       setData(apiResponse);
-  //     }
-  //   };
-
-  //   fetchDataFromAPI();
-  // }, [currentPage, currentQuery]);
-
   useEffect(() => {
     const fetchDataFromAPI = async () => {
       setIsLoading(true);
