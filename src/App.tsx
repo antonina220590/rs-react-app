@@ -13,7 +13,7 @@ function App() {
           <Route path="/" element={<SearchPage />}>
             <Route path="/character/:id" element={<DetailsPage />} />
           </Route>
-          <Route path="error" element={<Error404Page />} />
+          <Route path="*" element={<Error404Page />} />
         </Routes>
       </ErrorBoundary>
     </div>
