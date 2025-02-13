@@ -33,7 +33,7 @@ function Input({ onSearch }: InputProps) {
         data-testid="inputElement"
       ></input>
       <button
-        className="bg-[#ac3b61] text-amber-50 p-5 rounded-[5px]"
+        className="bg-[#ac3b61] text-amber-50 p-5 rounded-[5px] hover:bg-[#edc7b7] hover:text-black"
         onClick={handleSearchClick}
         style={{ cursor: 'pointer' }}
         data-testid="searchBtn"
