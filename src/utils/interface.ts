@@ -2,12 +2,12 @@ import { ReactElement } from 'react';
 
 export interface Character {
   id?: number;
-  name: string;
-  status: string;
-  gender: string;
+  name?: string;
+  status?: string;
+  gender?: string;
 
-  species: string;
-  image: string;
+  species?: string;
+  image?: string;
 }
 
 export interface CardsProps {

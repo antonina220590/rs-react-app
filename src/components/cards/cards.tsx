@@ -10,7 +10,7 @@ function Cards({ characters }: CardsProps) {
           key={character.id}
           className="flex flex-col items-center w-[300px] h-[520px] bg-gray-500/70 backdrop-blur-lg border border-white/18 rounded-xl shadow-xl justify-end"
         >
-          <Heart id={`heart-${character.id}`} />
+          <Heart character={character} />
           <div className="pb-[10px]">
             <img
               className="h-[280px]"
