@@ -36,6 +36,7 @@ const Heart = ({ character }: HeartProps) => {
         type="checkbox"
         className="peer absolute left-[-100vw]"
         checked={isChecked}
+        readOnly
       />
       <label
         htmlFor={`${character.id}`}

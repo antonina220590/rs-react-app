@@ -7,6 +7,7 @@ import fetchData from './helpers/fetchData';
 import { useSearchQuery } from '../../utils/localStorageHook';
 import Pagination from '../pagination/pagination';
 import { Outlet, useSearchParams } from 'react-router';
+import Flyout from '../flyout/flyout';
 
 function SearchPage() {
   const [characters, setCharacters] = useState<Character[]>([]);
@@ -115,6 +116,7 @@ function SearchPage() {
 
         <Outlet />
       </div>
+      <Flyout />
     </div>
   );
 }
