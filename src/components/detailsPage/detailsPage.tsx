@@ -1,43 +1,24 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router';
-import { Character } from '../../utils/interface';
-import { fetchCharacter } from './helpers/fetchCharacter';
 import Spinner from '../spinner/spinners';
+import { useGetCharacterByIdQuery } from '../../utils/slices/apiSlice';
+import { FetchBaseQueryError } from '@reduxjs/toolkit/query/react';
+
+const isFetchBaseQueryError = (
+  error: unknown
+): error is FetchBaseQueryError => {
+  return (error as FetchBaseQueryError).status !== undefined;
+};
 
 function DetailsPage() {
   const { id } = useParams();
-  const [character, setCharacter] = useState<Character | null>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const {
+    data: character,
+    error,
+    isLoading,
+  } = useGetCharacterByIdQuery(Number(id));
   const navigate = useNavigate();
   const detailsRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const fetchCharacterData = async () => {
-      setIsLoading(true);
-      setError(null);
-
-      try {
-        if (!id) {
-          throw new Error('Character ID is missing');
-        }
-        const data = await fetchCharacter(id);
-        setCharacter(data);
-      } catch (error) {
-        const errorMessage =
-          error instanceof Error
-            ? error.message
-            : 'An unexpected error occurred.';
-        setError(errorMessage);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    if (id) {
-      fetchCharacterData();
-    }
-  }, [id, setCharacter, setError, setIsLoading]);
 
   const closeCard = useCallback(() => {
     navigate(`/${location.search}`);
@@ -74,7 +55,11 @@ function DetailsPage() {
           </div>
         ) : error ? (
           <div className="bg-gray-500/70 backdrop-blur-lg border border-white/18 rounded-xl shadow-xl h-[200px] flex items-center">
-            <p className="text-amber-50 text-4xl p-5">Error: {error}</p>
+            <p className="text-amber-50 text-4xl p-5">
+              {isFetchBaseQueryError(error)
+                ? `Error: ${error.status} - ${error.data ? JSON.stringify(error.data) : 'No additional information available.'}`
+                : 'An unexpected error occurred.'}
+            </p>
           </div>
         ) : (
           <>

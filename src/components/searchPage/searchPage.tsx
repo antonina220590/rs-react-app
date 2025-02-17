@@ -1,23 +1,30 @@
-import { useEffect, useState } from 'react';
-import { ApiResponse, Character } from '../../utils/interface';
+import { useEffect } from 'react';
 import Input from '../input/input';
 import Cards from '../cards/cards';
 import Spinner from '../spinner/spinners';
-import fetchData from './helpers/fetchData';
 import { useSearchQuery } from '../../utils/localStorageHook';
 import Pagination from '../pagination/pagination';
 import { Outlet, useSearchParams } from 'react-router';
 import Flyout from '../flyout/flyout';
+import { useGetCharactersQuery } from '../../utils/slices/apiSlice';
+import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
+
+const isFetchBaseQueryError = (
+  error: unknown
+): error is FetchBaseQueryError => {
+  return (error as FetchBaseQueryError).status !== undefined;
+};
 
 function SearchPage() {
-  const [characters, setCharacters] = useState<Character[]>([]);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useSearchQuery();
   const [searchParams, setSearchParams] = useSearchParams();
-  const [data, setData] = useState<ApiResponse | null>(null);
   const currentQuery = searchParams.get('search') || '';
   const currentPage = parseInt(searchParams.get('page') || '1', 10);
+
+  const { data, error, isLoading } = useGetCharactersQuery({
+    searchQuery: currentQuery,
+    currentPage,
+  });
 
   useEffect(() => {
     if (searchQuery !== (searchParams.get('search') || '')) {
@@ -28,33 +35,6 @@ function SearchPage() {
       }
     }
   }, [searchParams, searchQuery, setSearchParams]);
-
-  useEffect(() => {
-    const fetchDataFromAPI = async () => {
-      setIsLoading(true);
-      setErrorMessage(null);
-
-      try {
-        const apiResponse = await fetchData(
-          currentQuery,
-          currentPage,
-          setCharacters,
-          setIsLoading,
-          setErrorMessage
-        );
-
-        if (apiResponse) {
-          setData(apiResponse);
-        }
-      } catch (error) {
-        console.error('Error fetching data:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchDataFromAPI();
-  }, [currentPage, currentQuery]);
 
   const handlePageChange = (newPage: number) => {
     if (data && newPage <= data.info.pages) {
@@ -93,13 +73,16 @@ function SearchPage() {
         <div className="w-[95%] min-h-dvh m-10 bg-[#123c69] backdrop-blur-2xl border rounded-xl mb-8 gap-15 justify-center items-center flex flex-wrap flex-row">
           {isLoading ? (
             <Spinner />
-          ) : errorMessage ? (
+          ) : error ? (
             <div className="bg-gray-500/70 backdrop-blur-lg border border-white/18 rounded-xl shadow-xl h-[200px] flex items-center">
               <p className="text-amber-50 text-4xl p-5">
-                Error: {errorMessage}
+                Error:{' '}
+                {isFetchBaseQueryError(error)
+                  ? `${error.status} - ${error.data && typeof error.data === 'string' ? error.data : (error.data as { error?: string }).error || 'No additional information available.'}`
+                  : 'An unexpected error occurred.'}
               </p>
             </div>
-          ) : characters.length === 0 ? (
+          ) : !data || data.results.length === 0 ? (
             <div className="bg-gray-500/70 backdrop-blur-lg border border-white/18 rounded-xl shadow-xl h-[200px] flex items-center">
               <p className="text-amber-50 text-4xl p-5">
                 No results found for your search.
@@ -108,12 +91,11 @@ function SearchPage() {
           ) : (
             <div className="flex">
               <div className="w-50% flex flex-wrap">
-                <Cards characters={characters} />
+                <Cards characters={data.results} />{' '}
               </div>
             </div>
           )}
         </div>
-
         <Outlet />
       </div>
       <Flyout />
