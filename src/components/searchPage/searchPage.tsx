@@ -69,8 +69,8 @@ function SearchPage() {
         />
       </div>
 
-      <div className="flex flex-row w-[95%] relative">
-        <div className="w-[95%] min-h-dvh m-10 bg-[#123c69] backdrop-blur-2xl border rounded-xl mb-8 gap-15 justify-center items-center flex flex-wrap flex-row">
+      <div className="flex flex-row w-[95%] relative mt-[20px] justify-center">
+        <div className="w-[95%] min-h-dvh ml-[10px] mr-[10px] bg-[#123c69] backdrop-blur-2xl border rounded-xl mb-8 gap-15 justify-center items-center flex flex-wrap flex-row">
           {isLoading ? (
             <Spinner />
           ) : error ? (

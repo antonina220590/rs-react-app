@@ -1,8 +1,9 @@
-import { useCallback, useRef } from 'react';
+import { useCallback } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import Spinner from '../spinner/spinners';
 import { useGetCharacterByIdQuery } from '../../utils/slices/apiSlice';
 import { FetchBaseQueryError } from '@reduxjs/toolkit/query/react';
+import Error404Page from '../404Page/404page';
 
 const isFetchBaseQueryError = (
   error: unknown
@@ -18,29 +19,33 @@ function DetailsPage() {
     isLoading,
   } = useGetCharacterByIdQuery(Number(id));
   const navigate = useNavigate();
-  const detailsRef = useRef<HTMLDivElement>(null);
 
   const closeCard = useCallback(() => {
     navigate(`/${location.search}`);
   }, [navigate]);
 
+  if (error) {
+    if (isFetchBaseQueryError(error) && error.status === 404) {
+      return <Error404Page />;
+    }
+
+    return (
+      <div className="bg-gray-500/70 backdrop-blur-lg border border-white/18 rounded-xl shadow-xl h-[200px] flex items-center">
+        <p className="text-amber-50 text-4xl p-5">
+          {isFetchBaseQueryError(error)
+            ? `Error: ${error.status} - ${error.data ? JSON.stringify(error.data) : 'No additional information available.'}`
+            : 'An unexpected error occurred.'}
+        </p>
+      </div>
+    );
+  }
+
   return (
-    <div className="flex flex-wrap gap-20 p-10 justify-evenly flex-1">
-      <div
-        ref={detailsRef}
-        className="flex flex-col items-center w-[500px] h-[700px] bg-gray-500/70 backdrop-blur-lg border border-white/18 rounded-xl shadow-xl sticky top-0"
-      >
+    <div className="flex flex-wrap gap-20 pl-[10px] pr-[10px] justify-evenly flex-1">
+      <div className="flex flex-col items-center w-[500px] h-[700px] bg-gray-500/70 backdrop-blur-lg border border-white/18 rounded-xl shadow-xl sticky top-0">
         {isLoading ? (
           <div className="h-[700px] inset-0 flex items-center justify-center bg-gray-500/50">
             <Spinner />
-          </div>
-        ) : error ? (
-          <div className="bg-gray-500/70 backdrop-blur-lg border border-white/18 rounded-xl shadow-xl h-[200px] flex items-center">
-            <p className="text-amber-50 text-4xl p-5">
-              {isFetchBaseQueryError(error)
-                ? `Error: ${error.status} - ${error.data ? JSON.stringify(error.data) : 'No additional information available.'}`
-                : 'An unexpected error occurred.'}
-            </p>
           </div>
         ) : (
           <>
