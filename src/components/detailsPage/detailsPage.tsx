@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import Spinner from '../spinner/spinners';
 import { useGetCharacterByIdQuery } from '../../utils/slices/apiSlice';
@@ -23,25 +23,6 @@ function DetailsPage() {
   const closeCard = useCallback(() => {
     navigate(`/${location.search}`);
   }, [navigate]);
-
-  const handleClickOutside = useCallback(
-    (event: MouseEvent) => {
-      if (
-        detailsRef.current &&
-        !detailsRef.current.contains(event.target as Node)
-      ) {
-        closeCard();
-      }
-    },
-    [closeCard]
-  );
-
-  useEffect(() => {
-    document.addEventListener('mousedown', handleClickOutside);
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [handleClickOutside]);
 
   return (
     <div className="flex flex-wrap gap-20 p-10 justify-evenly flex-1">

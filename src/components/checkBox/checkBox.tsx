@@ -30,7 +30,10 @@ const Heart = ({ character }: HeartProps) => {
     }
   };
   return (
-    <div className="h-[80px] flex">
+    <div
+      className="h-[100px] w-[100px] flex justify-center"
+      onClick={(e) => e.stopPropagation()}
+    >
       <input
         id={`${character.id}`}
         type="checkbox"
