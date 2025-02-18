@@ -1,6 +1,8 @@
 import { useAppSelector } from '../../../app/hooks';
+import { useTheme } from '../../../utils/context/useThemeHook';
 
 export default function DownloadBtn() {
+  const { isDarkTheme } = useTheme();
   const favList = useAppSelector((state) => state.favourites);
   let csvFile = '';
   const formattedFavList = favList.map((character) => ({
@@ -33,7 +35,7 @@ export default function DownloadBtn() {
 
   return (
     <a
-      className="w-[140px] py-[7px] px-[15px] rounded-[5px] bg-[#ac3b61] text-amber-50 hover:bg-[#edc7b7] hover:text-black"
+      className={`w-[140px] py-[7px] px-[15px] rounded-[5px] ${isDarkTheme ? 'bg-neutral-300' : 'bg-[#ac3b61]'} ${isDarkTheme ? 'text-black' : 'text-white'} ${isDarkTheme ? 'hover:bg-white' : 'hover:bg-[#edc7b7]'}`}
       data-testid="download"
       href={objectUrl}
       download={`${favList.length}_characters.csv`}

@@ -1,4 +1,5 @@
 import { useAppDispatch, useAppSelector } from '../../app/hooks';
+import { useTheme } from '../../utils/context/useThemeHook';
 import { Character } from '../../utils/interface';
 import { deleteFromFav } from '../../utils/slices/favouritesSlice';
 import DownloadBtn from './downloadBtn/downloadBtn';
@@ -6,6 +7,7 @@ import DownloadBtn from './downloadBtn/downloadBtn';
 export default function Flyout() {
   const favList = useAppSelector((state) => state.favourites);
   const dispatch = useAppDispatch();
+  const { isDarkTheme } = useTheme();
 
   const deleteAll = () => {
     favList.forEach((character: Character) => {
@@ -15,10 +17,10 @@ export default function Flyout() {
   return (
     <>
       {favList.length > 0 && (
-        <div className=" fixed bottom-0 flex justify-around items-center w-[70%] h-[9%] bg-amber-200 rounded-[5px]">
+        <div className=" fixed bottom-0 flex justify-around items-center w-[70%] h-[9%] bg-gray-500/70 backdrop-blur-lg border border-white/18 rounded-xl shadow-xl">
           <button
             type="button"
-            className="w-[140px] py-[7px] px-[15px] rounded-[5px] bg-[#ac3b61] text-amber-50 hover:bg-[#edc7b7] hover:text-black"
+            className={`w-[140px] py-[7px] px-[15px] rounded-[5px] ${isDarkTheme ? 'bg-neutral-300' : 'bg-[#ac3b61]'} ${isDarkTheme ? 'text-black' : 'text-white'} ${isDarkTheme ? 'hover:bg-white' : 'hover:bg-[#edc7b7]'}`}
             style={{ cursor: 'pointer' }}
             onClick={deleteAll}
           >

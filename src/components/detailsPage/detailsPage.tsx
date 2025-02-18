@@ -86,7 +86,7 @@ function DetailsPage() {
               </p>
             </div>
             <button
-              className="w-[150px] h-[50px] cursor-pointer rounded-md bg-[#ac3b61] text-white text-3xl border-none"
+              className={`w-[150px] h-[50px] cursor-pointer rounded-md ${isDarkTheme ? 'bg-neutral-300' : 'bg-[#ac3b61]'} ${isDarkTheme ? 'text-black' : 'text-white'} ${isDarkTheme ? 'hover:bg-white' : 'hover:bg-[#edc7b7]'} text-3xl border-none`}
               type="button"
               onClick={closeCard}
               data-testid="closeCardBtn"
