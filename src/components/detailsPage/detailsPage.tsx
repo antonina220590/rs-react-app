@@ -4,6 +4,7 @@ import Spinner from '../spinner/spinners';
 import { useGetCharacterByIdQuery } from '../../utils/slices/apiSlice';
 import { FetchBaseQueryError } from '@reduxjs/toolkit/query/react';
 import Error404Page from '../404Page/404page';
+import { useTheme } from '../../utils/context/useThemeHook';
 
 const isFetchBaseQueryError = (
   error: unknown
@@ -19,6 +20,7 @@ function DetailsPage() {
     isLoading,
   } = useGetCharacterByIdQuery(Number(id));
   const navigate = useNavigate();
+  const { isDarkTheme } = useTheme();
 
   const closeCard = useCallback(() => {
     navigate(`/${location.search}`);
@@ -42,9 +44,13 @@ function DetailsPage() {
 
   return (
     <div className="flex flex-wrap gap-20 pl-[10px] pr-[10px] justify-evenly flex-1">
-      <div className="flex flex-col items-center w-[500px] h-[700px] bg-gray-500/70 backdrop-blur-lg border border-white/18 rounded-xl shadow-xl sticky top-0">
+      <div
+        className={`flex flex-col items-center w-[500px] h-[700px] ${isDarkTheme ? 'bg-[#19181A]' : 'bg-[#eee2dc]'}  rounded-xl sticky top-0`}
+      >
         {isLoading ? (
-          <div className="h-[700px] inset-0 flex items-center justify-center bg-gray-500/50">
+          <div
+            className={`h-[700px] inset-0 flex items-center justify-center ${isDarkTheme ? 'bg-[#19181A]' : 'bg-[#eee2dc]'}`}
+          >
             <Spinner />
           </div>
         ) : (
@@ -57,15 +63,25 @@ function DetailsPage() {
               />
             </div>
             <div className="pb-[20px]">
-              <h3 className="font-bold text-5xl p-15">{character?.name}</h3>
-              <p className="font-bold text-4xl pb-[10px]">
+              <h3
+                className={`font-bold text-5xl p-15 ${isDarkTheme ? 'text-white' : 'text-black'}`}
+              >
+                {character?.name}
+              </h3>
+              <p
+                className={`font-bold text-4xl pb-[10px] ${isDarkTheme ? 'text-white' : 'text-black'}`}
+              >
                 Status: <span className="font-normal">{character?.status}</span>
               </p>
-              <p className="font-bold text-4xl pb-[10px]">
+              <p
+                className={`font-bold text-4xl pb-[10px] ${isDarkTheme ? 'text-white' : 'text-black'}`}
+              >
                 Species:{' '}
                 <span className="font-normal">{character?.species}</span>
               </p>
-              <p className="font-bold text-4xl pb-[10px]">
+              <p
+                className={`font-bold text-4xl pb-[10px] ${isDarkTheme ? 'text-white' : 'text-black'}`}
+              >
                 Gender: <span className="font-normal">{character?.gender}</span>
               </p>
             </div>

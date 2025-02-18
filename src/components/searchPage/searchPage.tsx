@@ -8,6 +8,7 @@ import { Outlet, useSearchParams } from 'react-router';
 import Flyout from '../flyout/flyout';
 import { useGetCharactersQuery } from '../../utils/slices/apiSlice';
 import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
+import { useTheme } from '../../utils/context/useThemeHook';
 
 const isFetchBaseQueryError = (
   error: unknown
@@ -20,6 +21,7 @@ function SearchPage() {
   const [searchParams, setSearchParams] = useSearchParams();
   const currentQuery = searchParams.get('search') || '';
   const currentPage = parseInt(searchParams.get('page') || '1', 10);
+  const { isDarkTheme } = useTheme();
 
   const { data, error, isLoading } = useGetCharactersQuery({
     searchQuery: currentQuery,
@@ -58,7 +60,9 @@ function SearchPage() {
   };
   return (
     <div className="w-[90%] flex flex-col items-center">
-      <div className="w-[95%] m-10 bg-[#123c69] backdrop-blur-2xl border rounded-xl items-center justify-center mb-8 gap-15 flex flex-wrap relative">
+      <div
+        className={`w-[95%] m-10 rounded-xl items-center justify-center mb-8 gap-15 flex flex-wrap relative ${isDarkTheme ? 'bg-[#19181A]' : 'bg-[#eee2dc]'}`}
+      >
         <Input onSearch={handleSearch} />
       </div>
       <div>
@@ -70,7 +74,9 @@ function SearchPage() {
       </div>
 
       <div className="flex flex-row w-[95%] relative mt-[20px] justify-center">
-        <div className="w-[95%] min-h-dvh ml-[10px] mr-[10px] bg-[#123c69] backdrop-blur-2xl border rounded-xl mb-8 gap-15 justify-center items-center flex flex-wrap flex-row">
+        <div
+          className={`w-[95%] min-h-dvh ml-[10px] mr-[10px] ${isDarkTheme ? 'bg-[#19181A]' : 'bg-[#eee2dc]'} backdrop-blur-2xl rounded-xl mb-8 gap-15 justify-center items-center flex flex-wrap flex-row`}
+        >
           {isLoading ? (
             <Spinner />
           ) : error ? (
