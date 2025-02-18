@@ -7,7 +7,7 @@ function Cards({ characters }: CardsProps) {
   const { isDarkTheme } = useTheme();
 
   return (
-    <div className="flex flex-wrap gap-20 m-7 p-10 justify-evenly ">
+    <div className="flex flex-wrap gap-20 m-7 p-10 justify-evenly">
       {characters.map((character) => (
         <Link
           to={`/character/${character.id}${window.location.search}`}

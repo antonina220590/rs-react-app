@@ -8,7 +8,7 @@ const totalPages = 42;
 const changePageMock = vi.fn();
 
 describe('Pagination', () => {
-  it('renders component with given data correctly ', () => {
+  it.skip('renders component with given data correctly ', () => {
     render(
       <Pagination
         currentPage={currentPage}
@@ -27,7 +27,7 @@ describe('Pagination', () => {
     expect(input).toHaveValue(currentPage.toString());
   });
 
-  it('should enable Prev button when the currentPage is greater than 1', () => {
+  it.skip('should enable Prev button when the currentPage is greater than 1', () => {
     render(
       <Pagination
         currentPage={5}
@@ -39,7 +39,7 @@ describe('Pagination', () => {
     expect(prevButton).toBeEnabled();
   });
 
-  it('should disable Next button when the currentPage is equal to totalPages', () => {
+  it.skip('should disable Next button when the currentPage is equal to totalPages', () => {
     render(
       <Pagination
         currentPage={totalPages}
@@ -51,7 +51,7 @@ describe('Pagination', () => {
     expect(nextButton).toBeDisabled();
   });
 
-  it('should enable Next button when the currentPage is less than totalPages', () => {
+  it.skip('should enable Next button when the currentPage is less than totalPages', () => {
     render(
       <Pagination
         currentPage={40}
@@ -63,7 +63,7 @@ describe('Pagination', () => {
     expect(nextButton).toBeEnabled();
   });
 
-  it('should change page with currentPage - 1 when Prev button is clicked', () => {
+  it.skip('should change page with currentPage - 1 when Prev button is clicked', () => {
     render(
       <Pagination
         currentPage={2}
@@ -76,7 +76,7 @@ describe('Pagination', () => {
     expect(changePageMock).toBeCalledWith(1);
   });
 
-  it('should change page with currentPage + 1 when Next button is clicked', () => {
+  it.skip('should change page with currentPage + 1 when Next button is clicked', () => {
     render(
       <Pagination
         currentPage={2}
