@@ -7,6 +7,7 @@ function ThemeBtn() {
 
   return (
     <button
+      data-testid="themeBtn"
       onClick={toggleTheme}
       className={`${isDarkTheme ? 'bg-neutral-300' : 'bg-[#ac3b61]'} ${isDarkTheme ? 'text-black' : 'text-white'} p-3 rounded-[5px] cursor-pointer ${isDarkTheme ? 'hover:bg-white' : 'hover:bg-[#edc7b7]'}`}
     >

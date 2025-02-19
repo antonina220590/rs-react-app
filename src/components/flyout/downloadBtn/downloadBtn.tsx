@@ -4,6 +4,7 @@ import { useTheme } from '../../../utils/context/useThemeHook';
 export default function DownloadBtn() {
   const { isDarkTheme } = useTheme();
   const favList = useAppSelector((state) => state.favourites);
+
   let csvFile = '';
   const formattedFavList = favList.map((character) => ({
     id: character.id,
