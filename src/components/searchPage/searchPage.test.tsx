@@ -3,7 +3,6 @@ import { fireEvent, render, screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import SearchPage from './searchPage';
 import { MemoryRouter } from 'react-router';
-import fetchData from './helpers/fetchData';
 
 const mockApiResponse = {
   info: {
@@ -50,9 +49,9 @@ vi.mock('./helpers/fetchData', () => {
 });
 
 describe('SearchPage', () => {
-  beforeEach(() => {
-    vi.mocked(fetchData).mockResolvedValue(mockApiResponse);
-  });
+  // beforeEach(() => {
+  //   vi.mocked(fetchData).mockResolvedValue(mockApiResponse);
+  // });
 
   afterEach(() => {
     vi.clearAllMocks();

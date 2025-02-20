@@ -1,4 +1,4 @@
-import { useCallback } from 'react';
+import { useCallback, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import Spinner from '../spinner/spinners';
 import { useGetCharacterByIdQuery } from '../../utils/slices/apiSlice';
@@ -17,10 +17,16 @@ function DetailsPage() {
   const {
     data: character,
     error,
-    isLoading,
-  } = useGetCharacterByIdQuery(Number(id));
+    isLoading: isCharacterLoading,
+  } = useGetCharacterByIdQuery(id ?? '');
   const navigate = useNavigate();
   const { isDarkTheme } = useTheme();
+
+  useEffect(() => {
+    if (!id || Number.isNaN(Number(id))) {
+      navigate('/Error404Page', { replace: true });
+    }
+  }, [id, navigate]);
 
   const closeCard = useCallback(() => {
     navigate(`/${location.search}`);
@@ -47,7 +53,7 @@ function DetailsPage() {
       <div
         className={`flex flex-col items-center w-[500px] h-[700px] ${isDarkTheme ? 'bg-[#19181A]' : 'bg-[#eee2dc]'}  rounded-xl sticky top-0`}
       >
-        {isLoading ? (
+        {isCharacterLoading ? (
           <div
             className={`h-[700px] inset-0 flex items-center justify-center ${isDarkTheme ? 'bg-[#19181A]' : 'bg-[#eee2dc]'}`}
           >
@@ -64,12 +70,14 @@ function DetailsPage() {
             </div>
             <div className="pb-[20px]">
               <h3
+                data-testid="characterName"
                 className={`font-bold text-5xl p-15 ${isDarkTheme ? 'text-white' : 'text-black'}`}
               >
                 {character?.name}
               </h3>
               <p
                 className={`font-bold text-4xl pb-[10px] ${isDarkTheme ? 'text-white' : 'text-black'}`}
+                data-testid="characterStatus"
               >
                 Status: <span className="font-normal">{character?.status}</span>
               </p>
@@ -77,12 +85,17 @@ function DetailsPage() {
                 className={`font-bold text-4xl pb-[10px] ${isDarkTheme ? 'text-white' : 'text-black'}`}
               >
                 Species:{' '}
-                <span className="font-normal">{character?.species}</span>
+                <span className="font-normal" data-testid="characterSpecies">
+                  {character?.species}
+                </span>
               </p>
               <p
                 className={`font-bold text-4xl pb-[10px] ${isDarkTheme ? 'text-white' : 'text-black'}`}
               >
-                Gender: <span className="font-normal">{character?.gender}</span>
+                Gender:{' '}
+                <span className="font-normal" data-testid="characterGender">
+                  {character?.gender}
+                </span>
               </p>
             </div>
             <button

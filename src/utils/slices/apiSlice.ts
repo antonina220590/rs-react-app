@@ -22,7 +22,7 @@ export const apiSlice = createApi({
         return url;
       },
     }),
-    getCharacterById: builder.query<Character, number>({
+    getCharacterById: builder.query<Character, string>({
       query: (id) => `/${id}`,
     }),
   }),
