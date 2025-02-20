@@ -1,6 +1,6 @@
 import { http, HttpResponse, delay } from 'msw';
 import { setupServer } from 'msw/node';
-import { Character } from '../utils/interface';
+import { Character } from '../../utils/interface';
 
 const mockCharacter: Character = {
   id: 1,

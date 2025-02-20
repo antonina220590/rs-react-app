@@ -26,6 +26,7 @@ function Cards({ characters }: CardsProps) {
           <div className="h-[90px]">
             <h3
               className={`font-bold text-4xl p-10 ${isDarkTheme ? 'text-white' : 'text-black'}`}
+              data-testid="nameOfCharacter"
             >
               {character.name}
             </h3>

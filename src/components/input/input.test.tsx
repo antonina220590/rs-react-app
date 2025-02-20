@@ -1,7 +1,8 @@
 import Input from './input';
 import '@testing-library/jest-dom';
 import { describe, expect, vi } from 'vitest';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, screen } from '@testing-library/react';
+import { renderWithProviders } from '../../utils/test-utils';
 
 const setItemMock = vi.fn();
 const getItemMock = vi.fn();
@@ -16,8 +17,8 @@ Object.defineProperty(window, 'localStorage', {
 });
 
 describe('Input', () => {
-  it.skip('should render component', () => {
-    render(<Input onSearch={vi.fn()} />);
+  it('should render component', () => {
+    renderWithProviders(<Input onSearch={vi.fn()} />);
 
     const inputElement = screen.getByTestId('inputElement');
     const searchButton = screen.getByTestId('searchBtn');
@@ -26,9 +27,9 @@ describe('Input', () => {
     expect(inputElement).toBeInTheDocument();
   });
 
-  it.skip('updates searchState on input change', () => {
+  it('updates searchState on input change', () => {
     const mockOnSearch = vi.fn();
-    render(<Input onSearch={mockOnSearch} />);
+    renderWithProviders(<Input onSearch={mockOnSearch} />);
 
     const inputElement = screen.getByTestId('inputElement');
     const searchButton = screen.getByTestId('searchBtn');
@@ -39,9 +40,9 @@ describe('Input', () => {
     expect(mockOnSearch).toHaveBeenCalledWith('Rick');
   });
 
-  it.skip('trims whitespace input', () => {
+  it('trims whitespace input', () => {
     const mockOnSearch = vi.fn();
-    render(<Input onSearch={mockOnSearch} />);
+    renderWithProviders(<Input onSearch={mockOnSearch} />);
 
     const inputElement = screen.getByTestId('inputElement');
     const searchButton = screen.getByTestId('searchBtn');
@@ -52,9 +53,9 @@ describe('Input', () => {
     expect(mockOnSearch).toHaveBeenCalledWith('');
   });
 
-  it.skip('saves value to local staroge on click', () => {
+  it('saves value to local staroge on click', () => {
     const mockOnSearch = vi.fn();
-    render(<Input onSearch={mockOnSearch} />);
+    renderWithProviders(<Input onSearch={mockOnSearch} />);
 
     const inputElement = screen.getByTestId('inputElement');
     const searchButton = screen.getByTestId('searchBtn');

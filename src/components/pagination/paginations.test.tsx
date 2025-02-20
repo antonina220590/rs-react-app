@@ -1,15 +1,16 @@
 import Pagination from './pagination';
 import '@testing-library/jest-dom';
 import { describe, expect, vi } from 'vitest';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, screen } from '@testing-library/react';
+import { renderWithProviders } from '../../utils/test-utils';
 
 const currentPage = 1;
 const totalPages = 42;
 const changePageMock = vi.fn();
 
 describe('Pagination', () => {
-  it.skip('renders component with given data correctly ', () => {
-    render(
+  it('renders component with given data correctly ', () => {
+    renderWithProviders(
       <Pagination
         currentPage={currentPage}
         totalPages={totalPages}
@@ -27,8 +28,8 @@ describe('Pagination', () => {
     expect(input).toHaveValue(currentPage.toString());
   });
 
-  it.skip('should enable Prev button when the currentPage is greater than 1', () => {
-    render(
+  it('should enable Prev button when the currentPage is greater than 1', () => {
+    renderWithProviders(
       <Pagination
         currentPage={5}
         totalPages={totalPages}
@@ -39,8 +40,8 @@ describe('Pagination', () => {
     expect(prevButton).toBeEnabled();
   });
 
-  it.skip('should disable Next button when the currentPage is equal to totalPages', () => {
-    render(
+  it('should disable Next button when the currentPage is equal to totalPages', () => {
+    renderWithProviders(
       <Pagination
         currentPage={totalPages}
         totalPages={totalPages}
@@ -51,8 +52,8 @@ describe('Pagination', () => {
     expect(nextButton).toBeDisabled();
   });
 
-  it.skip('should enable Next button when the currentPage is less than totalPages', () => {
-    render(
+  it('should enable Next button when the currentPage is less than totalPages', () => {
+    renderWithProviders(
       <Pagination
         currentPage={40}
         totalPages={totalPages}
@@ -63,8 +64,8 @@ describe('Pagination', () => {
     expect(nextButton).toBeEnabled();
   });
 
-  it.skip('should change page with currentPage - 1 when Prev button is clicked', () => {
-    render(
+  it('should change page with currentPage - 1 when Prev button is clicked', () => {
+    renderWithProviders(
       <Pagination
         currentPage={2}
         totalPages={totalPages}
@@ -76,8 +77,8 @@ describe('Pagination', () => {
     expect(changePageMock).toBeCalledWith(1);
   });
 
-  it.skip('should change page with currentPage + 1 when Next button is clicked', () => {
-    render(
+  it('should change page with currentPage + 1 when Next button is clicked', () => {
+    renderWithProviders(
       <Pagination
         currentPage={2}
         totalPages={totalPages}

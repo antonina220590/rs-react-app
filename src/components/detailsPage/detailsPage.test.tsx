@@ -2,7 +2,7 @@ import { screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import DetailsPage from './detailsPage';
 import { renderWithProviders } from '../../utils/test-utils';
-import { server } from '../../mocks/handlers';
+import { server } from '../../mocks/handlers/characterId';
 import { vi } from 'vitest';
 import * as UseThemeHook from '../../utils/context/useThemeHook';
 
