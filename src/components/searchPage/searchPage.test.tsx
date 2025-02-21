@@ -7,6 +7,8 @@ import { http, HttpResponse } from 'msw';
 import * as UseThemeHook from '../../utils/context/useThemeHook';
 import { vi } from 'vitest';
 import { Character } from '../../utils/interface';
+import { setupStore } from '../../app/store';
+import { addToFav } from '../../utils/slices/favouritesSlice';
 
 const mockCharacter: Character = {
   id: 1,
@@ -55,7 +57,7 @@ describe('SearchPage Component', () => {
     expect(screen.getByTestId('spinner')).toBeInTheDocument();
     await waitFor(
       () => expect(screen.queryByTestId('spinner')).not.toBeInTheDocument(),
-      { timeout: 2000 }
+      { timeout: 500 }
     );
   });
 
@@ -80,7 +82,7 @@ describe('SearchPage Component', () => {
     expect(screen.getByTestId('spinner')).toBeInTheDocument();
     await waitFor(
       () => expect(screen.queryByTestId('spinner')).not.toBeInTheDocument(),
-      { timeout: 2000 }
+      { timeout: 500 }
     );
     expect(screen.getByText('Rick Sanchez')).toBeInTheDocument();
   });
@@ -92,7 +94,7 @@ describe('SearchPage Component', () => {
     expect(screen.getByTestId('spinner')).toBeInTheDocument();
     await waitFor(
       () => expect(screen.queryByTestId('spinner')).not.toBeInTheDocument(),
-      { timeout: 2000 }
+      { timeout: 500 }
     );
     const name = screen.getByTestId('searchBtn');
     expect(name).toHaveClass(
@@ -107,7 +109,7 @@ describe('SearchPage Component', () => {
     expect(screen.getByTestId('spinner')).toBeInTheDocument();
     await waitFor(
       () => expect(screen.queryByTestId('spinner')).not.toBeInTheDocument(),
-      { timeout: 2000 }
+      { timeout: 500 }
     );
     const name = screen.getByTestId('searchBtn');
     expect(name).toHaveClass(
@@ -120,11 +122,34 @@ describe('SearchPage Component', () => {
     expect(screen.getByTestId('spinner')).toBeInTheDocument();
     await waitFor(
       () => expect(screen.queryByTestId('spinner')).not.toBeInTheDocument(),
-      { timeout: 2000 }
+      { timeout: 500 }
+    );
+    const checkBox = screen.getByTestId(`heart-label-${mockCharacter.id}`);
+    expect(checkBox).toBeInTheDocument();
+  });
+  test('the checkbox to be on the page', async () => {
+    renderWithProviders(<SearchPage />, { route: '/?page=1' });
+    expect(screen.getByTestId('spinner')).toBeInTheDocument();
+    await waitFor(
+      () => expect(screen.queryByTestId('spinner')).not.toBeInTheDocument(),
+      { timeout: 500 }
     );
     const checkBox = screen.getByTestId(`heart-label-${mockCharacter.id}`);
     expect(checkBox).toBeInTheDocument();
     fireEvent.click(checkBox);
+  });
+  test('renders flyout when favourites are present', async () => {
+    renderWithProviders(<SearchPage />, { route: '/?page=1' });
+    expect(screen.getByTestId('spinner')).toBeInTheDocument();
+    await waitFor(
+      () => expect(screen.queryByTestId('spinner')).not.toBeInTheDocument(),
+      { timeout: 500 }
+    );
+    const checkBox = screen.getByTestId(`heart-label-${mockCharacter.id}`);
+    expect(checkBox).toBeInTheDocument();
+    fireEvent.click(checkBox);
+    const store = setupStore();
+    store.dispatch(addToFav(mockCharacter));
     expect(screen.getByTestId('flyout')).toBeInTheDocument();
   });
 });

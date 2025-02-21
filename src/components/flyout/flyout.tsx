@@ -26,6 +26,7 @@ export default function Flyout() {
             className={`w-[140px] py-[7px] px-[15px] rounded-[5px] ${isDarkTheme ? 'bg-neutral-300' : 'bg-[#ac3b61]'} ${isDarkTheme ? 'text-black' : 'text-white'} ${isDarkTheme ? 'hover:bg-white' : 'hover:bg-[#edc7b7]'}`}
             style={{ cursor: 'pointer' }}
             onClick={deleteAll}
+            data-testid="unselectBtn"
           >
             Unselect All
           </button>

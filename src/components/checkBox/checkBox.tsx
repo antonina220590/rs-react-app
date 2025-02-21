@@ -42,6 +42,7 @@ const Heart = ({ character }: HeartProps) => {
       />
       <label
         data-testid={`heart-label-${character.id}`}
+        role="button"
         htmlFor={`${character.id}`}
         onClick={handleClick}
         className={`cursor-pointer p-[10px] text-6xl self-center transition-colors duration-200 ease-in-out select-none
