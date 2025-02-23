@@ -35,8 +35,6 @@ const server = setupServer(
   http.get('https://rickandmortyapi.com/api/character', async ({ request }) => {
     const url = new URL(request.url);
     const searchQuery = url.searchParams.get('name');
-    // const page = url.searchParams.get('page');
-
     await delay(200);
 
     if (searchQuery) {
