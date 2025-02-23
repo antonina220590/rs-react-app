@@ -17,7 +17,7 @@ function Error404Page() {
           Oooop! Something went wrong!
         </p>
         <button
-          className="bg-[#f96e4d] border-0 px-6 py-3 rounded-full text-white font-bold mt-4 hover:bg-[#e65c3f] focus:outline-none"
+          className="bg-[#f96e4d] cursor-pointer border-0 px-6 py-3 rounded-full text-white font-bold mt-4 hover:bg-[#e65c3f] focus:outline-none"
           onClick={refreshPage}
         >
           GET ME HOME

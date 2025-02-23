@@ -4,9 +4,13 @@ import {
   useSearchQuery,
 } from '../../utils/localStorageHook';
 import { InputProps } from '../../utils/interface';
+import ThemeBtn from '../themeButton/themeBtn';
+import SearchIcon from '../../icons/searchIcon/searchIcon';
+import { useTheme } from '../../utils/context/useThemeHook';
 
 function Input({ onSearch }: InputProps) {
   const [searchState, setSearchState] = useSearchQuery();
+  const { isDarkTheme } = useTheme();
 
   const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
     const target = event.target;
@@ -33,13 +37,14 @@ function Input({ onSearch }: InputProps) {
         data-testid="inputElement"
       ></input>
       <button
-        className="bg-[#ac3b61] text-amber-50 p-5 rounded-[5px]"
+        className={`${isDarkTheme ? 'bg-neutral-300' : 'bg-[#ac3b61]'} ${isDarkTheme ? 'text-black' : 'text-white'} p-3 rounded-[5px] cursor-pointer ${isDarkTheme ? 'hover:bg-white' : 'hover:bg-[#edc7b7]'}`}
         onClick={handleSearchClick}
         style={{ cursor: 'pointer' }}
         data-testid="searchBtn"
       >
-        Search
+        <SearchIcon className="w-[30px]" />
       </button>
+      <ThemeBtn />
     </>
   );
 }

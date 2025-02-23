@@ -2,12 +2,22 @@ import { ReactElement } from 'react';
 
 export interface Character {
   id?: number;
-  name: string;
-  status: string;
-  gender: string;
+  name?: string;
+  status?: string;
+  gender?: string;
 
-  species: string;
-  image: string;
+  species?: string;
+  image?: string;
+  type?: string;
+  origin?: {
+    name?: string;
+    url?: string;
+  };
+  location?: {
+    name?: string;
+    url?: string;
+  };
+  episode?: string[];
 }
 
 export interface CardsProps {

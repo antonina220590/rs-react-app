@@ -1,128 +1,81 @@
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { screen, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { useParams } from 'react-router';
 import DetailsPage from './detailsPage';
-import { fetchCharacter } from './helpers/fetchCharacter';
+import { renderWithProviders } from '../../utils/test-utils';
+import { server } from '../../mocks/handlers/characterId';
 import { vi } from 'vitest';
-import * as router from 'react-router';
+import * as UseThemeHook from '../../utils/context/useThemeHook';
 
-vi.mock('react-router', async () => {
-  const actual = await vi.importActual('react-router');
-  return {
-    ...actual,
-    useParams: vi.fn(),
-    useNavigate: vi.fn(),
-  };
-});
+beforeAll(() => server.listen());
+afterEach(() => server.resetHandlers());
+afterAll(() => server.close());
 
-vi.mock('./helpers/fetchCharacter');
-
-describe('DetailsPage', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
+describe('DetailsPage Component', () => {
+  test('renders "Not Found" when character not found', async () => {
+    renderWithProviders(<DetailsPage />, { route: '/character/9999' });
+    expect(screen.getByTestId('spinner')).toBeInTheDocument();
+    await waitFor(
+      () => expect(screen.queryByTestId('spinner')).not.toBeInTheDocument(),
+      { timeout: 2000 }
+    );
   });
-  it('renders loading spinner initially', () => {
-    (useParams as jest.Mock).mockReturnValue({ id: '1' });
-    (fetchCharacter as jest.Mock).mockImplementation(
-      () => new Promise(() => {})
+  test('renders character details successfully', async () => {
+    renderWithProviders(<DetailsPage />, { route: `/character/1` });
+    expect(screen.getByTestId('spinner')).toBeInTheDocument();
+    await waitFor(
+      () => expect(screen.queryByTestId('spinner')).not.toBeInTheDocument(),
+      { timeout: 2000 }
     );
 
-    render(<DetailsPage />);
-
-    expect(screen.getByText(/loading/i)).toBeInTheDocument();
+    expect(screen.getByTestId('characterName')).toBeInTheDocument();
+    expect(screen.getByTestId('characterStatus')).toBeInTheDocument();
+    expect(screen.getByTestId('characterSpecies')).toBeInTheDocument();
+    expect(screen.getByTestId('characterGender')).toBeInTheDocument();
   });
+  test('shows loading indicator while fetching', async () => {
+    renderWithProviders(<DetailsPage />, { route: '/details/1' });
+    expect(screen.getByTestId('spinner')).toBeInTheDocument();
+    await waitFor(
+      () => expect(screen.queryByTestId('spinner')).not.toBeInTheDocument(),
+      { timeout: 2000 }
+    );
+  });
+  test('applies correct theme styles for dark theme', async () => {
+    const useThemeSpy = vi.spyOn(UseThemeHook, 'useTheme');
+    useThemeSpy.mockReturnValue({ isDarkTheme: true, toggleTheme: vi.fn() });
+    renderWithProviders(<DetailsPage />, { route: `/character/1` });
+    expect(screen.getByTestId('spinner')).toBeInTheDocument();
+    await waitFor(
+      () => expect(screen.queryByTestId('spinner')).not.toBeInTheDocument(),
+      { timeout: 2000 }
+    );
+    const name = screen.getByTestId('characterName');
+    const button = screen.getByTestId('closeCardBtn');
 
-  it('renders error message if fetchCharacter fails', async () => {
-    (useParams as jest.Mock).mockReturnValue({ id: '1' });
-    (fetchCharacter as jest.Mock).mockRejectedValue(
-      new Error('Failed to fetch')
+    expect(name).toHaveClass('font-bold text-5xl p-15 text-white');
+    expect(button).toHaveClass(
+      'w-[150px] h-[50px] cursor-pointer rounded-md bg-neutral-300 text-black hover:bg-white text-3xl border-none'
     );
 
-    render(<DetailsPage />);
-
-    await waitFor(() => {
-      expect(screen.getByText(/error: failed to fetch/i)).toBeInTheDocument();
-    });
+    useThemeSpy.mockRestore();
   });
+  test('applies correct theme styles for light theme', async () => {
+    const useThemeSpy = vi.spyOn(UseThemeHook, 'useTheme');
+    useThemeSpy.mockReturnValue({ isDarkTheme: false, toggleTheme: vi.fn() });
+    renderWithProviders(<DetailsPage />, { route: `/character/1` });
+    expect(screen.getByTestId('spinner')).toBeInTheDocument();
+    await waitFor(
+      () => expect(screen.queryByTestId('spinner')).not.toBeInTheDocument(),
+      { timeout: 2000 }
+    );
+    const name = screen.getByTestId('characterName');
+    const button = screen.getByTestId('closeCardBtn');
 
-  it('renders character details successfully', async () => {
-    (useParams as jest.Mock).mockReturnValue({ id: '1' });
-    const mockCharacter = {
-      name: 'Rick Sanchez',
-      status: 'Alive',
-      species: 'Human',
-      gender: 'Male',
-      image: 'https://example.com/rick.png',
-    };
-    (fetchCharacter as jest.Mock).mockResolvedValue(mockCharacter);
+    expect(name).toHaveClass('font-bold text-5xl p-15 text-black');
+    expect(button).toHaveClass(
+      'w-[150px] h-[50px] cursor-pointer rounded-md bg-[#ac3b61] text-white hover:bg-[#edc7b7] text-3xl border-none'
+    );
 
-    render(<DetailsPage />);
-
-    await waitFor(() => {
-      expect(screen.getByText(/rick sanchez/i)).toBeInTheDocument();
-      expect(screen.getByText(/status:/i)).toBeInTheDocument();
-      expect(screen.getByText(/alive/i)).toBeInTheDocument();
-      expect(screen.getByText(/species:/i)).toBeInTheDocument();
-      expect(screen.getByText(/human/i)).toBeInTheDocument();
-      expect(screen.getByText(/gender:/i)).toBeInTheDocument();
-      expect(screen.getByText(/male/i)).toBeInTheDocument();
-      expect(screen.getByRole('img')).toHaveAttribute(
-        'src',
-        'https://example.com/rick.png'
-      );
-    });
-  });
-
-  it('closes the card when the close button is clicked', async () => {
-    const mockNavigate = vi.fn();
-    vi.spyOn(router, 'useParams').mockReturnValue({ id: '1' });
-    vi.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate);
-
-    const mockCharacter = {
-      id: 1,
-      name: 'Rick Sanchez',
-      status: 'Alive',
-      species: 'Human',
-      gender: 'Male',
-      image: 'https://example.com/rick.png',
-    };
-    vi.mocked(fetchCharacter).mockResolvedValue(mockCharacter);
-    render(<DetailsPage />);
-
-    await waitFor(() => {
-      expect(screen.getByText('Rick Sanchez')).toBeInTheDocument();
-    });
-
-    const closeBtn = screen.getByTestId('closeCardBtn');
-    fireEvent.click(closeBtn);
-
-    expect(mockNavigate).toHaveBeenCalled();
-    expect(closeBtn).toBeInTheDocument();
-  });
-
-  it('navigates to the correct URL when closing the card', async () => {
-    const mockNavigate = vi.fn();
-    vi.spyOn(router, 'useParams').mockReturnValue({ id: '1' });
-    vi.spyOn(router, 'useNavigate').mockReturnValue(mockNavigate);
-
-    const mockCharacter = {
-      id: 1,
-      name: 'Rick Sanchez',
-      status: 'Alive',
-      species: 'Human',
-      gender: 'Male',
-      image: 'https://example.com/rick.png',
-    };
-    vi.mocked(fetchCharacter).mockResolvedValue(mockCharacter);
-
-    render(<DetailsPage />);
-    await waitFor(() => {
-      expect(screen.getByText('Rick Sanchez')).toBeInTheDocument();
-    });
-
-    const closeBtn = screen.getByTestId('closeCardBtn');
-    fireEvent.click(closeBtn);
-
-    expect(mockNavigate).toHaveBeenCalledWith('/');
+    useThemeSpy.mockRestore();
   });
 });

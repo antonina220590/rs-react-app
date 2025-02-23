@@ -1,7 +1,8 @@
 import Pagination from './pagination';
 import '@testing-library/jest-dom';
 import { describe, expect, vi } from 'vitest';
-import { fireEvent, render, screen } from '@testing-library/react';
+import { fireEvent, screen } from '@testing-library/react';
+import { renderWithProviders } from '../../utils/test-utils';
 
 const currentPage = 1;
 const totalPages = 42;
@@ -9,7 +10,7 @@ const changePageMock = vi.fn();
 
 describe('Pagination', () => {
   it('renders component with given data correctly ', () => {
-    render(
+    renderWithProviders(
       <Pagination
         currentPage={currentPage}
         totalPages={totalPages}
@@ -28,7 +29,7 @@ describe('Pagination', () => {
   });
 
   it('should enable Prev button when the currentPage is greater than 1', () => {
-    render(
+    renderWithProviders(
       <Pagination
         currentPage={5}
         totalPages={totalPages}
@@ -40,7 +41,7 @@ describe('Pagination', () => {
   });
 
   it('should disable Next button when the currentPage is equal to totalPages', () => {
-    render(
+    renderWithProviders(
       <Pagination
         currentPage={totalPages}
         totalPages={totalPages}
@@ -52,7 +53,7 @@ describe('Pagination', () => {
   });
 
   it('should enable Next button when the currentPage is less than totalPages', () => {
-    render(
+    renderWithProviders(
       <Pagination
         currentPage={40}
         totalPages={totalPages}
@@ -64,7 +65,7 @@ describe('Pagination', () => {
   });
 
   it('should change page with currentPage - 1 when Prev button is clicked', () => {
-    render(
+    renderWithProviders(
       <Pagination
         currentPage={2}
         totalPages={totalPages}
@@ -77,7 +78,7 @@ describe('Pagination', () => {
   });
 
   it('should change page with currentPage + 1 when Next button is clicked', () => {
-    render(
+    renderWithProviders(
       <Pagination
         currentPage={2}
         totalPages={totalPages}
