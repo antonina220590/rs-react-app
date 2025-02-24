@@ -1,10 +1,9 @@
 import { useEffect } from 'react';
 import Input from '../input/input';
-// import Cards from '../cards/cards';
+import Cards from '../cards/cards';
 import Spinner from '../spinner/spinners';
 import { useSearchQuery } from '../../utils/localStorageHook';
 import Pagination from '../pagination/pagination';
-// import { Outlet, useSearchParams } from 'react-router';
 import { useRouter } from 'next/router';
 import Flyout from '../flyout/flyout';
 import { useGetCharactersQuery } from '../../utils/slices/apiSlice';
@@ -104,12 +103,11 @@ function SearchPage() {
           ) : (
             <div className="flex">
               <div className="w-50% flex flex-wrap">
-                {/* <Cards characters={data.results} />{' '} */}
+                <Cards characters={data.results} />{' '}
               </div>
             </div>
           )}
         </div>
-        {/* <Outlet /> */}
       </div>
       <Flyout />
     </div>

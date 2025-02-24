@@ -3,6 +3,7 @@ import { ThemeProvider } from '../utils/context/themeContext';
 import ErrorBoundary from '../utils/errorBoundary';
 import { wrapper } from '../app/store';
 import { Provider } from 'react-redux';
+import '../styles/globals.css';
 
 function MyApp({ Component, pageProps }: AppProps) {
   const { store } = wrapper.useWrappedStore(pageProps);
