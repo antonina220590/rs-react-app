@@ -1,9 +1,8 @@
 import { defineConfig } from 'vite';
 import react from '@vitejs/plugin-react';
-import tailwindcss from '@tailwindcss/vite';
 
 export default defineConfig({
-  plugins: [react(), tailwindcss()],
+  plugins: [react()],
   test: {
     globals: true,
     coverage: {
@@ -24,18 +23,3 @@ export default defineConfig({
     setupFiles: ['./src/test/test.ts'],
   },
 });
-
-declare module 'vite' {
-  interface UserConfig {
-    test?: {
-      coverage?: {
-        reporter?: string[];
-        exclude?: string[];
-        include?: string[];
-      };
-      environment?: string;
-      globals?: boolean;
-      setupFiles?: string[];
-    };
-  }
-}

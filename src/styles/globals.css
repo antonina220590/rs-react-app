@@ -1,6 +1,6 @@
 @import 'tailwindcss';
-@import 'tailwindcss/preflight';
-@tailwind utilities;
+/* @import 'tailwindcss/preflight';
+@tailwind utilities; */
 
 html {
   font-size: 10px;

@@ -1,5 +1,0 @@
-{
-  "c": ["pages/index", "webpack"],
-  "r": [],
-  "m": ["./src/components/testComponent/testComponent.tsx"]
-}
