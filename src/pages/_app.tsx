@@ -1,0 +1,20 @@
+import type { AppProps } from 'next/app';
+import { ThemeProvider } from '../utils/context/themeContext';
+import ErrorBoundary from '../utils/errorBoundary';
+import { wrapper } from '../app/store';
+import { Provider } from 'react-redux';
+
+function MyApp({ Component, pageProps }: AppProps) {
+  const { store } = wrapper.useWrappedStore(pageProps);
+  return (
+    <Provider store={store}>
+      <ThemeProvider>
+        <ErrorBoundary>
+          <Component {...pageProps} />
+        </ErrorBoundary>
+      </ThemeProvider>
+    </Provider>
+  );
+}
+
+export default MyApp;

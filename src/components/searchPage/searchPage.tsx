@@ -1,10 +1,11 @@
 import { useEffect } from 'react';
 import Input from '../input/input';
-import Cards from '../cards/cards';
+// import Cards from '../cards/cards';
 import Spinner from '../spinner/spinners';
 import { useSearchQuery } from '../../utils/localStorageHook';
 import Pagination from '../pagination/pagination';
-import { Outlet, useSearchParams } from 'react-router';
+// import { Outlet, useSearchParams } from 'react-router';
+import { useRouter } from 'next/router';
 import Flyout from '../flyout/flyout';
 import { useGetCharactersQuery } from '../../utils/slices/apiSlice';
 import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
@@ -17,10 +18,14 @@ const isFetchBaseQueryError = (
 };
 
 function SearchPage() {
-  const [searchQuery, setSearchQuery] = useSearchQuery();
-  const [searchParams, setSearchParams] = useSearchParams();
-  const currentQuery = searchParams.get('search') || '';
-  const currentPage = parseInt(searchParams.get('page') || '1', 10);
+  const router = useRouter();
+  const { search, page } = router.query;
+  const currentQuery = typeof search === 'string' ? search : '';
+  const currentPage = typeof page === 'string' ? parseInt(page, 10) : 1;
+  const [searchQuery] = useSearchQuery();
+  // const [searchParams, setSearchParams] = router.query;
+  // const currentQuery = searchParams.get('search') || '';
+  // const currentPage = parseInt(searchParams.get('page') || '1', 10);
   const { isDarkTheme } = useTheme();
 
   const { data, error, isLoading } = useGetCharactersQuery({
@@ -29,35 +34,37 @@ function SearchPage() {
   });
 
   useEffect(() => {
-    if (searchQuery !== (searchParams.get('search') || '')) {
+    if (searchQuery !== currentQuery) {
+      const query: { page?: string; search?: string } = { page: '1' };
       if (searchQuery.trim() !== '') {
-        setSearchParams({ page: '1', search: searchQuery });
-      } else {
-        setSearchParams({ page: '1' });
+        query.search = searchQuery;
       }
+      router.push({ pathname: router.pathname, query }, undefined, {
+        shallow: true,
+      });
     }
-  }, [searchParams, searchQuery, setSearchParams]);
+  }, [searchQuery, currentQuery, router]);
 
   const handlePageChange = (newPage: number) => {
     if (data && newPage <= data.info.pages) {
-      const newParams: { page: string; search?: string } = {
+      const query: { page?: string; search?: string } = {
         page: newPage.toString(),
       };
-      if (searchQuery.trim() !== '') {
-        newParams.search = searchQuery;
+      if (currentQuery.trim() !== '') {
+        query.search = currentQuery;
       }
-      setSearchParams(newParams);
+      router.push({ pathname: router.pathname, query });
     }
   };
 
   const handleSearch = (query: string) => {
-    setSearchQuery(query);
+    const newQuery: { page?: string; search?: string } = { page: '1' };
     if (query.trim() !== '') {
-      setSearchParams({ page: '1', query: query });
-    } else {
-      setSearchParams({ page: '1' });
+      newQuery.search = query;
     }
+    router.push({ pathname: router.pathname, query: newQuery });
   };
+
   return (
     <div className="w-[90%] flex flex-col items-center">
       <div
@@ -97,12 +104,12 @@ function SearchPage() {
           ) : (
             <div className="flex">
               <div className="w-50% flex flex-wrap">
-                <Cards characters={data.results} />{' '}
+                {/* <Cards characters={data.results} />{' '} */}
               </div>
             </div>
           )}
         </div>
-        <Outlet />
+        {/* <Outlet /> */}
       </div>
       <Flyout />
     </div>

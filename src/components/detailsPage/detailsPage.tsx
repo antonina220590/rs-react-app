@@ -3,7 +3,7 @@ import { useNavigate, useParams } from 'react-router';
 import Spinner from '../spinner/spinners';
 import { useGetCharacterByIdQuery } from '../../utils/slices/apiSlice';
 import { FetchBaseQueryError } from '@reduxjs/toolkit/query/react';
-import Error404Page from '../404Page/404page';
+import Error404Page from '../404Page/404Page';
 import { useTheme } from '../../utils/context/useThemeHook';
 
 const isFetchBaseQueryError = (

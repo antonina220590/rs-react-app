@@ -2,7 +2,7 @@ import './App.css';
 import { Routes, Route } from 'react-router';
 import SearchPage from './components/searchPage/searchPage';
 import ErrorBoundary from './utils/errorBoundary';
-import Error404Page from './components/404Page/404page';
+// import Error404Page from './components/404Page/404Page';
 import DetailsPage from './components/detailsPage/detailsPage';
 import { ThemeProvider } from './utils/context/themeContext';
 import { useTheme } from './utils/context/useThemeHook';
@@ -27,7 +27,7 @@ const Content = () => {
           <Route path="/" element={<SearchPage />}>
             <Route path="/character/:id" element={<DetailsPage />} />
           </Route>
-          <Route path="*" element={<Error404Page />} />
+          {/* <Route path="*" element={<Error404Page />} /> */}
         </Routes>
       </ErrorBoundary>
     </div>

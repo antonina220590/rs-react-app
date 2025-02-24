@@ -1,6 +1,6 @@
 import { fireEvent, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import Error404Page from './404page';
+import Error404Page from './404Page';
 import { describe, it, expect, vi } from 'vitest';
 
 describe('Error404Page', () => {
