@@ -21,10 +21,7 @@ function SearchPage() {
   const { search, page } = router.query;
   const currentQuery = typeof search === 'string' ? search : '';
   const currentPage = typeof page === 'string' ? parseInt(page, 10) : 1;
-  const [searchQuery] = useSearchQuery();
-  // const [searchParams, setSearchParams] = router.query;
-  // const currentQuery = searchParams.get('search') || '';
-  // const currentPage = parseInt(searchParams.get('page') || '1', 10);
+  const [searchQuery, setSearchQuery] = useSearchQuery();
   const { isDarkTheme } = useTheme();
 
   const { data, error, isLoading } = useGetCharactersQuery({
@@ -56,12 +53,17 @@ function SearchPage() {
     }
   };
 
+  // const handleSearch = (query: string) => {
+  //   const newQuery: { page?: string; search?: string } = { page: '1' };
+  //   if (query.trim() !== '') {
+  //     newQuery.search = query;
+  //   }
+  //   router.push({ pathname: router.pathname, query: newQuery });
+  // };
+
   const handleSearch = (query: string) => {
-    const newQuery: { page?: string; search?: string } = { page: '1' };
-    if (query.trim() !== '') {
-      newQuery.search = query;
-    }
-    router.push({ pathname: router.pathname, query: newQuery });
+    // Обновляем searchQuery через хук
+    setSearchQuery(query);
   };
 
   return (

@@ -10,7 +10,6 @@ const rootReducer = combineReducers({
 export const makeStore = () =>
   configureStore({
     reducer: rootReducer,
-    // preloadedState,
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware().concat(apiSlice.middleware),
   });
@@ -19,5 +18,5 @@ export type RootState = ReturnType<typeof rootReducer>;
 export type AppStore = ReturnType<typeof makeStore>;
 export type AppDispatch = AppStore['dispatch'];
 export const wrapper = createWrapper<AppStore>(makeStore, {
-  debug: true,
+  debug: false,
 });
