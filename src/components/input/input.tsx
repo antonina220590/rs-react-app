@@ -1,39 +1,51 @@
-import { ChangeEvent } from 'react';
-import {
-  saveToLocalStorage,
-  useSearchQuery,
-} from '../../utils/localStorageHook';
-import { InputProps } from '../../utils/interface';
-import ThemeBtn from '../themeButton/themeBtn';
+import { useState, useEffect, useRef } from 'react';
+import { useSearchQuery } from '../../utils/localStorageHook';
 import SearchIcon from '../../icons/searchIcon/searchIcon';
+import ThemeBtn from '../themeButton/themeBtn';
 import { useTheme } from '../../utils/context/useThemeHook';
+import { InputProps } from '../../utils/interface';
 
 function Input({ onSearch }: InputProps) {
-  const [searchState, setSearchState] = useSearchQuery();
+  const [inputValue, setInputValue] = useState<string>('');
+  const [searchQuery, updateSearchQuery] = useSearchQuery();
+  const inputRef = useRef<HTMLInputElement>(null);
   const { isDarkTheme } = useTheme();
 
-  const handleSearchChange = (event: ChangeEvent<HTMLInputElement>) => {
-    const target = event.target;
-    if (target) {
-      setSearchState(target.value.trim() || '');
-    } else {
-      new Error('event target is null');
+  useEffect(() => {
+    setInputValue(searchQuery);
+  }, [searchQuery]);
+
+  useEffect(() => {
+    if (inputRef.current) {
+      inputRef.current.focus();
     }
+  }, []);
+
+  const handleInputChange = (event: React.ChangeEvent<HTMLInputElement>) => {
+    setInputValue(event.target.value);
   };
+
   const handleSearchClick = () => {
-    onSearch(searchState);
-    saveToLocalStorage(searchState);
+    onSearch(inputValue);
+    updateSearchQuery(inputValue);
   };
+
+  // const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+  //   if (event.key === 'Enter') {
+  //     handleSearch();
+  //   }
+  // };
 
   return (
     <>
       <input
+        ref={inputRef}
         className="my-[20px] px-5 py-[10px] w-[250px] text-[20px] rounded-[5px] bg-white"
         name="input"
         type="text"
         placeholder="search....."
-        onChange={handleSearchChange}
-        value={searchState}
+        onChange={handleInputChange}
+        value={inputValue}
         data-testid="inputElement"
       ></input>
       <button

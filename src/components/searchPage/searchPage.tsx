@@ -31,7 +31,7 @@ function SearchPage() {
 
   useEffect(() => {
     if (searchQuery !== currentQuery) {
-      const query: { page?: string; search?: string } = { page: '1' };
+      const query: { page: string; search?: string } = { page: '1' };
       if (searchQuery.trim() !== '') {
         query.search = searchQuery;
       }
@@ -39,31 +39,31 @@ function SearchPage() {
         shallow: true,
       });
     }
-  }, [searchQuery, currentQuery, router]);
+  }, [router, searchQuery, currentQuery]);
 
   const handlePageChange = (newPage: number) => {
     if (data && newPage <= data.info.pages) {
-      const query: { page?: string; search?: string } = {
+      const query: { page: string; search?: string } = {
         page: newPage.toString(),
       };
-      if (currentQuery.trim() !== '') {
-        query.search = currentQuery;
+      if (searchQuery.trim() !== '') {
+        query.search = searchQuery;
       }
-      router.push({ pathname: router.pathname, query });
+      router.push({ pathname: router.pathname, query }, undefined, {
+        shallow: true,
+      });
     }
   };
 
-  // const handleSearch = (query: string) => {
-  //   const newQuery: { page?: string; search?: string } = { page: '1' };
-  //   if (query.trim() !== '') {
-  //     newQuery.search = query;
-  //   }
-  //   router.push({ pathname: router.pathname, query: newQuery });
-  // };
-
   const handleSearch = (query: string) => {
-    // Обновляем searchQuery через хук
     setSearchQuery(query);
+    const newQuery: { page: string; search?: string } = { page: '1' };
+    if (query.trim() !== '') {
+      newQuery.search = query;
+    }
+    router.push({ pathname: router.pathname, query: newQuery }, undefined, {
+      shallow: true,
+    });
   };
 
   return (

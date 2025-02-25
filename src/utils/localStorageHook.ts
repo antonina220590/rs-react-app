@@ -1,26 +1,44 @@
+import { useRouter } from 'next/router';
 import { useState, useEffect } from 'react';
-export const saveToLocalStorage = (searchQuery: string) => {
-  if (typeof window !== 'undefined') {
-    localStorage.setItem('searchQuery', searchQuery);
-  }
-};
 
-export const useSearchQuery = (): [
-  string,
-  React.Dispatch<React.SetStateAction<string>>,
-] => {
-  const [searchQuery, setSearchQuery] = useState<string>('');
+export const useSearchQuery = (): [string, (value: string) => void] => {
+  const router = useRouter();
+  const [searchQuery, setSearchQuery] = useState<string>(
+    typeof window !== 'undefined'
+      ? localStorage.getItem('searchQuery') || ''
+      : ''
+  );
 
   useEffect(() => {
-    const storedQuery = localStorage.getItem('searchQuery');
-    if (storedQuery) {
-      setSearchQuery(storedQuery);
+    const handleRouteChange = (url: string) => {
+      const { search = '' } = new URL(url, 'http://example.com');
+      setSearchQuery(new URLSearchParams(search).get('search') || '');
+    };
+
+    router.events.on('routeChangeComplete', handleRouteChange);
+
+    return () => {
+      router.events.off('routeChangeComplete', handleRouteChange);
+    };
+  }, [router.events]);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      localStorage.setItem('searchQuery', searchQuery);
     }
-  }, []);
-
-  useEffect(() => {
-    saveToLocalStorage(searchQuery);
   }, [searchQuery]);
 
-  return [searchQuery, setSearchQuery];
+  const updateSearch = (value: string) => {
+    setSearchQuery(value);
+    router.push(
+      {
+        pathname: router.pathname,
+        query: { ...router.query, search: value, page: '1' },
+      },
+      undefined,
+      { shallow: true }
+    );
+  };
+
+  return [searchQuery, updateSearch];
 };
