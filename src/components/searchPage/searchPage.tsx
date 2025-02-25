@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Input from '../input/input';
 import Cards from '../cards/cards';
 import Spinner from '../spinner/spinners';
@@ -6,9 +6,13 @@ import { useSearchQuery } from '../../utils/localStorageHook';
 import Pagination from '../pagination/pagination';
 import { useRouter } from 'next/router';
 import Flyout from '../flyout/flyout';
-import { useGetCharactersQuery } from '../../utils/slices/apiSlice';
+import {
+  useGetCharacterByIdQuery,
+  useGetCharactersQuery,
+} from '../../utils/slices/apiSlice';
 import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
 import { useTheme } from '../../utils/context/useThemeHook';
+import DetailsPage from '../detailsPage/detailsPage';
 
 const isFetchBaseQueryError = (
   error: unknown
@@ -23,11 +27,21 @@ function SearchPage() {
   const currentPage = typeof page === 'string' ? parseInt(page, 10) : 1;
   const [searchQuery, setSearchQuery] = useSearchQuery();
   const { isDarkTheme } = useTheme();
+  const [selectedCharacterId, setSelectedCharacterId] = useState<number | null>(
+    null
+  );
 
   const { data, error, isLoading } = useGetCharactersQuery({
     searchQuery: currentQuery,
     currentPage,
   });
+
+  const { data: Character } = useGetCharacterByIdQuery(
+    selectedCharacterId ? selectedCharacterId.toString() : '',
+    {
+      skip: selectedCharacterId === null,
+    }
+  );
 
   useEffect(() => {
     if (searchQuery !== currentQuery) {
@@ -66,6 +80,31 @@ function SearchPage() {
     });
   };
 
+  const handleCardClick = (id: number) => {
+    setSelectedCharacterId(id);
+    router.push(
+      {
+        pathname: router.pathname,
+        query: { ...router.query, id },
+      },
+      undefined,
+      { shallow: true }
+    );
+  };
+
+  const closeCard = () => {
+    setSelectedCharacterId(null);
+    const { id, ...restQuery } = router.query;
+    void id;
+    router.push(
+      {
+        pathname: router.pathname,
+        query: restQuery,
+      },
+      undefined,
+      { shallow: true }
+    );
+  };
   return (
     <div className="w-[90%] flex flex-col items-center">
       <div
@@ -105,11 +144,17 @@ function SearchPage() {
           ) : (
             <div className="flex">
               <div className="w-50% flex flex-wrap">
-                <Cards characters={data.results} />{' '}
+                <Cards
+                  characters={data.results}
+                  onCardClick={handleCardClick}
+                />{' '}
               </div>
             </div>
           )}
         </div>
+        {selectedCharacterId && Character && (
+          <DetailsPage character={Character} closeCard={closeCard} />
+        )}
       </div>
       <Flyout />
     </div>

@@ -22,6 +22,7 @@ export interface Character {
 
 export interface CardsProps {
   characters: Character[];
+  onCardClick: (id?: number) => void;
 }
 
 export interface ApiResponse {
