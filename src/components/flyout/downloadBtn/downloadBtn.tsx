@@ -21,10 +21,30 @@ export default function DownloadBtn() {
 
   if (formattedFavList.length) {
     const titles = Object.keys(formattedFavList[0]);
-    const array = [];
+    const array: string[][] = [];
     array.push(titles);
     formattedFavList.forEach((item) => {
-      array.push(Object.values(item));
+      const values = Object.values(item)
+        .map((value) => {
+          if (typeof value === 'number') {
+            return value.toString();
+          } else if (typeof value === 'string') {
+            return value;
+          } else if (value === undefined || value === null) {
+            return '';
+          } else if (Array.isArray(value)) {
+            return value.join(', ');
+          } else {
+            console.error(
+              'Unexpected data type in formattedFavList:',
+              value,
+              typeof value
+            );
+            return '';
+          }
+        })
+        .filter((val) => val !== '');
+      array.push(values);
     });
     array.forEach((data) => {
       csvFile += `${data.map((item) => `"${item}"`).join(',')}\n`;
