@@ -1,6 +1,11 @@
 import { useRouter } from 'next/router';
 import { useState, useEffect } from 'react';
 
+type QueryParams = {
+  page: string;
+  search?: string;
+};
+
 export const useSearchQuery = (): [string, (value: string) => void] => {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState<string>(
@@ -30,6 +35,12 @@ export const useSearchQuery = (): [string, (value: string) => void] => {
 
   const updateSearch = (value: string) => {
     setSearchQuery(value);
+    const newQuery: QueryParams = { ...router.query, page: '1' };
+    if (value.trim() !== '') {
+      newQuery.search = value;
+    } else {
+      delete newQuery.search;
+    }
     router.push(
       {
         pathname: router.pathname,

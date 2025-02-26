@@ -26,10 +26,10 @@ function SearchPage() {
   const currentQuery = typeof search === 'string' ? search : '';
   const currentPage = typeof page === 'string' ? parseInt(page, 10) : 1;
   const [searchQuery, setSearchQuery] = useSearchQuery();
-  const { isDarkTheme } = useTheme();
   const [selectedCharacterId, setSelectedCharacterId] = useState<number | null>(
     null
   );
+  const { isDarkTheme } = useTheme();
 
   const { data, error, isLoading } = useGetCharactersQuery({
     searchQuery: currentQuery,
@@ -72,12 +72,11 @@ function SearchPage() {
   const handleSearch = (query: string) => {
     setSearchQuery(query);
     const newQuery: { page: string; search?: string } = { page: '1' };
-    if (query.trim() !== '') {
-      newQuery.search = query;
+    const trimmedQuery = query.trim();
+    if (trimmedQuery.length > 0) {
+      newQuery.search = trimmedQuery;
     }
-    router.push({ pathname: router.pathname, query: newQuery }, undefined, {
-      shallow: true,
-    });
+    router.push({ pathname: router.pathname, query: newQuery }, undefined, {});
   };
 
   const handleCardClick = (id: number) => {

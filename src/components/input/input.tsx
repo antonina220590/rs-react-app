@@ -30,12 +30,6 @@ function Input({ onSearch }: InputProps) {
     updateSearchQuery(inputValue);
   };
 
-  // const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
-  //   if (event.key === 'Enter') {
-  //     handleSearch();
-  //   }
-  // };
-
   return (
     <>
       <input
