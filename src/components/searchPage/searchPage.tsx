@@ -30,12 +30,13 @@ function SearchPage({ initialData }: { initialData: ApiResponse }) {
   const [selectedCharacterId, setSelectedCharacterId] = useState<number | null>(
     null
   );
-  const { isDarkTheme } = useTheme();
+  const [isUpdatingURL, setIsUpdatingURL] = useState(false);
 
+  const { isDarkTheme } = useTheme();
   const { data, error, isLoading } = useGetCharactersQuery(
     { searchQuery, currentPage },
     {
-      skip: false,
+      skip: isUpdatingURL || (!searchQuery && !initialData),
       refetchOnMountOrArgChange: true,
     }
   );
@@ -49,15 +50,36 @@ function SearchPage({ initialData }: { initialData: ApiResponse }) {
 
   useEffect(() => {
     if (searchQuery !== currentQuery) {
+      setIsUpdatingURL(true);
       const query: { page: string; search?: string } = { page: '1' };
       if (searchQuery.trim() !== '') {
         query.search = searchQuery;
       }
-      router.push({ pathname: router.pathname, query }, undefined, {
-        shallow: true,
-      });
+      router
+        .replace({ pathname: router.pathname, query }, undefined, {
+          shallow: true,
+        })
+        .then(() => {
+          setIsUpdatingURL(false);
+        });
     }
   }, [router, searchQuery, currentQuery]);
+
+  const handleSearch = (query: string) => {
+    setSearchQuery(query);
+    const newQuery: { page: string; search?: string } = { page: '1' };
+
+    console.log('newQ', newQuery);
+    const trimmedQuery = query.trim();
+    if (trimmedQuery.length > 0) {
+      newQuery.search = trimmedQuery;
+    }
+    router.replace(
+      { pathname: router.pathname, query: newQuery },
+      undefined,
+      {}
+    );
+  };
 
   const handlePageChange = (newPage: number) => {
     if (data && newPage > 0 && newPage <= data.info.pages) {
@@ -71,16 +93,6 @@ function SearchPage({ initialData }: { initialData: ApiResponse }) {
         shallow: true,
       });
     }
-  };
-
-  const handleSearch = (query: string) => {
-    setSearchQuery(query);
-    const newQuery: { page: string; search?: string } = { page: '1' };
-    const trimmedQuery = query.trim();
-    if (trimmedQuery.length > 0) {
-      newQuery.search = trimmedQuery;
-    }
-    router.push({ pathname: router.pathname, query: newQuery }, undefined, {});
   };
 
   const handleCardClick = (id: number) => {
@@ -108,8 +120,15 @@ function SearchPage({ initialData }: { initialData: ApiResponse }) {
       { shallow: true }
     );
   };
-  const displayData = data || (currentPage === 1 ? initialData : undefined);
-  const totalPages = displayData?.info?.pages || initialData?.info?.pages || 42;
+  // const displayData = data || (currentPage === 1 ? initialData : undefined);
+  // const totalPages =
+  //   data?.info?.pages || (currentPage === 1 && initialData?.info?.pages) || 1;
+  const displayData = data ||
+    (currentPage === 1 && initialData) || {
+      results: [],
+      info: { count: 0, pages: 0, next: null, prev: null },
+    };
+  const totalPages = data?.info?.pages || 1;
 
   return (
     <div className="w-[90%] flex flex-col items-center">

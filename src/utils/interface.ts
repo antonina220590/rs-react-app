@@ -1,4 +1,12 @@
 import { ReactElement } from 'react';
+import favouritesSlice from './slices/favouritesSlice';
+import {
+  BaseQueryFn,
+  CombinedState,
+  FetchArgs,
+  FetchBaseQueryError,
+  QueryDefinition,
+} from '@reduxjs/toolkit/query';
 
 export interface Character {
   id?: number;
@@ -54,3 +62,39 @@ export interface PaginationProps {
 export interface InputProps {
   onSearch: (searchQuery: string) => void;
 }
+
+export type RootStateApi = {
+  favourites: ReturnType<typeof favouritesSlice>;
+  rickAndMortyApi: CombinedState<
+    {
+      getCharacters: QueryDefinition<
+        { searchQuery?: string; currentPage?: number },
+        BaseQueryFn<
+          string | FetchArgs,
+          unknown,
+          FetchBaseQueryError,
+          object,
+          object
+        >,
+        never,
+        ApiResponse,
+        'rickAndMortyApi'
+      >;
+      getCharacterById: QueryDefinition<
+        string,
+        BaseQueryFn<
+          string | FetchArgs,
+          unknown,
+          FetchBaseQueryError,
+          object,
+          object
+        >,
+        never,
+        Character,
+        'rickAndMortyApi'
+      >;
+    },
+    never,
+    'rickAndMortyApi'
+  >;
+};

@@ -1,25 +1,40 @@
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
-import { ApiResponse, Character } from '../interface';
+import { ApiResponse, Character, RootStateApi } from '../interface';
+import { HYDRATE } from 'next-redux-wrapper';
+import { Action, PayloadAction } from '@reduxjs/toolkit';
 
 const BASE_URL = 'https://rickandmortyapi.com/api/character';
 
+const baseQuery = fetchBaseQuery({ baseUrl: BASE_URL });
+
+function isHydrateAction(
+  action: Action
+): action is PayloadAction<RootStateApi> {
+  return action.type === HYDRATE;
+}
 export const apiSlice = createApi({
   reducerPath: 'rickAndMortyApi',
-  baseQuery: fetchBaseQuery({ baseUrl: BASE_URL }),
+  baseQuery,
+  extractRehydrationInfo(action, { reducerPath }) {
+    if (isHydrateAction(action)) {
+      return action.payload[reducerPath];
+    }
+    return undefined;
+  },
   endpoints: (builder) => ({
     getCharacters: builder.query<
       ApiResponse,
       { searchQuery?: string; currentPage?: number }
     >({
       query: ({ searchQuery, currentPage }) => {
-        let url = '';
-        if (searchQuery) {
-          url += `/?name=${encodeURIComponent(searchQuery)}`;
+        const params = new URLSearchParams();
+        if (searchQuery && searchQuery.trim() !== '') {
+          params.append('name', searchQuery.trim());
         }
-        if (currentPage) {
-          url += `${searchQuery ? '&' : '?'}page=${currentPage}`;
+        if (currentPage && currentPage > 1) {
+          params.append('page', currentPage.toString());
         }
-        return url;
+        return `?${params.toString()}`;
       },
     }),
     getCharacterById: builder.query<Character, string>({
