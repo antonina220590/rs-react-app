@@ -1,5 +1,8 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+  images: {
+    domains: ['rickandmortyapi.com'],
+  },
   eslint: {
     ignoreDuringBuilds: true,
   },

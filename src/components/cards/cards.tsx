@@ -1,3 +1,4 @@
+import Image from 'next/image';
 import { CardsProps } from '../../utils/interface';
 import Heart from '../checkBox/checkBox';
 import { useTheme } from '../../utils/context/useThemeHook';
@@ -14,12 +15,19 @@ function Cards({ characters, onCardClick }: CardsProps) {
         >
           <Heart character={character} />{' '}
           <div className="pb-[10px]">
-            <img
-              className="h-[280px]"
-              src={character.image}
-              alt={`${character.name} image`}
-              data-testid={`character-image-${character.id}`}
-            />
+            {character?.image ? (
+              <Image
+                className="h-[280px] pt-[20px] w-auto"
+                src={`${character.image}`}
+                alt={`${character.name} image`}
+                width={350}
+                height={350}
+                data-testid={`character-image-${character.id}`}
+                priority
+              />
+            ) : (
+              <p>No image available</p>
+            )}
           </div>
           <div className="h-[90px]">
             <h3

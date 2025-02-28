@@ -104,13 +104,7 @@ function SearchPage({ initialData }: { initialData: ApiResponse }) {
       shallow: true,
     });
   };
-
-  const displayData =
-    data && data.results.length > 0
-      ? data
-      : currentPage === 1
-        ? initialData
-        : { results: [], info: { count: 0, pages: 0, next: null, prev: null } };
+  const displayData = data ? data : initialData;
   const totalPages = displayData?.info?.pages || 1;
 
   return (
