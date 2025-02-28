@@ -63,6 +63,13 @@ export interface InputProps {
   onSearch: (searchQuery: string) => void;
 }
 
+export interface DetailsPageProps {
+  character: Character;
+  closeCard: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
+
+  fetching: boolean;
+}
+
 export type RootStateApi = {
   favourites: ReturnType<typeof favouritesSlice>;
   rickAndMortyApi: CombinedState<

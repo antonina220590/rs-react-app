@@ -36,6 +36,7 @@ function SearchPage({ initialData }: { initialData: ApiResponse }) {
     data: characterData,
     error: characterError,
     isLoading: isCharacterLoading,
+    isFetching,
   } = useGetCharacterByIdQuery(id ? String(id) : '', { skip: !id });
 
   useEffect(() => {
@@ -168,7 +169,11 @@ function SearchPage({ initialData }: { initialData: ApiResponse }) {
           )}
         </div>
         {id && characterData && (
-          <DetailsPage character={characterData} closeCard={closeCard} />
+          <DetailsPage
+            character={characterData}
+            closeCard={closeCard}
+            fetching={isFetching}
+          />
         )}
       </div>
       <Flyout />
