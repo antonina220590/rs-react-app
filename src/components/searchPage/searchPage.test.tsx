@@ -7,7 +7,7 @@ import { http, HttpResponse } from 'msw';
 import * as UseThemeHook from '../../utils/context/useThemeHook';
 import { vi } from 'vitest';
 import { Character } from '../../utils/interface';
-import { setupStore } from '../../app/store';
+import { makeStore } from '../../app/store';
 import { addToFav } from '../../utils/slices/favouritesSlice';
 
 const mockCharacter: Character = {
@@ -148,7 +148,7 @@ describe('SearchPage Component', () => {
     const checkBox = screen.getByTestId(`heart-label-${mockCharacter.id}`);
     expect(checkBox).toBeInTheDocument();
     fireEvent.click(checkBox);
-    const store = setupStore();
+    const store = makeStore();
     store.dispatch(addToFav(mockCharacter));
     expect(screen.getByTestId('flyout')).toBeInTheDocument();
   });

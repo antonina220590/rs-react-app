@@ -43,4 +43,8 @@ export const apiSlice = createApi({
   }),
 });
 
-export const { useGetCharactersQuery, useGetCharacterByIdQuery } = apiSlice;
+export const {
+  useGetCharactersQuery,
+  useGetCharacterByIdQuery,
+  useLazyGetCharactersQuery,
+} = apiSlice;
