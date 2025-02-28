@@ -1,7 +1,6 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import Input from '../input/input';
 import Cards from '../cards/cards';
-import Spinner from '../spinner/spinners';
 import { useSearchQuery } from '../../utils/localStorageHook';
 import Pagination from '../pagination/pagination';
 import { useRouter } from 'next/router';
@@ -107,6 +106,14 @@ function SearchPage({ initialData }: { initialData: ApiResponse }) {
   const displayData = data ? data : initialData;
   const totalPages = displayData?.info?.pages || 1;
 
+  if (!initialData) {
+    return (
+      <div className="flex justify-center items-center h-full">
+        <p>...isLoading</p>
+      </div>
+    );
+  }
+
   return (
     <div className="w-[90%] flex flex-col items-center">
       <div
@@ -130,8 +137,8 @@ function SearchPage({ initialData }: { initialData: ApiResponse }) {
             isDarkTheme ? 'bg-[#19181A]' : 'bg-[#eee2dc]'
           } backdrop-blur-2xl rounded-xl mb-8 gap-15 justify-center items-center flex flex-wrap flex-row`}
         >
-          {isLoading && (!displayData || displayData.results.length === 0) ? (
-            <Spinner />
+          {isLoading && !displayData ? (
+            <p>...loading</p>
           ) : error ? (
             <div className="bg-gray-500/70 backdrop-blur-lg border border-white/18 rounded-xl shadow-xl h-[200px] flex items-center">
               <p className="text-amber-50 text-4xl p-5">

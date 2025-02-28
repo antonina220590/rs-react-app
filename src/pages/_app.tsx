@@ -7,6 +7,7 @@ import '../styles/globals.css';
 
 function MyApp({ Component, pageProps }: AppProps) {
   const { store } = wrapper.useWrappedStore(pageProps);
+
   return (
     <Provider store={store}>
       <ThemeProvider>

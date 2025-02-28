@@ -41,7 +41,6 @@ const getServerSideProps: GetServerSideProps = wrapper.getServerSideProps(
       );
 
       if ('error' in result) {
-        throw new Error('Error fetching data');
       }
       return {
         props: {
