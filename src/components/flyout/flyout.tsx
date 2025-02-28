@@ -1,4 +1,4 @@
-import { useAppDispatch, useAppSelector } from '../../app/hooks';
+import { useAppDispatch, useAppSelector } from '../../services/hooks';
 import { useTheme } from '../../utils/context/useThemeHook';
 import { Character } from '../../utils/interface';
 import { deleteFromFav } from '../../utils/slices/favouritesSlice';

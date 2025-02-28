@@ -7,7 +7,7 @@ import { http, HttpResponse } from 'msw';
 import * as UseThemeHook from '../../utils/context/useThemeHook';
 import { vi } from 'vitest';
 import { Character } from '../../utils/interface';
-import { makeStore } from '../../app/store';
+import { makeStore } from '../../services/store';
 import { addToFav } from '../../utils/slices/favouritesSlice';
 
 const mockCharacter: Character = {

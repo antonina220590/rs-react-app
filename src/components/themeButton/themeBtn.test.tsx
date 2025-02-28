@@ -3,7 +3,7 @@ import '@testing-library/jest-dom';
 import ThemeBtn from './themeBtn';
 import * as UseThemeHook from '../../utils/context/useThemeHook';
 import { vi } from 'vitest';
-import { RootState, setupStore } from '../../app/store';
+import { RootState, setupStore } from '../../services/store';
 import { Provider } from 'react-redux';
 import { MemoryRouter, Route, Routes } from 'react-router';
 

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import Input from '../input/input';
 import Cards from '../cards/cards';
 import { useSearchQuery } from '../../utils/localStorageHook';

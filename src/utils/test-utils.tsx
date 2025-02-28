@@ -2,8 +2,8 @@ import React, { PropsWithChildren } from 'react';
 import { render } from '@testing-library/react';
 import type { RenderOptions } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import type { AppStore, RootState } from '../app/store';
-import { setupStore } from '../app/store';
+import type { AppStore, RootState } from '../services/store';
+import { setupStore } from '../services/store';
 import { MemoryRouter } from 'react-router';
 import { ThemeProvider } from '../utils/context/themeContext';
 

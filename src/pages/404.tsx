@@ -1,4 +1,4 @@
-function Error404Page() {
+function Custom404() {
   const refreshPage = () => {
     window.location.replace('/');
   };
@@ -27,4 +27,4 @@ function Error404Page() {
   );
 }
 
-export default Error404Page;
+export default Custom404;

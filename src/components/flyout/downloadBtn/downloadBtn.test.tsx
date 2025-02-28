@@ -4,7 +4,7 @@ import DownloadBtn from './downloadBtn';
 import * as UseThemeHook from '../../../utils/context/useThemeHook';
 import { vi } from 'vitest';
 import { Provider } from 'react-redux';
-import { RootState, setupStore } from '../../../app/store';
+import { RootState, setupStore } from '../../../services/store';
 import { MemoryRouter, Route, Routes } from 'react-router';
 import { Character } from '../../../utils/interface';
 

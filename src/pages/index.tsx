@@ -2,7 +2,7 @@ import SearchPage from '../components/searchPage/searchPage';
 import { useTheme } from '../utils/context/useThemeHook';
 import { GetServerSideProps } from 'next';
 import { ApiResponse } from '../utils/interface';
-import { wrapper } from '../app/store';
+import { wrapper } from '../services/store';
 import { apiSlice } from '../utils/slices/apiSlice';
 
 const getServerSideProps: GetServerSideProps = wrapper.getServerSideProps(
@@ -41,7 +41,22 @@ const getServerSideProps: GetServerSideProps = wrapper.getServerSideProps(
       );
 
       if ('error' in result) {
+        console.log(
+          'getServerSideProps: Returning notFound: true (RTK Query error)',
+          result.error
+        );
+        return {
+          notFound: true,
+        };
       }
+
+      if (!result.data || result.data.results.length === 0) {
+        console.log('getServerSideProps: Returning notFound: true (no data)');
+        return {
+          notFound: true,
+        };
+      }
+
       return {
         props: {
           initialData: result.data,
@@ -51,15 +66,19 @@ const getServerSideProps: GetServerSideProps = wrapper.getServerSideProps(
       };
     } catch (error) {
       console.error('Error fetching data:', error);
+      console.log('getServerSideProps: Returning notFound: true (catch error)');
+      // return {
+      //   props: {
+      //     initialData: {
+      //       results: [],
+      //       info: { count: 0, pages: 0, next: null, prev: null },
+      //     },
+      //     initialSearchQuery: searchQuery,
+      //     initialPage: currentPage,
+      //   },
+      // };
       return {
-        props: {
-          initialData: {
-            results: [],
-            info: { count: 0, pages: 0, next: null, prev: null },
-          },
-          initialSearchQuery: searchQuery,
-          initialPage: currentPage,
-        },
+        notFound: true,
       };
     }
   }

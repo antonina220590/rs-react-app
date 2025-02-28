@@ -7,7 +7,7 @@ import { describe, expect, test, vi } from 'vitest';
 import { Route } from 'react-router';
 import * as UseThemeHook from '../../utils/context/useThemeHook';
 import { Provider } from 'react-redux';
-import { RootState, setupStore } from '../../app/store';
+import { RootState, setupStore } from '../../services/store';
 
 const mockThemeContext = {
   isDarkTheme: false,
