@@ -2,9 +2,20 @@ import Image from 'next/image';
 import { useTheme } from '../../utils/context/useThemeHook';
 import { DetailsPageProps } from '../../utils/interface';
 import Spinner from '../spinner/spinners';
+import Custom404 from '../../pages/404';
 
-function DetailsPage({ character, closeCard, fetching }: DetailsPageProps) {
+function DetailsPage({
+  character,
+  closeCard,
+  fetching,
+  error,
+}: DetailsPageProps) {
   const { isDarkTheme } = useTheme();
+
+  if (error) {
+    return <Custom404 />;
+  }
+
   return (
     <div className="flex flex-wrap gap-20 pl-[10px] pr-[10px] justify-evenly flex-1">
       <div

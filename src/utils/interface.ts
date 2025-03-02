@@ -64,10 +64,12 @@ export interface InputProps {
 }
 
 export interface DetailsPageProps {
-  character: Character;
+  character?: Character;
   closeCard: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
 
   fetching: boolean;
+
+  error: unknown;
 }
 
 export type RootStateApi = {

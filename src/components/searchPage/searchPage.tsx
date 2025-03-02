@@ -169,11 +169,12 @@ function SearchPage({ initialData }: { initialData: ApiResponse }) {
             </div>
           )}
         </div>
-        {id && characterData && (
+        {id && (
           <DetailsPage
             character={characterData}
             closeCard={closeCard}
             fetching={isFetching}
+            error={characterError}
           />
         )}
       </div>
