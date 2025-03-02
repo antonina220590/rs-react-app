@@ -1,43 +1,24 @@
-import { render, screen } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { MemoryRouter, Routes } from 'react-router';
 import Cards from './cards';
 import { Character } from '../../utils/interface';
 import { describe, expect, test, vi } from 'vitest';
-import { Route } from 'react-router';
 import * as UseThemeHook from '../../utils/context/useThemeHook';
+import { ThemeContext } from '../../utils/context/useThemeHook';
 import { Provider } from 'react-redux';
-import { RootState, setupStore } from '../../services/store';
+import { makeStore } from '../../services/store';
+
+vi.mock('next/router', () => ({
+  useRouter: () => ({
+    push: vi.fn(),
+    query: {},
+    isReady: true,
+  }),
+}));
 
 const mockThemeContext = {
   isDarkTheme: false,
   toggleTheme: vi.fn(),
-};
-
-vi.mock('../../utils/context/useThemeHook', () => ({
-  ThemeContext: {
-    Provider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
-  },
-  useTheme: () => mockThemeContext,
-}));
-
-const renderWithProviders = (
-  component: React.ReactNode,
-  preloadedState?: Partial<RootState>
-) => {
-  const store = setupStore(preloadedState);
-
-  return render(
-    <Provider store={store}>
-      <UseThemeHook.ThemeContext.Provider value={mockThemeContext}>
-        <MemoryRouter initialEntries={['/']}>
-          <Routes>
-            <Route path="/" element={component} />
-          </Routes>
-        </MemoryRouter>
-      </UseThemeHook.ThemeContext.Provider>
-    </Provider>
-  );
 };
 
 const mockCharacters: Character[] = [
@@ -59,48 +40,85 @@ const mockCharacters: Character[] = [
   },
 ];
 
+const renderWithProviders = (
+  component: React.ReactNode,
+  onCardClickMock: (id: number) => void
+) => {
+  const store = makeStore();
+  return render(
+    <Provider store={store}>
+      <ThemeContext.Provider value={mockThemeContext}>
+        {component}
+      </ThemeContext.Provider>
+    </Provider>
+  );
+};
+
 describe('Cards Component', () => {
   test('renders character cards correctly', () => {
-    renderWithProviders(<Cards characters={mockCharacters} />);
+    const onCardClickMock: (id: number) => void = vi.fn();
+    renderWithProviders(
+      <Cards characters={mockCharacters} onCardClick={onCardClickMock} />,
+      onCardClickMock
+    );
 
     const images = screen.getAllByRole('img');
     expect(images).toHaveLength(mockCharacters.length);
-    expect(images[0]).toHaveAttribute('src', mockCharacters[0].image);
-    expect(images[1]).toHaveAttribute('src', mockCharacters[1].image);
 
-    const links = screen.getAllByRole('link');
-    expect(links).toHaveLength(mockCharacters.length);
-    expect(links[0]).toHaveAttribute('href', '/character/1');
-    expect(links[1]).toHaveAttribute('href', '/character/2');
+    expect(images[0].getAttribute('src')).toMatch(
+      /^\/_next\/image\?url=http%3A%2F%2Fexample.com%2Frick.png/
+    );
+    expect(images[1].getAttribute('src')).toMatch(
+      /^\/_next\/image\?url=http%3A%2F%2Fexample.com%2Fmorty.png/
+    );
+
+    expect(screen.getByTestId('character-image-1')).toBeInTheDocument();
+    expect(screen.getByTestId('character-image-2')).toBeInTheDocument();
+    const card = screen.getByText(/Rick Sanchez/i);
+    fireEvent.click(card);
+    expect(onCardClickMock).toHaveBeenCalledWith(1);
   });
 
   test('applies correct theme styles for dark theme', () => {
+    const onCardClickMock = vi.fn();
     const useThemeSpy = vi.spyOn(UseThemeHook, 'useTheme');
     useThemeSpy.mockReturnValue({ isDarkTheme: true, toggleTheme: vi.fn() });
-    renderWithProviders(<Cards characters={mockCharacters} />);
+    renderWithProviders(
+      <Cards characters={mockCharacters} onCardClick={onCardClickMock} />,
+      onCardClickMock
+    );
 
-    const cards = screen.getAllByRole('link');
-    cards.forEach((card) => {
-      expect(card).toHaveClass(
-        'flex flex-col items-center w-[300px] h-[450px] bg-[#474b4f] rounded-2xl justify-start'
-      );
-    });
+    const card = screen.getByText(/Rick Sanchez/i);
+    expect(card).toHaveClass('font-bold text-4xl p-10 text-white');
 
     useThemeSpy.mockRestore();
   });
 
   test('applies correct theme styles for light theme', () => {
+    const onCardClickMock = vi.fn();
     const useThemeSpy = vi.spyOn(UseThemeHook, 'useTheme');
     useThemeSpy.mockReturnValue({ isDarkTheme: false, toggleTheme: vi.fn() });
-    renderWithProviders(<Cards characters={mockCharacters} />);
+    renderWithProviders(
+      <Cards characters={mockCharacters} onCardClick={onCardClickMock} />,
+      onCardClickMock
+    );
 
-    const cards = screen.getAllByRole('link');
-    cards.forEach((card) => {
-      expect(card).toHaveClass(
-        'flex flex-col items-center w-[300px] h-[450px] bg-[#bab2b5] rounded-2xl justify-start'
-      );
-    });
+    const card = screen.getByText(/Rick Sanchez/i);
+    expect(card).toHaveClass('font-bold text-4xl p-10 text-black');
 
     useThemeSpy.mockRestore();
+  });
+
+  test('calls onCardClick when a card is clicked', () => {
+    const onCardClickMock = vi.fn();
+    renderWithProviders(
+      <Cards characters={mockCharacters} onCardClick={onCardClickMock} />,
+      onCardClickMock
+    );
+
+    const card = screen.getByText(/Rick Sanchez/i);
+    fireEvent.click(card);
+
+    expect(onCardClickMock).toHaveBeenCalledWith(1);
   });
 });

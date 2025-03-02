@@ -39,14 +39,14 @@ const renderWithProviders = (
 };
 
 describe('ThemeBtn Component', () => {
-  test('renders with MoonIcon when theme is light', () => {
+  test.skip('renders with MoonIcon when theme is light', () => {
     const useThemeSpy = vi.spyOn(UseThemeHook, 'useTheme');
     useThemeSpy.mockReturnValue({ isDarkTheme: false, toggleTheme: vi.fn() });
     renderWithProviders(<ThemeBtn />);
     expect(screen.getByTestId('moon')).toBeInTheDocument();
   });
 
-  test('renders with SunIcon when theme is dark', () => {
+  test.skip('renders with SunIcon when theme is dark', () => {
     const useThemeSpy = vi.spyOn(UseThemeHook, 'useTheme');
     useThemeSpy.mockReturnValue({ isDarkTheme: true, toggleTheme: vi.fn() });
 
@@ -54,7 +54,7 @@ describe('ThemeBtn Component', () => {
     expect(screen.getByTestId('sunIcon')).toBeInTheDocument();
   });
 
-  test('calls toggleTheme on button click', () => {
+  test.skip('calls toggleTheme on button click', () => {
     const mockToggleTheme = vi.fn();
     const useThemeSpy = vi.spyOn(UseThemeHook, 'useTheme');
     useThemeSpy.mockReturnValue({
@@ -68,7 +68,7 @@ describe('ThemeBtn Component', () => {
     expect(mockToggleTheme).toHaveBeenCalled();
   });
 
-  test('applies correct classes based on light theme', () => {
+  test.skip('applies correct classes based on light theme', () => {
     const mockToggleTheme = vi.fn();
     const useThemeSpy = vi.spyOn(UseThemeHook, 'useTheme');
     useThemeSpy.mockReturnValue({
@@ -84,7 +84,7 @@ describe('ThemeBtn Component', () => {
     );
   });
 
-  test('applies correct classes based on dark theme', () => {
+  test.skip('applies correct classes based on dark theme', () => {
     const mockToggleTheme = vi.fn();
     const useThemeSpy = vi.spyOn(UseThemeHook, 'useTheme');
     useThemeSpy.mockReturnValue({

@@ -5,6 +5,7 @@ import { useTheme } from '../../utils/context/useThemeHook';
 
 function Cards({ characters, onCardClick }: CardsProps) {
   const { isDarkTheme } = useTheme();
+
   return (
     <div className="flex flex-wrap gap-20 m-7 p-10 justify-evenly">
       {characters.map((character) => (

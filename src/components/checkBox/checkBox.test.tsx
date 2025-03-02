@@ -1,9 +1,9 @@
-import { render, screen, cleanup } from '@testing-library/react';
+import { render, screen, cleanup, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { Character } from '../../utils/interface';
 import { vi } from 'vitest';
 import { Provider } from 'react-redux';
-import { setupStore } from '../../services/store';
+import { AppStore, makeStore } from '../../services/store';
 import Heart from './checkBox';
 
 const mockCharacter: Character = {
@@ -28,11 +28,17 @@ vi.mock('../../utils/context/useThemeHook', () => ({
 }));
 
 describe('Checkbox Component', () => {
-  afterEach(cleanup);
+  let store: AppStore;
+
+  beforeEach(() => {
+    store = makeStore();
+  });
+
+  afterEach(() => {
+    cleanup();
+  });
 
   const renderWithProviders = (component: React.ReactNode) => {
-    const store = setupStore();
-
     return render(<Provider store={store}>{component}</Provider>);
   };
 
@@ -44,8 +50,51 @@ describe('Checkbox Component', () => {
   });
 
   test('initial state of favourites is empty', () => {
-    const store = setupStore();
+    const store = makeStore();
     const state = store.getState();
     expect(state.favourites).toEqual([]);
+  });
+
+  test('adds character to favourites on click', () => {
+    renderWithProviders(<Heart character={mockCharacter} />);
+    const heartLabel = screen.getByTestId(`heart-label-${mockCharacter.id}`);
+
+    fireEvent.click(heartLabel);
+
+    const state = store.getState();
+    expect(state.favourites).toContainEqual(mockCharacter);
+    expect(heartLabel).toHaveClass('text-[#ac3b61]');
+  });
+
+  test('removes character from favourites on second click', () => {
+    renderWithProviders(<Heart character={mockCharacter} />);
+    const heartLabel = screen.getByTestId(`heart-label-${mockCharacter.id}`);
+
+    fireEvent.click(heartLabel);
+    fireEvent.click(heartLabel);
+
+    const state = store.getState();
+    expect(state.favourites).not.toContainEqual(mockCharacter);
+    expect(heartLabel).not.toHaveClass('text-[#ac3b61]');
+  });
+
+  test('stops propagation of click event', () => {
+    const onClickMock = vi.fn();
+    const stopPropagationSpy = vi.spyOn(Event.prototype, 'stopPropagation');
+
+    render(
+      <div onClick={onClickMock}>
+        <Provider store={store}>
+          <Heart character={mockCharacter} />
+        </Provider>
+      </div>
+    );
+
+    const heartLabel = screen.getByTestId(`heart-label-${mockCharacter.id}`);
+    fireEvent.click(heartLabel);
+    expect(stopPropagationSpy).toHaveBeenCalled();
+    expect(onClickMock).not.toHaveBeenCalled();
+
+    stopPropagationSpy.mockRestore();
   });
 });

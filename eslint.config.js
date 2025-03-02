@@ -6,6 +6,7 @@ import eslintPluginReactCompiler from 'eslint-plugin-react-compiler';
 import eslintPluginReactRefresh from 'eslint-plugin-react-refresh';
 import typescriptEslintParser from '@typescript-eslint/parser';
 import { defineConfig } from 'eslint-define-config';
+import typescriptEslint from '@typescript-eslint/eslint-plugin';
 
 export default defineConfig([
   {
@@ -18,7 +19,7 @@ export default defineConfig([
       parserOptions: { ecmaFeatures: { jsx: true } },
     },
     plugins: {
-      '@typescript-eslint': eslintPluginReact,
+      '@typescript-eslint': typescriptEslint,
       react: eslintPluginReact,
       'react-hooks': eslintPluginReactHooks,
       '@next/next': eslintPluginNext,
@@ -36,6 +37,14 @@ export default defineConfig([
       ...eslintPluginNext.configs.recommended.rules,
       ...eslintPluginReact.configs['jsx-runtime'].rules,
       'prettier/prettier': 'error',
+      '@typescript-eslint/no-explicit-any': 'error',
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: 'Comment',
+          message: 'Comments are not allowed.',
+        },
+      ],
     },
     settings: { react: { version: 'detect' } },
     ignores: ['dist', 'eslint.config.js', 'coverage', 'node_modules'],

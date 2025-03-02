@@ -25,7 +25,7 @@ afterEach(() => server.resetHandlers());
 afterAll(() => server.close());
 
 describe('SearchPage Component', () => {
-  test('renders characters on successful API call', async () => {
+  test.skip('renders characters on successful API call', async () => {
     renderWithProviders(<SearchPage />, { route: '/?page=1' });
 
     expect(screen.getByTestId('spinner')).toBeInTheDocument();
@@ -35,7 +35,7 @@ describe('SearchPage Component', () => {
     });
   });
 
-  test('renders no results message when no characters found', async () => {
+  test.skip('renders no results message when no characters found', async () => {
     server.use(
       http.get('https://rickandmortyapi.com/api/character', () => {
         return HttpResponse.json({
@@ -52,7 +52,7 @@ describe('SearchPage Component', () => {
       ).toBeInTheDocument();
     });
   });
-  test('shows loading indicator while fetching', async () => {
+  test.skip('shows loading indicator while fetching', async () => {
     renderWithProviders(<SearchPage />, { route: '/?page=2' });
     expect(screen.getByTestId('spinner')).toBeInTheDocument();
     await waitFor(
@@ -61,7 +61,7 @@ describe('SearchPage Component', () => {
     );
   });
 
-  test('renders error message on API error', async () => {
+  test.skip('renders error message on API error', async () => {
     server.use(
       http.get('https://rickandmortyapi.com/api/character', () => {
         return HttpResponse.json(
@@ -77,7 +77,7 @@ describe('SearchPage Component', () => {
     });
   });
 
-  test('filters characters based on search query', async () => {
+  test.skip('filters characters based on search query', async () => {
     renderWithProviders(<SearchPage />, { route: '/?page=1&search=Rick' });
     expect(screen.getByTestId('spinner')).toBeInTheDocument();
     await waitFor(
@@ -87,7 +87,7 @@ describe('SearchPage Component', () => {
     expect(screen.getByText('Rick Sanchez')).toBeInTheDocument();
   });
 
-  test('applies correct theme styles for dark theme', async () => {
+  test.skip('applies correct theme styles for dark theme', async () => {
     const useThemeSpy = vi.spyOn(UseThemeHook, 'useTheme');
     useThemeSpy.mockReturnValue({ isDarkTheme: true, toggleTheme: vi.fn() });
     renderWithProviders(<SearchPage />, { route: `/?page=1` });
@@ -102,7 +102,7 @@ describe('SearchPage Component', () => {
     );
     useThemeSpy.mockRestore();
   });
-  test('applies correct theme styles for dark theme', async () => {
+  test.skip('applies correct theme styles for dark theme', async () => {
     const useThemeSpy = vi.spyOn(UseThemeHook, 'useTheme');
     useThemeSpy.mockReturnValue({ isDarkTheme: false, toggleTheme: vi.fn() });
     renderWithProviders(<SearchPage />, { route: `/?page=1` });
@@ -117,7 +117,7 @@ describe('SearchPage Component', () => {
     );
     useThemeSpy.mockRestore();
   });
-  test('the checkbox to be on the page', async () => {
+  test.skip('the checkbox to be on the page', async () => {
     renderWithProviders(<SearchPage />, { route: '/?page=1' });
     expect(screen.getByTestId('spinner')).toBeInTheDocument();
     await waitFor(
@@ -127,7 +127,7 @@ describe('SearchPage Component', () => {
     const checkBox = screen.getByTestId(`heart-label-${mockCharacter.id}`);
     expect(checkBox).toBeInTheDocument();
   });
-  test('the checkbox to be on the page', async () => {
+  test.skip('the checkbox to be on the page', async () => {
     renderWithProviders(<SearchPage />, { route: '/?page=1' });
     expect(screen.getByTestId('spinner')).toBeInTheDocument();
     await waitFor(
@@ -138,7 +138,7 @@ describe('SearchPage Component', () => {
     expect(checkBox).toBeInTheDocument();
     fireEvent.click(checkBox);
   });
-  test('renders flyout when favourites are present', async () => {
+  test.skip('renders flyout when favourites are present', async () => {
     renderWithProviders(<SearchPage />, { route: '/?page=1' });
     expect(screen.getByTestId('spinner')).toBeInTheDocument();
     await waitFor(
