@@ -139,7 +139,7 @@ describe('SearchPage Component', () => {
     fireEvent.click(checkBox);
   });
   test.skip('renders flyout when favourites are present', async () => {
-    renderWithProviders(<SearchPage />, { route: '/?page=1' });
+    renderWithProviders(<SearchPage />);
     expect(screen.getByTestId('spinner')).toBeInTheDocument();
     await waitFor(
       () => expect(screen.queryByTestId('spinner')).not.toBeInTheDocument(),
