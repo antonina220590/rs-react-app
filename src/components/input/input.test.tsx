@@ -1,69 +1,88 @@
-import Input from './input';
+import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import { describe, expect, vi } from 'vitest';
-import { fireEvent, screen } from '@testing-library/react';
-import { renderWithProviders } from '../../utils/test-utils';
+import Input from './input';
+import { describe, expect, test, vi } from 'vitest';
+import * as UseThemeHook from '../../utils/context/useThemeHook';
+import { ThemeContext } from '../../utils/context/useThemeHook';
+import * as LocalStorageHook from '../../utils/localStorageHook';
 
-const setItemMock = vi.fn();
-const getItemMock = vi.fn();
-const clearMock = vi.fn();
+vi.mock('next/router', () => ({
+  useRouter: () => ({
+    push: vi.fn(),
+    query: {},
+    isReady: true,
+    events: {
+      on: vi.fn(),
+      off: vi.fn(),
+      emit: vi.fn(),
+    },
+  }),
+}));
 
-Object.defineProperty(window, 'localStorage', {
-  value: {
-    setItem: setItemMock,
-    getItem: getItemMock,
-    clear: clearMock,
-  },
-});
+const mockThemeContext = {
+  isDarkTheme: false,
+  toggleTheme: vi.fn(),
+};
 
-describe('Input', () => {
-  it.skip('should render component', () => {
-    renderWithProviders(<Input onSearch={vi.fn()} />);
+const renderWithProviders = (
+  onSearch: (query: string) => void,
+  isDarkTheme: boolean = false
+) => {
+  const useThemeSpy = vi.spyOn(UseThemeHook, 'useTheme');
+  useThemeSpy.mockReturnValue({ isDarkTheme, toggleTheme: vi.fn() });
+
+  return render(
+    <ThemeContext.Provider value={mockThemeContext}>
+      <Input onSearch={onSearch} />
+    </ThemeContext.Provider>
+  );
+};
+
+describe('Input Component', () => {
+  test('updates input value on change', () => {
+    renderWithProviders(vi.fn());
 
     const inputElement = screen.getByTestId('inputElement');
-    const searchButton = screen.getByTestId('searchBtn');
-
-    expect(searchButton).toBeInTheDocument();
-    expect(inputElement).toBeInTheDocument();
-  });
-
-  test.skip('updates searchState on input change', () => {
-    const mockOnSearch = vi.fn();
-    renderWithProviders(<Input onSearch={mockOnSearch} />);
-
-    const inputElement = screen.getByTestId('inputElement');
-    const searchButton = screen.getByTestId('searchBtn');
-
     fireEvent.change(inputElement, { target: { value: 'Rick' } });
-    fireEvent.click(searchButton);
 
-    expect(mockOnSearch).toHaveBeenCalledWith('Rick');
+    expect(inputElement).toHaveValue('Rick');
   });
 
-  test.skip('trims whitespace input', () => {
-    const mockOnSearch = vi.fn();
-    renderWithProviders(<Input onSearch={mockOnSearch} />);
+  test('applies correct theme styles for dark theme', () => {
+    renderWithProviders(vi.fn(), true);
 
-    const inputElement = screen.getByTestId('inputElement');
     const searchButton = screen.getByTestId('searchBtn');
-
-    fireEvent.change(inputElement, { target: { value: '   ' } });
-    fireEvent.click(searchButton);
-
-    expect(mockOnSearch).toHaveBeenCalledWith('');
+    expect(searchButton).toHaveClass('bg-neutral-300');
   });
 
-  it.skip('saves value to local staroge on click', () => {
-    const mockOnSearch = vi.fn();
-    renderWithProviders(<Input onSearch={mockOnSearch} />);
+  test('applies correct theme styles for light theme', () => {
+    renderWithProviders(vi.fn());
+
+    const searchButton = screen.getByTestId('searchBtn');
+    expect(searchButton).toHaveClass('bg-[#ac3b61]');
+  });
+
+  test('focuses input on mount', () => {
+    renderWithProviders(vi.fn());
 
     const inputElement = screen.getByTestId('inputElement');
-    const searchButton = screen.getByTestId('searchBtn');
+    expect(inputElement).toHaveFocus();
+  });
 
-    fireEvent.change(inputElement, { target: { value: 'Rick' } });
-    fireEvent.click(searchButton);
+  test('renders ThemeBtn', () => {
+    renderWithProviders(vi.fn());
+    expect(screen.getByTestId('themeBtn')).toBeInTheDocument();
+  });
 
-    expect(mockOnSearch).toHaveBeenCalledWith('Rick');
-    expect(setItemMock).toHaveBeenCalledWith('searchQuery', 'Rick');
+  test('initializes with search query from localStorage', () => {
+    const useSearchQuerySpy = vi.spyOn(LocalStorageHook, 'useSearchQuery');
+    useSearchQuerySpy.mockReturnValue(['Rick', vi.fn()]);
+
+    renderWithProviders(vi.fn());
+
+    const inputElement = screen.getByTestId('inputElement');
+    expect(inputElement).toHaveValue('Rick');
+
+    useSearchQuerySpy.mockRestore();
   });
 });
