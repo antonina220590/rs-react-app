@@ -66,17 +66,6 @@ const getServerSideProps: GetServerSideProps = wrapper.getServerSideProps(
       };
     } catch (error) {
       console.error('Error fetching data:', error);
-      console.log('getServerSideProps: Returning notFound: true (catch error)');
-      // return {
-      //   props: {
-      //     initialData: {
-      //       results: [],
-      //       info: { count: 0, pages: 0, next: null, prev: null },
-      //     },
-      //     initialSearchQuery: searchQuery,
-      //     initialPage: currentPage,
-      //   },
-      // };
       return {
         notFound: true,
       };

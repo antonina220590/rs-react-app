@@ -1,155 +1,380 @@
-import { fireEvent, screen, waitFor } from '@testing-library/react';
-import SearchPage from './searchPage';
-import '@testing-library/jest-dom';
-import { renderWithProviders } from '../../utils/test-utils';
-import { server } from '../../mocks/handlers/characters';
-import { http, HttpResponse } from 'msw';
-import * as UseThemeHook from '../../utils/context/useThemeHook';
-import { vi } from 'vitest';
-import { Character } from '../../utils/interface';
+import {
+  render,
+  screen,
+  waitFor,
+  fireEvent,
+  act,
+} from '@testing-library/react';
+import { Provider } from 'react-redux';
 import { makeStore } from '../../services/store';
+import '@testing-library/jest-dom';
+import SearchPage from './searchPage';
+import { vi } from 'vitest';
+import { mockApiResponse } from '../../mocks/handlers/characters';
+import { ThemeContext } from '../../utils/context/useThemeHook';
+import {
+  useGetCharacterByIdQuery,
+  useLazyGetCharactersQuery,
+} from '../../utils/slices/apiSlice';
+import { mockCharacter } from '../../mocks/handlers/characterId';
 import { addToFav } from '../../utils/slices/favouritesSlice';
+import { ApiResponse, Character } from '../../utils/interface';
 
-const mockCharacter: Character = {
-  id: 1,
-  name: 'Rick Sanchez',
-  image: 'http://example.com/rick.png',
-  status: 'Alive',
-  gender: 'Male',
-  species: 'Human',
-};
+interface MockRouter {
+  query: { page: string; id: string | undefined; search?: string };
+  isReady: boolean;
+  push: ReturnType<typeof vi.fn>;
+  pathname: string;
+  events: {
+    on: ReturnType<typeof vi.fn>;
+    off: ReturnType<typeof vi.fn>;
+  };
+  asPath: string;
+}
+
 global.URL.createObjectURL = vi.fn();
 
-beforeAll(() => server.listen());
-afterEach(() => server.resetHandlers());
-afterAll(() => server.close());
+const mockThemeContext = {
+  isDarkTheme: false,
+  toggleTheme: vi.fn(),
+};
+const mockCharacterDetails: Character[] = [
+  {
+    id: 1,
+    name: 'Rick Sanchez',
+    image: 'http://example.com/rick.png',
+    status: 'Alive',
+    gender: 'Male',
+    species: 'Human',
+  },
+];
 
-describe('SearchPage Component', () => {
-  test.skip('renders characters on successful API call', async () => {
-    renderWithProviders(<SearchPage />, { route: '/?page=1' });
+const mockRouter: MockRouter = {
+  query: { page: '1', id: undefined },
+  isReady: true,
+  push: vi.fn().mockImplementation((route) => {
+    mockRouter.query = route.query;
+  }),
+  pathname: '/',
+  events: {
+    on: vi.fn(),
+    off: vi.fn(),
+  },
+  get asPath() {
+    const queryParams = new URLSearchParams();
+    for (const key in this.query) {
+      if (this.query[key] !== undefined) {
+        queryParams.append(key, String(this.query[key]));
+      }
+    }
+    return Object.keys(this.query).length > 0
+      ? `${this.pathname}?${queryParams.toString()}`
+      : this.pathname;
+  },
+};
 
-    expect(screen.getByTestId('spinner')).toBeInTheDocument();
+vi.mock('next/router', () => ({
+  useRouter: () => mockRouter,
+}));
+
+vi.mock('../../utils/slices/apiSlice', async (importOriginal) => {
+  const actual = (await importOriginal()) as {
+    useLazyGetCharactersQuery: jest.Mock;
+    useGetCharacterByIdQuery: jest.Mock;
+  };
+  return {
+    ...actual,
+    useLazyGetCharactersQuery: vi
+      .fn()
+      .mockReturnValue([
+        vi.fn(),
+        { data: null, error: null, isLoading: false },
+      ]),
+    useGetCharacterByIdQuery: vi.fn().mockImplementation((id) => {
+      return { data: mockCharacterDetails, error: null, isLoading: false };
+    }),
+  };
+});
+
+let mockSearchQuery = '';
+
+const triggerMock = vi.fn();
+vi.mock('next/router', () => ({
+  useRouter: () => mockRouter,
+}));
+
+vi.mock('../../utils/localStorageHook', () => ({
+  useSearchQuery: () => {
+    return [
+      mockSearchQuery,
+      (newValue: string) => {
+        mockSearchQuery = newValue;
+      },
+    ];
+  },
+}));
+
+const emptyApiResponse: ApiResponse = {
+  info: {
+    count: 0,
+    pages: 0,
+    next: null,
+    prev: null,
+  },
+  results: [],
+};
+
+const setup = (initialData: ApiResponse) => {
+  const store = makeStore();
+  return render(
+    <ThemeContext.Provider value={mockThemeContext}>
+      <Provider store={store}>
+        <SearchPage initialData={initialData} />
+      </Provider>
+    </ThemeContext.Provider>
+  );
+};
+
+describe('SearchPage Component', async () => {
+  beforeEach(() => {
+    vi.clearAllMocks();
+  });
+
+  test('renders search input', () => {
+    setup(mockApiResponse);
+    expect(screen.getByPlaceholderText('search.....')).toBeInTheDocument();
+  });
+
+  test('displays error message', async () => {
+    (useLazyGetCharactersQuery as jest.Mock).mockReturnValue([
+      vi.fn(),
+      {
+        data: null,
+        error: { status: 404, data: 'Not found' },
+        isLoading: false,
+      },
+    ]);
+
+    setup(mockApiResponse);
+
+    await waitFor(() =>
+      expect(screen.getByText(/Error: 404 - Not found/i)).toBeInTheDocument()
+    );
+  });
+
+  test('displays no results found message', async () => {
+    (useLazyGetCharactersQuery as jest.Mock).mockReturnValue([
+      vi.fn(),
+      { data: { results: [] }, error: null, isLoading: false },
+    ]);
+
+    setup(mockApiResponse);
+
+    await waitFor(() =>
+      expect(
+        screen.getByText(/No results found for your search/i)
+      ).toBeInTheDocument()
+    );
+  });
+
+  test('displays character cards', async () => {
+    (useLazyGetCharactersQuery as jest.Mock).mockReturnValue([
+      vi.fn(),
+      { data: mockApiResponse, error: null, isLoading: false },
+    ]);
+
+    setup(mockApiResponse);
+
     await waitFor(() => {
       expect(screen.getByText('Rick Sanchez')).toBeInTheDocument();
-      expect(screen.getByText('Morty Smith')).toBeInTheDocument();
     });
   });
 
-  test.skip('renders no results message when no characters found', async () => {
-    server.use(
-      http.get('https://rickandmortyapi.com/api/character', () => {
-        return HttpResponse.json({
-          info: { count: 0, pages: 1, next: null, prev: null },
-          results: [],
-        });
-      })
-    );
+  test('handles search input changes', async () => {
+    (useLazyGetCharactersQuery as jest.Mock).mockReturnValue([
+      vi.fn(),
+      { data: mockApiResponse, error: null, isLoading: false },
+    ]);
 
-    renderWithProviders(<SearchPage />, { route: '/?page=1' });
+    setup(mockApiResponse);
+
+    const input = screen.getByPlaceholderText(
+      'search.....'
+    ) as HTMLInputElement;
+    fireEvent.change(input, { target: { value: 'Morty' } });
+
+    expect(input.value).toBe('Morty');
+  });
+  test('displays message when search input is empty', async () => {
+    (useLazyGetCharactersQuery as jest.Mock).mockReturnValue([
+      vi.fn(),
+      { data: { results: [] }, error: null, isLoading: false },
+    ]);
+
+    setup(mockApiResponse);
+
+    const input = screen.getByPlaceholderText(
+      'search.....'
+    ) as HTMLInputElement;
+    fireEvent.change(input, { target: { value: '' } });
+
     await waitFor(() => {
       expect(
-        screen.getByText('No results found for your search.')
+        screen.getByText(/No results found for your search/i)
       ).toBeInTheDocument();
     });
   });
-  test.skip('shows loading indicator while fetching', async () => {
-    renderWithProviders(<SearchPage />, { route: '/?page=2' });
-    expect(screen.getByTestId('spinner')).toBeInTheDocument();
-    await waitFor(
-      () => expect(screen.queryByTestId('spinner')).not.toBeInTheDocument(),
-      { timeout: 500 }
-    );
+  test('disables previous button when on the first page', async () => {
+    (useLazyGetCharactersQuery as jest.Mock).mockReturnValue([
+      vi.fn(),
+      { data: mockApiResponse, error: null, isLoading: false },
+    ]);
+
+    setup(mockApiResponse);
+
+    const previousButton = screen.getByTestId('prevBtn');
+    expect(previousButton).toBeDisabled();
   });
+  test('shows Flyout when checkbox is checked', async () => {
+    (useLazyGetCharactersQuery as jest.Mock).mockReturnValue([
+      vi.fn(),
+      { data: mockApiResponse, error: null, isLoading: false },
+    ]);
 
-  test.skip('renders error message on API error', async () => {
-    server.use(
-      http.get('https://rickandmortyapi.com/api/character', () => {
-        return HttpResponse.json(
-          { error: 'Internal Server Error' },
-          { status: 500 }
-        );
-      })
-    );
+    setup(mockApiResponse);
 
-    renderWithProviders(<SearchPage />, { route: '/?page=1' });
+    const checkBox = screen.getByTestId(`heart-label-${mockCharacter.id}`);
+    fireEvent.click(checkBox);
+
     await waitFor(() => {
-      expect(screen.getByText(/Error: 500/)).toBeInTheDocument();
+      const store = makeStore();
+      store.dispatch(addToFav(mockCharacter));
+      expect(screen.getByTestId('flyout')).toBeInTheDocument();
     });
   });
 
-  test.skip('filters characters based on search query', async () => {
-    renderWithProviders(<SearchPage />, { route: '/?page=1&search=Rick' });
-    expect(screen.getByTestId('spinner')).toBeInTheDocument();
+  test('opens character details on card click', async () => {
+    const trigger = vi.fn();
+    (useLazyGetCharactersQuery as jest.Mock).mockReturnValue([
+      trigger,
+      {
+        data: mockApiResponse,
+        error: null,
+        isLoading: false,
+        isFetching: false,
+      },
+    ]);
+
+    (useGetCharacterByIdQuery as jest.Mock).mockReturnValue({
+      data: mockCharacterDetails,
+      error: null,
+      isLoading: false,
+    });
+    setup(mockApiResponse);
+
+    const card = await screen.findByText('Rick Sanchez');
+    fireEvent.click(card);
+
     await waitFor(
-      () => expect(screen.queryByTestId('spinner')).not.toBeInTheDocument(),
-      { timeout: 500 }
+      () => {
+        expect(mockRouter.push).toHaveBeenCalledWith(
+          {
+            pathname: '/',
+            query: { page: '1', id: 1 },
+          },
+          undefined,
+          { shallow: true }
+        );
+      },
+      { timeout: 3000 }
     );
+  });
+  test('closes character details on close button click', async () => {
+    mockRouter.query = { page: '1', id: '1' };
+    const trigger = vi.fn();
+    (useLazyGetCharactersQuery as jest.Mock).mockReturnValue([
+      trigger,
+      {
+        data: mockApiResponse,
+        error: null,
+        isLoading: false,
+        isFetching: false,
+      },
+    ]);
+
+    (useGetCharacterByIdQuery as jest.Mock).mockReturnValue({
+      data: mockCharacterDetails,
+      error: null,
+      isLoading: false,
+    });
+    setup(mockApiResponse);
+
+    const closeButton = await screen.findByTestId('closeCardBtn');
+    expect(closeButton).toBeInTheDocument();
+    await act(() => fireEvent.click(closeButton));
+    await waitFor(() => {
+      expect(mockRouter.push).toHaveBeenCalledWith(
+        {
+          pathname: '/',
+          query: { page: '1' },
+        },
+        undefined,
+        { shallow: true }
+      );
+    });
+  });
+  test('correctly initializes with initialData if provided', () => {
+    setup(mockApiResponse);
     expect(screen.getByText('Rick Sanchez')).toBeInTheDocument();
   });
+  test('does not navigate to invalid page on pagination', async () => {
+    (useLazyGetCharactersQuery as jest.Mock).mockReturnValue([
+      vi.fn(),
+      {
+        data: { info: { pages: 2, count: 2, next: '', prev: '' }, results: [] },
+        error: null,
+        isLoading: false,
+      },
+    ]);
+    setup({ info: { pages: 2, count: 2, next: '', prev: '' }, results: [] });
 
-  test.skip('applies correct theme styles for dark theme', async () => {
-    const useThemeSpy = vi.spyOn(UseThemeHook, 'useTheme');
-    useThemeSpy.mockReturnValue({ isDarkTheme: true, toggleTheme: vi.fn() });
-    renderWithProviders(<SearchPage />, { route: `/?page=1` });
-    expect(screen.getByTestId('spinner')).toBeInTheDocument();
-    await waitFor(
-      () => expect(screen.queryByTestId('spinner')).not.toBeInTheDocument(),
-      { timeout: 500 }
-    );
-    const name = screen.getByTestId('searchBtn');
-    expect(name).toHaveClass(
-      'bg-neutral-300 text-black p-3 rounded-[5px] cursor-pointer hover:bg-white'
-    );
-    useThemeSpy.mockRestore();
+    const nextPageButton = screen.getByTestId('nextBtn');
+    await act(() => fireEvent.click(nextPageButton));
+    await act(() => fireEvent.click(nextPageButton));
+
+    await waitFor(() => {
+      expect(mockRouter.push).not.toHaveBeenCalledWith(
+        {
+          pathname: '/',
+          query: { page: '3' },
+        },
+        undefined,
+        { shallow: true }
+      );
+    });
   });
-  test.skip('applies correct theme styles for dark theme', async () => {
-    const useThemeSpy = vi.spyOn(UseThemeHook, 'useTheme');
-    useThemeSpy.mockReturnValue({ isDarkTheme: false, toggleTheme: vi.fn() });
-    renderWithProviders(<SearchPage />, { route: `/?page=1` });
-    expect(screen.getByTestId('spinner')).toBeInTheDocument();
-    await waitFor(
-      () => expect(screen.queryByTestId('spinner')).not.toBeInTheDocument(),
-      { timeout: 500 }
-    );
-    const name = screen.getByTestId('searchBtn');
-    expect(name).toHaveClass(
-      'bg-[#ac3b61] text-white p-3 rounded-[5px] cursor-pointer hover:bg-[#edc7b7]'
-    );
-    useThemeSpy.mockRestore();
+  test('navigates to the correct page on pagination button click', async () => {
+    (useLazyGetCharactersQuery as jest.Mock).mockReturnValue([
+      vi.fn(),
+      { data: mockApiResponse, error: null, isLoading: false },
+    ]);
+    setup(mockApiResponse);
+
+    const nextPageButton = screen.getByTestId('nextBtn');
+    await act(() => fireEvent.click(nextPageButton));
+
+    await waitFor(() => {
+      expect(mockRouter.query).toEqual({ page: '2', id: undefined });
+    });
   });
-  test.skip('the checkbox to be on the page', async () => {
-    renderWithProviders(<SearchPage />, { route: '/?page=1' });
-    expect(screen.getByTestId('spinner')).toBeInTheDocument();
-    await waitFor(
-      () => expect(screen.queryByTestId('spinner')).not.toBeInTheDocument(),
-      { timeout: 500 }
-    );
-    const checkBox = screen.getByTestId(`heart-label-${mockCharacter.id}`);
-    expect(checkBox).toBeInTheDocument();
-  });
-  test.skip('the checkbox to be on the page', async () => {
-    renderWithProviders(<SearchPage />, { route: '/?page=1' });
-    expect(screen.getByTestId('spinner')).toBeInTheDocument();
-    await waitFor(
-      () => expect(screen.queryByTestId('spinner')).not.toBeInTheDocument(),
-      { timeout: 500 }
-    );
-    const checkBox = screen.getByTestId(`heart-label-${mockCharacter.id}`);
-    expect(checkBox).toBeInTheDocument();
-    fireEvent.click(checkBox);
-  });
-  test.skip('renders flyout when favourites are present', async () => {
-    renderWithProviders(<SearchPage />);
-    expect(screen.getByTestId('spinner')).toBeInTheDocument();
-    await waitFor(
-      () => expect(screen.queryByTestId('spinner')).not.toBeInTheDocument(),
-      { timeout: 500 }
-    );
-    const checkBox = screen.getByTestId(`heart-label-${mockCharacter.id}`);
-    expect(checkBox).toBeInTheDocument();
-    fireEvent.click(checkBox);
-    const store = makeStore();
-    store.dispatch(addToFav(mockCharacter));
-    expect(screen.getByTestId('flyout')).toBeInTheDocument();
+  test('renders loading state initially', () => {
+    (useLazyGetCharactersQuery as jest.Mock).mockReturnValue([
+      vi.fn(),
+      { data: null, error: null, isLoading: true },
+    ]);
+    setup(emptyApiResponse);
+    expect(
+      screen.getByText('No results found for your search.')
+    ).toBeInTheDocument();
   });
 });

@@ -13,6 +13,7 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
+    "noImplicitAny": true,
     "jsx": "preserve",
     "paths": {
       "tailwindcss": ["./node_modules/tailwindcss/dist/lib.d.mts"]

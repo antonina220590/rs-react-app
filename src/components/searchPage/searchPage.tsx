@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import Input from '../input/input';
 import Cards from '../cards/cards';
 import { useSearchQuery } from '../../utils/localStorageHook';
@@ -19,6 +19,7 @@ const isFetchBaseQueryError = (
 ): error is FetchBaseQueryError => {
   return (error as FetchBaseQueryError).status !== undefined;
 };
+const DEBOUNCE_DELAY = 500;
 
 function SearchPage({ initialData }: { initialData: ApiResponse }) {
   const router = useRouter();
@@ -45,40 +46,36 @@ function SearchPage({ initialData }: { initialData: ApiResponse }) {
     }
   }, [search, page, router.isReady, trigger, currentPage]);
 
-  const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-  const handleSearch = (query: string) => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
+  const timeoutIdRef = useRef<NodeJS.Timeout | null>(null);
 
-    timeoutRef.current = setTimeout(() => {
-      const trimmedQuery = query.trim();
-      setSearchQuery(trimmedQuery);
-      const newQuery: {
-        search?: string;
-        page: string;
-        id?: string | string[];
-      } = {
-        ...router.query,
-        search: trimmedQuery,
-        page: '1',
-      };
-      if (!trimmedQuery) {
-        delete newQuery.search;
+  const handleSearch = useCallback(
+    (query: string) => {
+      if (timeoutIdRef.current) {
+        clearTimeout(timeoutIdRef.current);
       }
-      router.push({ pathname: router.pathname, query: newQuery }, undefined, {
-        shallow: true,
-      });
-    }, 300);
-  };
 
-  useEffect(() => {
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-    };
-  }, []);
+      timeoutIdRef.current = setTimeout(() => {
+        const trimmedQuery = query.trim();
+        setSearchQuery(trimmedQuery);
+        const newQuery: {
+          search?: string;
+          page: string;
+          id?: string | string[];
+        } = {
+          ...router.query,
+          search: trimmedQuery,
+          page: '1',
+        };
+        if (!trimmedQuery) {
+          delete newQuery.search;
+        }
+        router.push({ pathname: router.pathname, query: newQuery }, undefined, {
+          shallow: true,
+        });
+      }, DEBOUNCE_DELAY);
+    },
+    [router, setSearchQuery]
+  );
 
   const handlePageChange = (newPage: number) => {
     if (data && newPage > 0 && newPage <= data.info.pages) {
