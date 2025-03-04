@@ -14,9 +14,7 @@ export const makeStore = () =>
       getDefaultMiddleware().concat(apiSlice.middleware),
   });
 
-export type RootState = ReturnType<typeof rootReducer>;
-export type AppStore = ReturnType<typeof makeStore>;
+type AppStore = ReturnType<typeof makeStore>;
+export type RootState = ReturnType<AppStore['getState']>;
 export type AppDispatch = AppStore['dispatch'];
-export const wrapper = createWrapper<AppStore>(makeStore, {
-  debug: false,
-});
+export const wrapper = createWrapper<AppStore>(makeStore);

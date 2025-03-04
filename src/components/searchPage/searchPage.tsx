@@ -1,114 +1,73 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback } from 'react';
 import Input from '../input/input';
 import Cards from '../cards/cards';
-import { useSearchQuery } from '../../utils/localStorageHook';
 import Pagination from '../pagination/pagination';
 import { useRouter } from 'next/router';
 import Flyout from '../flyout/flyout';
-import {
-  useGetCharacterByIdQuery,
-  useLazyGetCharactersQuery,
-} from '../../utils/slices/apiSlice';
-import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
+import { useGetCharacterByIdQuery } from '../../utils/slices/apiSlice';
 import { useTheme } from '../../utils/context/useThemeHook';
 import DetailsPage from '../detailsPage/detailsPage';
-import { ApiResponse } from '../../utils/interface';
+import { SearchPageProps } from '../../utils/interface';
 
-const isFetchBaseQueryError = (
-  error: unknown
-): error is FetchBaseQueryError => {
-  return (error as FetchBaseQueryError).status !== undefined;
-};
-const DEBOUNCE_DELAY = 500;
-
-function SearchPage({ initialData }: { initialData: ApiResponse }) {
+function SearchPage({
+  initialData,
+  initialCharacter,
+  error,
+  notFound,
+}: SearchPageProps) {
   const router = useRouter();
   const { search, page, id } = router.query;
 
-  const [searchQuery, setSearchQuery] = useSearchQuery();
+  const searchQuery = typeof search === 'string' ? search : '';
   const currentPage = typeof page === 'string' ? parseInt(page, 10) : 1;
-
   const { isDarkTheme } = useTheme();
-
-  const [trigger, { data, error, isLoading }] = useLazyGetCharactersQuery();
 
   const {
     data: characterData,
     error: characterError,
-    isLoading: isCharacterLoading,
     isFetching,
-  } = useGetCharacterByIdQuery(id ? String(id) : '', { skip: !id });
+  } = useGetCharacterByIdQuery(id ? String(id) : '', {
+    skip: !id,
+  });
 
-  useEffect(() => {
-    if (router.isReady) {
-      const actualSearch = typeof search === 'string' ? search : '';
-      trigger({ searchQuery: actualSearch, currentPage });
-    }
-  }, [search, page, router.isReady, trigger, currentPage]);
+  const displayCharacter = initialCharacter || characterData;
 
-  const timeoutIdRef = useRef<NodeJS.Timeout | null>(null);
-
-  const handleSearch = useCallback(
-    (query: string) => {
-      if (timeoutIdRef.current) {
-        clearTimeout(timeoutIdRef.current);
-      }
-
-      timeoutIdRef.current = setTimeout(() => {
-        const trimmedQuery = query.trim();
-        setSearchQuery(trimmedQuery);
-        const newQuery: {
-          search?: string;
-          page: string;
-          id?: string | string[];
-        } = {
-          ...router.query,
-          search: trimmedQuery,
-          page: '1',
-        };
-        if (!trimmedQuery) {
-          delete newQuery.search;
-        }
-        router.push({ pathname: router.pathname, query: newQuery }, undefined, {
-          shallow: true,
-        });
-      }, DEBOUNCE_DELAY);
+  const handlePageChange = useCallback(
+    (newPage: number) => {
+      const newQuery = { ...router.query, page: newPage.toString() };
+      router.push({ pathname: router.pathname, query: newQuery });
     },
-    [router, setSearchQuery]
+    [router]
   );
 
-  const handlePageChange = (newPage: number) => {
-    if (data && newPage > 0 && newPage <= data.info.pages) {
-      const newQuery = { ...router.query, page: newPage.toString() };
-      router.push({ pathname: router.pathname, query: newQuery }, undefined, {
-        shallow: true,
+  const handleCardClick = useCallback(
+    (charId: number) => {
+      router.push({
+        pathname: router.pathname,
+        query: { ...router.query, id: charId },
       });
-    }
-  };
+    },
+    [router]
+  );
 
-  const handleCardClick = (charId: number) => {
-    router.push(
-      { pathname: router.pathname, query: { ...router.query, id: charId } },
-      undefined,
-      { shallow: true }
-    );
-  };
-
-  const closeCard = () => {
+  const closeCard = useCallback(() => {
     const { id, ...restQuery } = router.query;
-    router.push({ pathname: router.pathname, query: restQuery }, undefined, {
-      shallow: true,
-    });
-  };
-  const displayData = data ? data : initialData;
-  const totalPages = displayData?.info?.pages || 1;
 
-  if (!initialData) {
-    return (
-      <div className="flex justify-center items-center h-full">
-        <p>...isLoading</p>
-      </div>
-    );
+    if (typeof id === 'string' || typeof id === 'undefined') {
+      router.push({ pathname: router.pathname, query: restQuery });
+    } else {
+      console.error('Unexpected type for id:', id);
+    }
+  }, [router]);
+
+  const displayData = initialData;
+
+  if (error) {
+    return <div>Error: {error}</div>;
+  }
+
+  if (notFound) {
+    return <p>no results</p>;
   }
 
   return (
@@ -118,12 +77,12 @@ function SearchPage({ initialData }: { initialData: ApiResponse }) {
           isDarkTheme ? 'bg-[#19181A]' : 'bg-[#eee2dc]'
         }`}
       >
-        <Input onSearch={handleSearch} />
+        <Input initialSearchQuery={searchQuery} />
       </div>
       <div>
         <Pagination
           currentPage={currentPage}
-          totalPages={totalPages}
+          totalPages={initialData.info.pages || 1}
           changePage={handlePageChange}
         />
       </div>
@@ -134,27 +93,8 @@ function SearchPage({ initialData }: { initialData: ApiResponse }) {
             isDarkTheme ? 'bg-[#19181A]' : 'bg-[#eee2dc]'
           } backdrop-blur-2xl rounded-xl mb-8 gap-15 justify-center items-center flex flex-wrap flex-row`}
         >
-          {isLoading && !displayData ? (
-            <p>...loading</p>
-          ) : error ? (
-            <div className="bg-gray-500/70 backdrop-blur-lg border border-white/18 rounded-xl shadow-xl h-[200px] flex items-center">
-              <p className="text-amber-50 text-4xl p-5">
-                Error:
-                {isFetchBaseQueryError(error)
-                  ? ` ${error.status} - ${
-                      typeof error.data === 'string'
-                        ? error.data
-                        : 'Unknown error'
-                    }`
-                  : 'An unexpected error occurred.'}
-              </p>
-            </div>
-          ) : !displayData || displayData.results.length === 0 ? (
-            <div className="bg-gray-500/70 backdrop-blur-lg border border-white/18 rounded-xl shadow-xl h-[200px] flex items-center">
-              <p className="text-amber-50 text-4xl p-5">
-                No results found for your search.
-              </p>
-            </div>
+          {!displayData || displayData.results.length === 0 ? (
+            <p>no results</p>
           ) : (
             <div className="flex">
               <div className="w-50% flex flex-wrap">
@@ -166,9 +106,9 @@ function SearchPage({ initialData }: { initialData: ApiResponse }) {
             </div>
           )}
         </div>
-        {id && (
+        {id && displayCharacter && (
           <DetailsPage
-            character={characterData}
+            character={displayCharacter}
             closeCard={closeCard}
             fetching={isFetching}
             error={characterError}
@@ -179,5 +119,4 @@ function SearchPage({ initialData }: { initialData: ApiResponse }) {
     </div>
   );
 }
-
 export default SearchPage;

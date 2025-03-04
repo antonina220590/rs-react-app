@@ -11,7 +11,7 @@ function Cards({ characters, onCardClick }: CardsProps) {
       {characters.map((character) => (
         <div
           key={character.id}
-          onClick={() => onCardClick(character.id)}
+          onClick={() => onCardClick({ id: character.id })}
           className={`flex flex-col items-center w-[300px] h-[450px] ${isDarkTheme ? 'bg-[#474b4f]' : 'bg-[#bab2b5]'} rounded-2xl justify-start`}
         >
           <Heart character={character} />{' '}

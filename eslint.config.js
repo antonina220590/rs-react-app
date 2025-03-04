@@ -38,15 +38,38 @@ export default defineConfig([
       ...eslintPluginReact.configs['jsx-runtime'].rules,
       'prettier/prettier': 'error',
       '@typescript-eslint/no-explicit-any': 'error',
+      'no-inline-comments': 'error',
+      // 'no-unused-vars': 'error',
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          varsIgnorePattern: '^_',
+          argsIgnorePattern: '^_',
+          ignoreRestSiblings: true,
+        },
+      ],
       'no-restricted-syntax': [
         'error',
         {
-          selector: 'Comment',
-          message: 'Comments are not allowed.',
+          selector: 'BlockComment',
+          message: 'Use JSDoc/TSDoc for documentation.',
+        },
+        {
+          selector:
+            'LineComment:not(Program > LineComment, :matches([id.name=\"TODO\"],[id.name=\"FIXME\"]))', // Allow // at top level and TODO, FIXME
+          message:
+            "Comments are discouraged. Explain 'why', not 'what'. Use JSDoc/TSDoc for APIs.",
         },
       ],
     },
+
     settings: { react: { version: 'detect' } },
-    ignores: ['dist', 'eslint.config.js', 'coverage', 'node_modules'],
+    ignores: [
+      'dist',
+      'eslint.config.js',
+      'coverage',
+      'node_modules',
+      '**/*.test.tsx',
+    ],
   },
 ]);

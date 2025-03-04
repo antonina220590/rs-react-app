@@ -1,36 +1,31 @@
 import { ReactElement } from 'react';
-import favouritesSlice from './slices/favouritesSlice';
-import {
-  BaseQueryFn,
-  CombinedState,
-  FetchArgs,
-  FetchBaseQueryError,
-  QueryDefinition,
-} from '@reduxjs/toolkit/query';
+import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
+import { SerializedError } from '@reduxjs/toolkit';
 
 export interface Character {
-  id?: number;
-  name?: string;
-  status?: string;
-  gender?: string;
-
-  species?: string;
-  image?: string;
-  type?: string;
-  origin?: {
-    name?: string;
-    url?: string;
+  id: number;
+  name: string;
+  status: string;
+  gender: string;
+  species: string;
+  image: string;
+  type: string;
+  origin: {
+    name: string;
+    url: string;
   };
-  location?: {
-    name?: string;
-    url?: string;
+  location: {
+    name: string;
+    url: string;
   };
-  episode?: string[];
+  episode: string[];
+  url: string;
+  created: string;
 }
 
 export interface CardsProps {
   characters: Character[];
-  onCardClick: (id?: number) => void;
+  onCardClick: ({ id }: { id: number }) => void;
 }
 
 export interface ApiResponse {
@@ -56,54 +51,30 @@ export interface IState {
 export interface PaginationProps {
   currentPage: number;
   totalPages: number;
-  changePage: (page: number) => void;
+  changePage: (_page: number) => void;
 }
 
 export interface InputProps {
-  onSearch: (searchQuery: string) => void;
+  initialSearchQuery: string;
 }
 
 export interface DetailsPageProps {
-  character?: Character;
-  closeCard: (event: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
-
+  character: Character;
+  closeCard: () => void;
   fetching: boolean;
-
-  error: unknown;
+  error: FetchBaseQueryError | SerializedError | undefined;
 }
 
-export type RootStateApi = {
-  favourites: ReturnType<typeof favouritesSlice>;
-  rickAndMortyApi: CombinedState<
-    {
-      getCharacters: QueryDefinition<
-        { searchQuery?: string; currentPage?: number },
-        BaseQueryFn<
-          string | FetchArgs,
-          unknown,
-          FetchBaseQueryError,
-          object,
-          object
-        >,
-        never,
-        ApiResponse,
-        'rickAndMortyApi'
-      >;
-      getCharacterById: QueryDefinition<
-        string,
-        BaseQueryFn<
-          string | FetchArgs,
-          unknown,
-          FetchBaseQueryError,
-          object,
-          object
-        >,
-        never,
-        Character,
-        'rickAndMortyApi'
-      >;
-    },
-    never,
-    'rickAndMortyApi'
-  >;
-};
+export interface SearchPageProps {
+  initialData: ApiResponse;
+  initialCharacter: Character | null;
+  error?: string | null | undefined;
+  notFound?: boolean;
+}
+
+export interface PageProps {
+  initialData: ApiResponse;
+  initialCharacter: Character | null;
+  error: string | null | undefined;
+  notFound?: boolean;
+}
