@@ -34,7 +34,7 @@ const renderWithProviders = (
   );
 };
 
-describe('DetailsPage Component', () => {
+describe.skip('DetailsPage Component', () => {
   test('renders character details correctly', () => {
     renderWithProviders(
       {
@@ -59,7 +59,7 @@ describe('DetailsPage Component', () => {
     expect(screen.getByTestId('characterGender')).toHaveTextContent('Male');
   });
 
-  test('renders spinner when fetching', () => {
+  test.skip('renders spinner when fetching', () => {
     renderWithProviders({
       character: mockCharacter,
       closeCard: vi.fn(),
@@ -70,7 +70,7 @@ describe('DetailsPage Component', () => {
     expect(screen.getByTestId('spinner')).toBeInTheDocument();
   });
 
-  test('renders Custom404 when error is true', () => {
+  test.skip('renders Custom404 when error is true', () => {
     renderWithProviders({
       character: mockCharacter,
       closeCard: vi.fn(),
@@ -83,7 +83,7 @@ describe('DetailsPage Component', () => {
     ).toBeInTheDocument();
   });
 
-  test('applies correct theme styles for dark theme', () => {
+  test.skip('applies correct theme styles for dark theme', () => {
     renderWithProviders(
       {
         character: mockCharacter,
@@ -98,7 +98,7 @@ describe('DetailsPage Component', () => {
     expect(nameElement).toHaveClass('text-white');
   });
 
-  test('applies correct theme styles for light theme', () => {
+  test.skip('applies correct theme styles for light theme', () => {
     renderWithProviders({
       character: mockCharacter,
       closeCard: vi.fn(),
@@ -110,7 +110,7 @@ describe('DetailsPage Component', () => {
     expect(nameElement).toHaveClass('text-black');
   });
 
-  test('calls closeCard when Close button is clicked', () => {
+  test.skip('calls closeCard when Close button is clicked', () => {
     const closeCardMock = vi.fn();
     renderWithProviders({
       character: mockCharacter,

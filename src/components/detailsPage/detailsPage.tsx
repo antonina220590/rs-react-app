@@ -8,6 +8,7 @@ function DetailsPage({
   character,
   closeCard,
   fetching,
+  loading,
   error,
 }: DetailsPageProps) {
   const { isDarkTheme } = useTheme();
@@ -21,7 +22,7 @@ function DetailsPage({
       <div
         className={`flex flex-col items-center w-[500px] h-[710px] ${isDarkTheme ? 'bg-[#19181A]' : 'bg-[#eee2dc]'}  rounded-xl sticky top-0`}
       >
-        {fetching ? (
+        {fetching || loading ? (
           <div className="flex justify-center items-center h-full">
             <Spinner />
           </div>

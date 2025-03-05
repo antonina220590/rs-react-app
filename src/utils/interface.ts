@@ -62,6 +62,8 @@ export interface DetailsPageProps {
   character: Character;
   closeCard: () => void;
   fetching: boolean;
+
+  loading: boolean;
   error: FetchBaseQueryError | SerializedError | undefined;
 }
 

@@ -25,6 +25,7 @@ function SearchPage({
   const {
     data: characterData,
     error: characterError,
+    isLoading: characterLoading,
     isFetching,
   } = useGetCharacterByIdQuery(id ? String(id) : '', {
     skip: !id,
@@ -48,6 +49,7 @@ function SearchPage({
 
   const handleCardClick = useCallback(
     (charId: number) => {
+      console.log(characterLoading);
       router.push({
         pathname: router.pathname,
         query: { ...router.query, id: charId },
@@ -118,6 +120,7 @@ function SearchPage({
             closeCard={closeCard}
             fetching={isFetching}
             error={characterError}
+            loading={characterLoading}
           />
         )}
       </div>
