@@ -9,12 +9,7 @@ import { useTheme } from '../../utils/context/useThemeHook';
 import DetailsPage from '../detailsPage/detailsPage';
 import { QueryParams, SearchPageProps } from '../../utils/interface';
 
-function SearchPage({
-  initialData,
-  initialCharacter,
-  error,
-  notFound,
-}: SearchPageProps) {
+function SearchPage({ initialData, initialCharacter }: SearchPageProps) {
   const router = useRouter();
   const { search, page, id } = router.query;
 
@@ -49,7 +44,6 @@ function SearchPage({
 
   const handleCardClick = useCallback(
     (charId: number) => {
-      console.log(characterLoading);
       router.push({
         pathname: router.pathname,
         query: { ...router.query, id: charId },
@@ -69,14 +63,6 @@ function SearchPage({
   }, [router]);
 
   const displayData = initialData;
-
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
-
-  if (notFound) {
-    return <p>no results</p>;
-  }
 
   return (
     <div className="w-[90%] flex flex-col items-center">
@@ -101,18 +87,14 @@ function SearchPage({
             isDarkTheme ? 'bg-[#19181A]' : 'bg-[#eee2dc]'
           } backdrop-blur-2xl rounded-xl mb-8 gap-15 justify-center items-center flex flex-wrap flex-row`}
         >
-          {!displayData || displayData.results.length === 0 ? (
-            <p>no results</p>
-          ) : (
-            <div className="flex">
-              <div className="w-50% flex flex-wrap">
-                <Cards
-                  characters={displayData.results}
-                  onCardClick={handleCardClick}
-                />
-              </div>
+          <div className="flex">
+            <div className="w-50% flex flex-wrap">
+              <Cards
+                characters={displayData.results}
+                onCardClick={handleCardClick}
+              />
             </div>
-          )}
+          </div>
         </div>
         {id && displayCharacter && (
           <DetailsPage

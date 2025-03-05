@@ -77,8 +77,10 @@ export interface SearchPageProps {
 export interface PageProps {
   initialData: ApiResponse;
   initialCharacter: Character | null;
-  error: string | null | undefined;
-  notFound?: boolean;
+  error: string | null;
+  notFound: boolean;
+
+  isFromServer?: boolean;
 }
 
 export interface QueryParams {
