@@ -25,7 +25,7 @@ export interface Character {
 
 export interface CardsProps {
   characters: Character[];
-  onCardClick: ({ id }: { id: number }) => void;
+  onCardClick: (id: number) => void;
 }
 
 export interface ApiResponse {
@@ -77,4 +77,11 @@ export interface PageProps {
   initialCharacter: Character | null;
   error: string | null | undefined;
   notFound?: boolean;
+}
+
+export interface QueryParams {
+  search?: string;
+  page?: string;
+  id?: string | string[];
+  [key: string]: string | string[] | undefined;
 }

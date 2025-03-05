@@ -7,7 +7,7 @@ import Flyout from '../flyout/flyout';
 import { useGetCharacterByIdQuery } from '../../utils/slices/apiSlice';
 import { useTheme } from '../../utils/context/useThemeHook';
 import DetailsPage from '../detailsPage/detailsPage';
-import { SearchPageProps } from '../../utils/interface';
+import { QueryParams, SearchPageProps } from '../../utils/interface';
 
 function SearchPage({
   initialData,
@@ -34,7 +34,13 @@ function SearchPage({
 
   const handlePageChange = useCallback(
     (newPage: number) => {
-      const newQuery = { ...router.query, page: newPage.toString() };
+      const newQuery: QueryParams = {
+        ...router.query,
+        page: newPage.toString(),
+      };
+      if (newQuery.id) {
+        delete newQuery.id;
+      }
       router.push({ pathname: router.pathname, query: newQuery });
     },
     [router]

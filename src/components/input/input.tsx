@@ -3,16 +3,10 @@ import SearchIcon from '../../icons/searchIcon/searchIcon';
 import ThemeBtn from '../themeButton/themeBtn';
 import { useTheme } from '../../utils/context/useThemeHook';
 import { useRouter } from 'next/router';
+import { QueryParams } from '../../utils/interface';
 
 interface InputProps {
   initialSearchQuery: string;
-}
-
-interface QueryParams {
-  search?: string;
-  page?: string;
-  id?: string | string[];
-  [key: string]: string | string[] | undefined;
 }
 
 const DEBOUNCE_DELAY = 500;

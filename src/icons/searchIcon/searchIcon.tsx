@@ -8,6 +8,7 @@ const SearchIcon = (props: IconProps) => {
       viewBox="0 -0.5 25 25"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      style={{ width: '35px', height: '35px', fill: 'black', stroke: 'blue' }}
     >
       <path
         fillRule="evenodd"

@@ -8,6 +8,7 @@ const MoonIcon = (props: IconProps) => {
       viewBox="0 0 26 26"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
+      style={{ width: '35px', height: '35px', fill: 'black', stroke: 'blue' }}
     >
       <g id="SVGRepo_bgCarrier" strokeWidth="0" />
 
