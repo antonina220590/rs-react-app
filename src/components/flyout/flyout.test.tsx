@@ -7,7 +7,7 @@ import * as UseThemeHook from '../../utils/context/useThemeHook';
 import { ThemeContext } from '../../utils/context/useThemeHook';
 import { Provider } from 'react-redux';
 import { makeStore } from '../../services/store';
-import { addToFav, deleteFromFav } from '../../utils/slices/favouritesSlice';
+import { addToFav } from '../../utils/slices/favouritesSlice';
 import Flyout from './flyout';
 
 global.URL.createObjectURL = vi.fn();
@@ -18,8 +18,46 @@ const mockThemeContext = {
 };
 
 const mockCharacters: Character[] = [
-  { id: 1, name: 'Rick' },
-  { id: 2, name: 'Morty' },
+  {
+    id: 1,
+    name: 'Rick',
+    status: '',
+    gender: '',
+    species: '',
+    image: '',
+    type: '',
+    origin: {
+      name: '',
+      url: '',
+    },
+    location: {
+      name: '',
+      url: '',
+    },
+    episode: [],
+    url: '',
+    created: '',
+  },
+  {
+    id: 2,
+    name: 'Morty',
+    status: '',
+    gender: '',
+    species: '',
+    image: '',
+    type: '',
+    origin: {
+      name: '',
+      url: '',
+    },
+    location: {
+      name: '',
+      url: '',
+    },
+    episode: [],
+    url: '',
+    created: '',
+  },
 ];
 
 const renderWithProviders = (component: React.ReactNode) => {
@@ -37,13 +75,13 @@ const renderWithProviders = (component: React.ReactNode) => {
 };
 
 describe('Flyout Component', () => {
-  test.skip('renders Flyout when favourites list is not empty', () => {
+  test('renders Flyout when favourites list is not empty', () => {
     renderWithProviders(<Flyout />);
     expect(screen.getByTestId('flyout')).toBeInTheDocument();
     expect(screen.getByText('2 items added to favourites')).toBeInTheDocument();
   });
 
-  test.skip('does not render Flyout when favourites list is empty', () => {
+  test('does not render Flyout when favourites list is empty', () => {
     const store = makeStore();
     render(
       <Provider store={store}>
@@ -55,7 +93,7 @@ describe('Flyout Component', () => {
     expect(screen.queryByTestId('flyout')).toBeNull();
   });
 
-  test.skip('dispatches deleteFromFav for each item when "Unselect All" is clicked', () => {
+  test('dispatches deleteFromFav for each item when "Unselect All" is clicked', () => {
     const store = makeStore();
     mockCharacters.forEach((char) => {
       store.dispatch(addToFav(char));
@@ -76,7 +114,7 @@ describe('Flyout Component', () => {
     expect(updatedState).toEqual([]);
   });
 
-  test.skip('applies correct theme styles for dark theme', () => {
+  test('applies correct theme styles for dark theme', () => {
     const useThemeSpy = vi.spyOn(UseThemeHook, 'useTheme');
     useThemeSpy.mockReturnValue({ isDarkTheme: true, toggleTheme: vi.fn() });
 
@@ -88,7 +126,7 @@ describe('Flyout Component', () => {
     useThemeSpy.mockRestore();
   });
 
-  test.skip('applies correct theme styles for light theme', () => {
+  test('applies correct theme styles for light theme', () => {
     const useThemeSpy = vi.spyOn(UseThemeHook, 'useTheme');
     useThemeSpy.mockReturnValue({ isDarkTheme: false, toggleTheme: vi.fn() });
 
@@ -100,7 +138,7 @@ describe('Flyout Component', () => {
     useThemeSpy.mockRestore();
   });
 
-  test.skip('renders DownloadBtn', () => {
+  test('renders DownloadBtn', () => {
     renderWithProviders(<Flyout />);
     expect(screen.getByTestId('download')).toBeInTheDocument();
   });

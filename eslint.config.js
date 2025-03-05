@@ -69,7 +69,7 @@ export default defineConfig([
       'eslint.config.js',
       'coverage',
       'node_modules',
-      '**/*.test.tsx',
+      // '**/*.test.tsx',
     ],
   },
 ]);

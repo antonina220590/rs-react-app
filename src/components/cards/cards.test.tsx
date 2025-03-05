@@ -29,6 +29,18 @@ const mockCharacters: Character[] = [
     status: 'Alive',
     gender: 'Male',
     species: 'Human',
+    type: '',
+    origin: {
+      name: '',
+      url: '',
+    },
+    location: {
+      name: '',
+      url: '',
+    },
+    episode: [],
+    url: '',
+    created: '',
   },
   {
     id: 2,
@@ -37,12 +49,24 @@ const mockCharacters: Character[] = [
     status: 'Alive',
     gender: 'Male',
     species: 'Human',
+    type: '',
+    origin: {
+      name: '',
+      url: '',
+    },
+    location: {
+      name: '',
+      url: '',
+    },
+    episode: [],
+    url: '',
+    created: '',
   },
 ];
 
 const renderWithProviders = (
   component: React.ReactNode,
-  onCardClickMock: (id: number) => void
+  _onCardClickMock: (id: number) => void
 ) => {
   const store = makeStore();
   return render(

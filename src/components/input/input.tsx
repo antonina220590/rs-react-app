@@ -23,7 +23,7 @@ function Input({ initialSearchQuery }: InputProps) {
         clearTimeout(timeoutIdRef.current);
       }
 
-      timeoutIdRef.current = setTimeout(() => {
+      timeoutIdRef.current = setTimeout(async () => {
         const trimmedQuery = query.trim();
         const newQuery: QueryParams = {
           ...router.query,
@@ -38,11 +38,7 @@ function Input({ initialSearchQuery }: InputProps) {
 
         delete newQuery.id;
 
-        if (newQuery.id !== undefined) {
-          delete newQuery.id;
-        }
-
-        router.push({ pathname: router.pathname, query: newQuery });
+        await router.push({ pathname: router.pathname, query: newQuery });
       }, DEBOUNCE_DELAY);
     },
     [router]
@@ -69,6 +65,7 @@ function Input({ initialSearchQuery }: InputProps) {
         type="button"
         className={`${isDarkTheme ? 'bg-neutral-300' : 'bg-[#ac3b61]'} ${isDarkTheme ? 'text-black' : 'text-white'} p-3 rounded-[5px] cursor-pointer ${isDarkTheme ? 'hover:bg-white' : 'hover:bg-[#edc7b7]'}`}
         onClick={() => {
+          console.log('Button clicked, input value:', inputRef.current?.value);
           handleSearch(inputRef.current?.value || '');
         }}
         data-testid="searchBtn"

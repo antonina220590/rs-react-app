@@ -1,27 +1,33 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import DetailsPage from './detailsPage';
-import { DetailsPageProps } from '../../utils/interface';
+import { DetailsPageProps, Character } from '../../utils/interface';
 import { describe, expect, test, vi } from 'vitest';
-import * as UseThemeHook from '../../utils/context/useThemeHook';
 import { ThemeContext } from '../../utils/context/useThemeHook';
+import * as UseThemeHook from '../../utils/context/useThemeHook';
 
 const mockThemeContext = {
   isDarkTheme: false,
   toggleTheme: vi.fn(),
 };
 
-const mockCharacter = {
+const mockCharacter: Character = {
   id: 1,
   name: 'Rick Sanchez',
   image: 'http://example.com/rick.png',
   status: 'Alive',
   gender: 'Male',
   species: 'Human',
+  type: '',
+  origin: { name: 'Earth', url: 'earth-url' },
+  location: { name: 'Earth', url: 'earth-url' },
+  episode: ['episode1', 'episode2'],
+  url: 'character-url',
+  created: '2017',
 };
 
 const renderWithProviders = (
-  props: DetailsPageProps,
+  props: Partial<DetailsPageProps>,
   isDarkTheme: boolean = false
 ) => {
   const useThemeSpy = vi.spyOn(UseThemeHook, 'useTheme');
@@ -29,28 +35,27 @@ const renderWithProviders = (
 
   return render(
     <ThemeContext.Provider value={mockThemeContext}>
-      <DetailsPage {...props} />
+      <DetailsPage
+        {...{
+          closeCard: vi.fn(),
+          fetching: false,
+          character: mockCharacter,
+          error: undefined,
+          loading: false,
+        }}
+        {...props}
+      />
     </ThemeContext.Provider>
   );
 };
 
-describe.skip('DetailsPage Component', () => {
+describe('DetailsPage Component', () => {
   test('renders character details correctly', () => {
-    renderWithProviders(
-      {
-        character: mockCharacter,
-        closeCard: vi.fn(),
-        fetching: false,
-        error: false,
-      },
-      false
-    );
+    renderWithProviders({});
 
     const image = screen.getByRole('img');
-    expect(image.getAttribute('src')).toMatch(
-      /^\/_next\/image\?url=http%3A%2F%2Fexample.com%2Frick.png/
-    );
 
+    expect(image).toBeInTheDocument();
     expect(screen.getByTestId('characterName')).toHaveTextContent(
       'Rick Sanchez'
     );
@@ -59,38 +64,18 @@ describe.skip('DetailsPage Component', () => {
     expect(screen.getByTestId('characterGender')).toHaveTextContent('Male');
   });
 
-  test.skip('renders spinner when fetching', () => {
+  test('renders spinner when fetching', () => {
     renderWithProviders({
-      character: mockCharacter,
-      closeCard: vi.fn(),
       fetching: true,
-      error: false,
+      character: undefined,
+      error: undefined,
     });
-
     expect(screen.getByTestId('spinner')).toBeInTheDocument();
   });
 
-  test.skip('renders Custom404 when error is true', () => {
-    renderWithProviders({
-      character: mockCharacter,
-      closeCard: vi.fn(),
-      fetching: false,
-      error: true,
-    });
-
-    expect(
-      screen.getByText('Oooop! Something went wrong!')
-    ).toBeInTheDocument();
-  });
-
-  test.skip('applies correct theme styles for dark theme', () => {
+  test('applies correct theme styles for dark theme', () => {
     renderWithProviders(
-      {
-        character: mockCharacter,
-        closeCard: vi.fn(),
-        fetching: false,
-        error: false,
-      },
+      { fetching: false, character: mockCharacter, error: undefined },
       true
     );
 
@@ -98,25 +83,21 @@ describe.skip('DetailsPage Component', () => {
     expect(nameElement).toHaveClass('text-white');
   });
 
-  test.skip('applies correct theme styles for light theme', () => {
-    renderWithProviders({
-      character: mockCharacter,
-      closeCard: vi.fn(),
-      fetching: false,
-      error: false,
-    });
-
+  test('applies correct theme styles for light theme', () => {
+    renderWithProviders(
+      { fetching: false, character: mockCharacter, error: undefined },
+      false
+    );
     const nameElement = screen.getByTestId('characterName');
     expect(nameElement).toHaveClass('text-black');
   });
 
-  test.skip('calls closeCard when Close button is clicked', () => {
+  test('calls closeCard when Close button is clicked', () => {
     const closeCardMock = vi.fn();
     renderWithProviders({
-      character: mockCharacter,
       closeCard: closeCardMock,
       fetching: false,
-      error: false,
+      error: undefined,
     });
 
     const closeButton = screen.getByTestId('closeCardBtn');

@@ -29,7 +29,7 @@ const renderWithProviders = (
 };
 
 describe('Pagination Component', () => {
-  test.skip('renders pagination controls correctly', () => {
+  test('renders pagination controls correctly', () => {
     renderWithProviders({
       currentPage: 2,
       totalPages: 5,
@@ -41,7 +41,7 @@ describe('Pagination Component', () => {
     expect(screen.getByTestId('nextBtn')).toBeInTheDocument();
   });
 
-  test.skip('disables Prev button on first page', () => {
+  test('disables Prev button on first page', () => {
     renderWithProviders({
       currentPage: 1,
       totalPages: 5,
@@ -51,7 +51,7 @@ describe('Pagination Component', () => {
     expect(screen.getByTestId('prevBtn')).toBeDisabled();
   });
 
-  test.skip('disables Next button on last page', () => {
+  test('disables Next button on last page', () => {
     renderWithProviders({
       currentPage: 5,
       totalPages: 5,
@@ -61,7 +61,7 @@ describe('Pagination Component', () => {
     expect(screen.getByTestId('nextBtn')).toBeDisabled();
   });
 
-  test.skip('calls changePage with correct page on Prev click', () => {
+  test('calls changePage with correct page on Prev click', () => {
     const changePageMock = vi.fn();
     renderWithProviders({
       currentPage: 3,
@@ -75,7 +75,7 @@ describe('Pagination Component', () => {
     expect(changePageMock).toHaveBeenCalledWith(2);
   });
 
-  test.skip('calls changePage with correct page on Next click', () => {
+  test('calls changePage with correct page on Next click', () => {
     const changePageMock = vi.fn();
     renderWithProviders({
       currentPage: 3,
@@ -89,7 +89,7 @@ describe('Pagination Component', () => {
     expect(changePageMock).toHaveBeenCalledWith(4);
   });
 
-  test.skip('applies correct theme styles for dark theme', () => {
+  test('applies correct theme styles for dark theme', () => {
     renderWithProviders(
       {
         currentPage: 2,
@@ -103,7 +103,7 @@ describe('Pagination Component', () => {
     expect(prevButton).toHaveClass('bg-neutral-300');
   });
 
-  test.skip('applies correct theme styles for light theme', () => {
+  test('applies correct theme styles for light theme', () => {
     renderWithProviders({
       currentPage: 2,
       totalPages: 5,

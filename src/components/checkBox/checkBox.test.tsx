@@ -13,6 +13,18 @@ const mockCharacter: Character = {
   status: 'Alive',
   gender: 'Male',
   species: 'Human',
+  type: '',
+  origin: {
+    name: '',
+    url: '',
+  },
+  location: {
+    name: '',
+    url: '',
+  },
+  episode: [],
+  url: '',
+  created: '',
 };
 
 const mockThemeContext = {
@@ -42,20 +54,20 @@ describe('Checkbox Component', () => {
     return render(<Provider store={store}>{component}</Provider>);
   };
 
-  test.skip('renders heart as unchecked initially', () => {
+  test('renders heart as unchecked initially', () => {
     renderWithProviders(<Heart character={mockCharacter} />);
     const heartLabel = screen.getByTestId(`heart-label-${mockCharacter.id}`);
     expect(heartLabel).toHaveClass('text-[#eee2dc]');
     expect(heartLabel).not.toHaveClass('text-[#ac3b61]');
   });
 
-  test.skip('initial state of favourites is empty', () => {
+  test('initial state of favourites is empty', () => {
     const store = makeStore();
     const state = store.getState();
     expect(state.favourites).toEqual([]);
   });
 
-  test.skip('adds character to favourites on click', () => {
+  test('adds character to favourites on click', () => {
     renderWithProviders(<Heart character={mockCharacter} />);
     const heartLabel = screen.getByTestId(`heart-label-${mockCharacter.id}`);
 
@@ -66,7 +78,7 @@ describe('Checkbox Component', () => {
     expect(heartLabel).toHaveClass('text-[#ac3b61]');
   });
 
-  test.skip('removes character from favourites on second click', () => {
+  test('removes character from favourites on second click', () => {
     renderWithProviders(<Heart character={mockCharacter} />);
     const heartLabel = screen.getByTestId(`heart-label-${mockCharacter.id}`);
 
@@ -78,7 +90,7 @@ describe('Checkbox Component', () => {
     expect(heartLabel).not.toHaveClass('text-[#ac3b61]');
   });
 
-  test.skip('stops propagation of click event', () => {
+  test('stops propagation of click event', () => {
     const onClickMock = vi.fn();
     const stopPropagationSpy = vi.spyOn(Event.prototype, 'stopPropagation');
 

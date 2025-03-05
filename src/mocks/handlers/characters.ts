@@ -10,6 +10,18 @@ const mockCharacters: Character[] = [
     species: 'Human',
     gender: 'Male',
     image: 'https://rickandmortyapi.com/api/character/avatar/1.jpeg',
+    type: '',
+    origin: {
+      name: '',
+      url: '',
+    },
+    location: {
+      name: '',
+      url: '',
+    },
+    episode: [],
+    url: '',
+    created: '',
   },
   {
     id: 2,
@@ -18,6 +30,18 @@ const mockCharacters: Character[] = [
     species: 'Human',
     gender: 'Male',
     image: 'https://rickandmortyapi.com/api/character/avatar/2.jpeg',
+    type: '',
+    origin: {
+      name: '',
+      url: '',
+    },
+    location: {
+      name: '',
+      url: '',
+    },
+    episode: [],
+    url: '',
+    created: '',
   },
 ];
 

@@ -59,7 +59,7 @@ export interface InputProps {
 }
 
 export interface DetailsPageProps {
-  character: Character;
+  character: Character | null;
   closeCard: () => void;
   fetching: boolean;
 

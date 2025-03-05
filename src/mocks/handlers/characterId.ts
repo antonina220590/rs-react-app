@@ -9,6 +9,18 @@ const mockCharacter: Character = {
   species: 'Human',
   gender: 'Male',
   image: 'https://rickandmortyapi.com/api/character/avatar/1.jpeg',
+  type: '',
+  origin: {
+    name: '',
+    url: '',
+  },
+  location: {
+    name: '',
+    url: '',
+  },
+  episode: [],
+  url: '',
+  created: '',
 };
 
 const server = setupServer(
