@@ -39,7 +39,6 @@ export default defineConfig([
       'prettier/prettier': 'error',
       '@typescript-eslint/no-explicit-any': 'error',
       'no-inline-comments': 'error',
-      // 'no-unused-vars': 'error',
       '@typescript-eslint/no-unused-vars': [
         'error',
         {
@@ -64,12 +63,6 @@ export default defineConfig([
     },
 
     settings: { react: { version: 'detect' } },
-    ignores: [
-      'dist',
-      'eslint.config.js',
-      'coverage',
-      'node_modules',
-      // '**/*.test.tsx',
-    ],
+    ignores: ['dist', 'eslint.config.js', 'coverage', 'node_modules'],
   },
 ]);

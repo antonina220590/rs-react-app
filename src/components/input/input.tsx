@@ -65,7 +65,6 @@ function Input({ initialSearchQuery }: InputProps) {
         type="button"
         className={`${isDarkTheme ? 'bg-neutral-300' : 'bg-[#ac3b61]'} ${isDarkTheme ? 'text-black' : 'text-white'} p-3 rounded-[5px] cursor-pointer ${isDarkTheme ? 'hover:bg-white' : 'hover:bg-[#edc7b7]'}`}
         onClick={() => {
-          console.log('Button clicked, input value:', inputRef.current?.value);
           handleSearch(inputRef.current?.value || '');
         }}
         data-testid="searchBtn"
