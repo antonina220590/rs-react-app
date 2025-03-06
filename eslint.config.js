@@ -55,7 +55,7 @@ export default defineConfig([
         },
         {
           selector:
-            'LineComment:not(Program > LineComment, :matches([id.name=\"TODO\"],[id.name=\"FIXME\"]))', // Allow // at top level and TODO, FIXME
+            'LineComment:not(Program > LineComment, :matches([id.name=\"TODO\"],[id.name=\"FIXME\"]))',
           message:
             "Comments are discouraged. Explain 'why', not 'what'. Use JSDoc/TSDoc for APIs.",
         },
@@ -63,6 +63,13 @@ export default defineConfig([
     },
 
     settings: { react: { version: 'detect' } },
-    ignores: ['dist', 'eslint.config.js', 'coverage', 'node_modules'],
+    ignores: [
+      'dist',
+      'eslint.config.js',
+      'coverage',
+      'node_modules',
+      'next',
+      '.next',
+    ],
   },
 ]);
