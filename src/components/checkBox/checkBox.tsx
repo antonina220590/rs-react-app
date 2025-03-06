@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Character } from '../../utils/interface';
-import { useAppDispatch, useAppSelector } from '../../services/hooks';
+import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { addToFav, deleteFromFav } from '../../utils/slices/favouritesSlice';
 import { useTheme } from '../../utils/context/useThemeHook';
 

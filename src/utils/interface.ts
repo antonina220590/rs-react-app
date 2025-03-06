@@ -89,3 +89,8 @@ export interface QueryParams {
   id?: string | string[];
   [key: string]: string | string[] | undefined;
 }
+
+export interface ApiError {
+  status: number;
+  message: string;
+}

@@ -1,6 +1,6 @@
 import { render, screen, waitFor, fireEvent } from '@testing-library/react';
 import { Provider } from 'react-redux';
-import { makeStore } from '../../services/store';
+import { makeStore } from '../../store/store';
 import '@testing-library/jest-dom';
 import SearchPage from './searchPage';
 import { vi } from 'vitest';

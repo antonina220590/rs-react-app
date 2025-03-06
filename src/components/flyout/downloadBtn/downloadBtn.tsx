@@ -1,4 +1,4 @@
-import { useAppSelector } from '../../../services/hooks';
+import { useAppSelector } from '../../../store/hooks';
 import { useTheme } from '../../../utils/context/useThemeHook';
 
 export default function DownloadBtn() {

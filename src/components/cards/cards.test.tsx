@@ -6,7 +6,7 @@ import { describe, expect, test, vi } from 'vitest';
 import * as UseThemeHook from '../../utils/context/useThemeHook';
 import { ThemeContext } from '../../utils/context/useThemeHook';
 import { Provider } from 'react-redux';
-import { makeStore } from '../../services/store';
+import { makeStore } from '../../store/store';
 
 vi.mock('next/router', () => ({
   useRouter: () => ({

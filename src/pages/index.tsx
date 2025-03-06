@@ -2,7 +2,7 @@ import SearchPage from '../components/searchPage/searchPage';
 import { useTheme } from '../utils/context/useThemeHook';
 import { GetServerSideProps } from 'next';
 import { ApiResponse, Character } from '../utils/interface';
-import { wrapper } from '../services/store';
+import { wrapper } from '../store/store';
 import { apiSlice } from '../utils/slices/apiSlice';
 import { SerializedError } from '@reduxjs/toolkit';
 import { FetchBaseQueryError } from '@reduxjs/toolkit/query';

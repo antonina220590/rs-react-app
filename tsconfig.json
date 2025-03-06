@@ -15,8 +15,10 @@
     "isolatedModules": true,
     "noImplicitAny": false,
     "jsx": "preserve",
+    "baseUrl": ".",
     "paths": {
-      "tailwindcss": ["./node_modules/tailwindcss/dist/lib.d.mts"]
+      "tailwindcss": ["./node_modules/tailwindcss/dist/lib.d.mts"],
+      "@/*": ["src/*"]
     },
     "plugins": [
       {
