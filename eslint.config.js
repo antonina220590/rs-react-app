@@ -68,8 +68,8 @@ export default defineConfig([
       'eslint.config.js',
       'coverage',
       'node_modules',
-      'next',
-      '.next',
+      'next/',
+      '.next/',
     ],
   },
 ]);
