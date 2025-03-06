@@ -63,13 +63,14 @@ export default defineConfig([
     },
 
     settings: { react: { version: 'detect' } },
+  },
+  {
     ignores: [
       'dist',
       'eslint.config.js',
       'coverage',
       'node_modules',
-      'next/',
-      '.next/',
+      '{.,}next/',
     ],
   },
 ]);
