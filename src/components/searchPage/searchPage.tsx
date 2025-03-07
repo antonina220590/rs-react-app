@@ -1,7 +1,7 @@
 'use client';
 
 import { useCallback } from 'react';
-import Input from '../input/input';
+
 import Cards from '../cards/cards';
 import Pagination from '../pagination/pagination';
 import { useRouter } from 'next/router';
@@ -13,17 +13,17 @@ import { QueryParams, SearchPageProps } from '../../utils/interface';
 
 function SearchPage({ initialData, initialCharacter }: SearchPageProps) {
   const router = useRouter();
-  const { search, page, id } = router.query;
+  const { _search, page, id } = router.query;
 
-  const searchQuery = typeof search === 'string' ? search : '';
+  // const searchQuery = typeof search === 'string' ? search : '';
   const currentPage = typeof page === 'string' ? parseInt(page, 10) : 1;
   const { isDarkTheme } = useTheme();
 
   const {
     data: characterData,
-    error: characterError,
-    isLoading: characterLoading,
-    isFetching,
+    // error: characterError,
+    // isLoading: characterLoading,
+    // isFetching,
   } = useGetCharacterByIdQuery(id ? String(id) : '', {
     skip: !id,
   });
@@ -54,15 +54,15 @@ function SearchPage({ initialData, initialCharacter }: SearchPageProps) {
   //   [router]
   // );
 
-  const closeCard = useCallback(() => {
-    const { id, ...restQuery } = router.query;
+  // const closeCard = useCallback(() => {
+  //   const { id, ...restQuery } = router.query;
 
-    if (typeof id === 'string' || typeof id === 'undefined') {
-      router.push({ pathname: router.pathname, query: restQuery });
-    } else {
-      console.error('Unexpected type for id:', id);
-    }
-  }, [router]);
+  //   if (typeof id === 'string' || typeof id === 'undefined') {
+  //     router.push({ pathname: router.pathname, query: restQuery });
+  //   } else {
+  //     console.error('Unexpected type for id:', id);
+  //   }
+  // }, [router]);
 
   const displayData = initialData;
 
@@ -73,7 +73,7 @@ function SearchPage({ initialData, initialCharacter }: SearchPageProps) {
           isDarkTheme ? 'bg-[#19181A]' : 'bg-[#eee2dc]'
         }`}
       >
-        <Input initialSearchQuery={searchQuery} />
+        {/* <Input initialSearchQuery={searchQuery} /> */}
       </div>
       <div>
         <Pagination
@@ -101,10 +101,10 @@ function SearchPage({ initialData, initialCharacter }: SearchPageProps) {
         {id && displayCharacter && (
           <DetailsPage
             character={displayCharacter}
-            closeCard={closeCard}
-            fetching={isFetching}
-            error={characterError}
-            loading={characterLoading}
+            // closeCard={closeCard}
+            // fetching={isFetching}
+            // error={characterError}
+            // loading={characterLoading}
           />
         )}
       </div>

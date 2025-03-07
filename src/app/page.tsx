@@ -1,7 +1,9 @@
 import { notFound } from 'next/navigation';
 import Cards from '@/components/cards/cards';
-import { getCharacters } from '@/utils/api/api';
+import { getCharacterById, getCharacters } from '@/utils/api/api';
 import InputClient from '@/components/input/input';
+import { Character } from '@/utils/interface';
+import DetailsPage from '@/components/detailsPage/detailsPage';
 interface HomePageSearchParams {
   name?: string | string[];
   page?: string | string[];
@@ -19,24 +21,22 @@ export default async function HomePage({
   const protocol = process.env.NODE_ENV === 'development' ? 'http' : 'https';
   const baseUrl = `${protocol}://${process.env.NEXT_PUBLIC_VERCEL_URL || 'localhost:3000'}`;
 
-  console.log('HomePage: searchParams:', searchParams);
-
   const { data: charactersData, error: charactersError } = await getCharacters({
     searchParams: searchParamsLoaded,
     baseUrl,
   });
-  // const characterId = searchParamsLoaded.id?.at(0);
-  // let _characterData: Character | null = null;
+  const characterId = searchParamsLoaded.id?.at(0);
+  let characterData: Character | null = null;
 
-  // if (characterId) {
-  //   const characterResult = await getCharacterById({
-  //     id: characterId,
-  //     baseUrl,
-  //   });
-  //   if (!characterResult.error) {
-  //     _characterData = characterResult.data;
-  //   }
-  // }
+  if (characterId) {
+    const characterResult = await getCharacterById({
+      id: characterId,
+      baseUrl,
+    });
+    if (!characterResult.error) {
+      characterData = characterResult.data;
+    }
+  }
 
   if (charactersError?.status === 404) {
     return notFound();
@@ -62,7 +62,7 @@ export default async function HomePage({
         <InputClient />
         <Cards characters={characters} />
       </div>
-      {/* {characterData && <DetailsPage character={characterData} />} */}
+      {characterData && <DetailsPage character={characterData} />}
     </div>
   );
 }

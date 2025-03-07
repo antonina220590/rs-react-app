@@ -1,6 +1,6 @@
 import { ReactElement } from 'react';
-import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
-import { SerializedError } from '@reduxjs/toolkit';
+// import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
+// import { SerializedError } from '@reduxjs/toolkit';
 
 export interface Character {
   id: number;
@@ -59,11 +59,11 @@ export interface InputProps {
 
 export interface DetailsPageProps {
   character: Character | null;
-  closeCard: () => void;
-  fetching: boolean;
+  // closeCard: () => void;
+  // fetching: boolean;
 
-  loading: boolean;
-  error: FetchBaseQueryError | SerializedError | undefined;
+  // loading: boolean;
+  // error: FetchBaseQueryError | SerializedError | undefined;
 }
 
 export interface SearchPageProps {

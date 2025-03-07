@@ -8,16 +8,10 @@ const RICK_AND_MORTY_API = 'https://rickandmortyapi.com/api/character';
 type Result<T> = { data: T; error: null } | { data: null; error: ApiError };
 export async function getCharacters({
   searchParams,
-  // baseUrl,
 }: {
   searchParams: { [key: string]: string | string[] | undefined };
   baseUrl: string;
 }): Promise<Result<ApiResponse | ApiEmptyResponse>> {
-  console.log('getCharacters: Received searchParams:', searchParams);
-  // const searchQuery = searchParams.name || '';
-
-  // const currentPage = Number(searchParams.page?.at(0) || '1');
-
   const searchParamsLoaded = await Promise.resolve(searchParams);
 
   const searchQuery = searchParamsLoaded.name
@@ -25,8 +19,6 @@ export async function getCharacters({
       ? searchParamsLoaded.name.join(',')
       : searchParamsLoaded.name
     : '';
-
-  console.log(searchQuery);
   const currentPage = Number(
     searchParamsLoaded.page
       ? Array.isArray(searchParamsLoaded.page)
@@ -42,11 +34,8 @@ export async function getCharacters({
   try {
     const res = await fetch(url, { next: { revalidate: 86400 } });
 
-    console.log('getCharacters: Response status:', res.status);
-
     if (!res.ok) {
       if (res.status === 404) {
-        console.log('getCharacters: API returned 404');
         return { data: { info: {}, results: [] }, error: null };
       }
       const errorText = await res.text();
@@ -61,7 +50,6 @@ export async function getCharacters({
     }
 
     const data: ApiResponse = await res.json();
-    console.log('getCharacters: Data from API route:', data);
     return { data, error: null };
   } catch (error) {
     console.error('getCharacters: Error during fetch or parsing:', error);
@@ -74,12 +62,11 @@ export async function getCharacters({
 
 export async function getCharacterById({
   id,
-  baseUrl,
 }: {
   id: string;
   baseUrl: string;
 }): Promise<Result<Character>> {
-  const url = `${baseUrl}/api/character/${id}`;
+  const url = `${RICK_AND_MORTY_API}/${id}`;
 
   const res = await fetch(url, { next: { revalidate: 86400 } });
 
