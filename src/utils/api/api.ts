@@ -1,25 +1,32 @@
-import { ApiResponse, Character } from '@/utils/interface';
-
+import { ApiEmptyResponse, ApiResponse, Character } from '@/utils/interface';
 interface ApiError {
   status: number;
   message: string;
 }
+const RICK_AND_MORTY_API = 'https://rickandmortyapi.com/api/character';
 
 type Result<T> = { data: T; error: null } | { data: null; error: ApiError };
 export async function getCharacters({
   searchParams,
-  baseUrl,
+  // baseUrl,
 }: {
   searchParams: { [key: string]: string | string[] | undefined };
   baseUrl: string;
-}): Promise<Result<ApiResponse>> {
+}): Promise<Result<ApiResponse | ApiEmptyResponse>> {
+  console.log('getCharacters: Received searchParams:', searchParams);
+  // const searchQuery = searchParams.name || '';
+
+  // const currentPage = Number(searchParams.page?.at(0) || '1');
+
   const searchParamsLoaded = await Promise.resolve(searchParams);
 
-  const searchQuery = searchParamsLoaded.search
-    ? Array.isArray(searchParamsLoaded.search)
-      ? searchParamsLoaded.search.join(',')
-      : searchParamsLoaded.search
+  const searchQuery = searchParamsLoaded.name
+    ? Array.isArray(searchParamsLoaded.name)
+      ? searchParamsLoaded.name.join(',')
+      : searchParamsLoaded.name
     : '';
+
+  console.log(searchQuery);
   const currentPage = Number(
     searchParamsLoaded.page
       ? Array.isArray(searchParamsLoaded.page)
@@ -31,31 +38,38 @@ export async function getCharacters({
   const params = new URLSearchParams();
   if (searchQuery) params.append('name', searchQuery);
   if (currentPage) params.append('page', currentPage.toString());
+  const url = `${RICK_AND_MORTY_API}?${params.toString()}`;
+  try {
+    const res = await fetch(url, { next: { revalidate: 86400 } });
 
-  const url = `${baseUrl}/api/characters?${params.toString()}`;
+    console.log('getCharacters: Response status:', res.status);
 
-  const res = await fetch(url, { next: { revalidate: 86400 } });
-
-  if (!res.ok) {
-    if (res.status === 404) {
+    if (!res.ok) {
+      if (res.status === 404) {
+        console.log('getCharacters: API returned 404');
+        return { data: { info: {}, results: [] }, error: null };
+      }
+      const errorText = await res.text();
+      console.error('Error fetching characters:', res.status, errorText);
       return {
         data: null,
-        error: { status: 404, message: 'Characters not found' },
+        error: {
+          status: res.status,
+          message: `Error fetching characters: ${errorText}`,
+        },
       };
     }
-    const errorText = await res.text();
-    console.error('Error fetching characters:', res.status, errorText);
+
+    const data: ApiResponse = await res.json();
+    console.log('getCharacters: Data from API route:', data);
+    return { data, error: null };
+  } catch (error) {
+    console.error('getCharacters: Error during fetch or parsing:', error);
     return {
       data: null,
-      error: {
-        status: res.status,
-        message: `Error fetching characters: ${errorText}`,
-      },
+      error: { status: 500, message: 'Fetch or parsing error' },
     };
   }
-
-  const data: ApiResponse = await res.json();
-  return { data, error: null };
 }
 
 export async function getCharacterById({
@@ -65,7 +79,7 @@ export async function getCharacterById({
   id: string;
   baseUrl: string;
 }): Promise<Result<Character>> {
-  const url = `${baseUrl}/api/characters/${id}`;
+  const url = `${baseUrl}/api/character/${id}`;
 
   const res = await fetch(url, { next: { revalidate: 86400 } });
 

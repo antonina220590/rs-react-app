@@ -1,3 +1,4 @@
+import { ApiResponse } from '@/utils/interface';
 import { NextResponse } from 'next/server';
 
 const API_BASE_URL = 'https://rickandmortyapi.com/api/character';
@@ -16,20 +17,21 @@ export async function GET(request: Request) {
 
     if (!res.ok) {
       if (res.status === 404) {
-        return NextResponse.json(
-          { message: 'Characters not found' },
-          { status: 404 }
-        );
+        return NextResponse.json({ info: {}, results: [] }, { status: 200 });
       }
-      throw new Error(`API Error: Status ${res.status}`);
+      const errorText = await res.text();
+      return NextResponse.json(
+        { message: `Failed to fetch characters: ${errorText}` },
+        { status: res.status }
+      );
     }
 
-    const data = await res.json();
+    const data: ApiResponse = await res.json();
     return NextResponse.json(data);
   } catch (error) {
-    console.error('Error in API route:', error);
+    const errorMessage = error instanceof Error ? error.message : String(error);
     return NextResponse.json(
-      { message: 'Failed to fetch characters' },
+      { message: `Failed to fetch characters: ${errorMessage}` },
       { status: 500 }
     );
   }

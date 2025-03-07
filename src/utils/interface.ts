@@ -93,3 +93,8 @@ export interface ApiError {
   status: number;
   message: string;
 }
+
+export interface ApiEmptyResponse {
+  info: {};
+  results: [];
+}

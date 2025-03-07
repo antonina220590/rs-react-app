@@ -8,6 +8,7 @@ import Link from 'next/link';
 
 function Cards({ characters }: CardsProps) {
   const { isDarkTheme } = useTheme();
+  console.log('CardList: characters:', characters);
 
   return (
     <div className="flex flex-wrap gap-20 m-7 p-10 justify-evenly">
