@@ -1,3 +1,4 @@
+'use client';
 import { useAppSelector } from '../../../store/hooks';
 import { useTheme } from '../../../utils/context/useThemeHook';
 

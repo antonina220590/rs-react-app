@@ -1,3 +1,5 @@
+'use client';
+
 import { useEffect, useRef, useCallback } from 'react';
 import SearchIcon from '../../icons/searchIcon/searchIcon';
 import ThemeBtn from '../themeButton/themeBtn';

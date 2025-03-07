@@ -1,3 +1,5 @@
+'use client';
+
 import { useCallback } from 'react';
 import Input from '../input/input';
 import Cards from '../cards/cards';
@@ -42,15 +44,15 @@ function SearchPage({ initialData, initialCharacter }: SearchPageProps) {
     [router]
   );
 
-  const handleCardClick = useCallback(
-    (charId: number) => {
-      router.push({
-        pathname: router.pathname,
-        query: { ...router.query, id: charId },
-      });
-    },
-    [router]
-  );
+  // const handleCardClick = useCallback(
+  //   (charId: number) => {
+  //     router.push({
+  //       pathname: router.pathname,
+  //       query: { ...router.query, id: charId },
+  //     });
+  //   },
+  //   [router]
+  // );
 
   const closeCard = useCallback(() => {
     const { id, ...restQuery } = router.query;
@@ -91,7 +93,7 @@ function SearchPage({ initialData, initialCharacter }: SearchPageProps) {
             <div className="w-50% flex flex-wrap">
               <Cards
                 characters={displayData.results}
-                onCardClick={handleCardClick}
+                // onCardClick={handleCardClick}
               />
             </div>
           </div>

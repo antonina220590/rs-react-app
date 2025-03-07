@@ -1,3 +1,5 @@
+'use client';
+
 function Custom404() {
   const refreshPage = () => {
     window.location.replace('/');

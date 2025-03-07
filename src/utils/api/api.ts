@@ -1,24 +1,40 @@
-import { ApiError, ApiResponse, Character } from '@/utils/interface';
+import { ApiResponse, Character } from '@/utils/interface';
+
+interface ApiError {
+  status: number;
+  message: string;
+}
 
 type Result<T> = { data: T; error: null } | { data: null; error: ApiError };
-
 export async function getCharacters({
-  searchQuery,
-  currentPage,
+  searchParams,
+  baseUrl,
 }: {
-  searchQuery?: string;
-  currentPage?: number;
+  searchParams: { [key: string]: string | string[] | undefined };
+  baseUrl: string;
 }): Promise<Result<ApiResponse>> {
+  const searchParamsLoaded = await Promise.resolve(searchParams);
+
+  const searchQuery = searchParamsLoaded.search
+    ? Array.isArray(searchParamsLoaded.search)
+      ? searchParamsLoaded.search.join(',')
+      : searchParamsLoaded.search
+    : '';
+  const currentPage = Number(
+    searchParamsLoaded.page
+      ? Array.isArray(searchParamsLoaded.page)
+        ? searchParamsLoaded.page[0]
+        : searchParamsLoaded.page
+      : '1'
+  );
+
   const params = new URLSearchParams();
   if (searchQuery) params.append('name', searchQuery);
   if (currentPage) params.append('page', currentPage.toString());
-  const url = `/api/characters?${params.toString()}`;
 
-  const res = await fetch(url, {
-    next: {
-      revalidate: 86400,
-    },
-  });
+  const url = `${baseUrl}/api/characters?${params.toString()}`;
+
+  const res = await fetch(url, { next: { revalidate: 86400 } });
 
   if (!res.ok) {
     if (res.status === 404) {
@@ -42,16 +58,16 @@ export async function getCharacters({
   return { data, error: null };
 }
 
-export async function getCharacterById(
-  id: string | number
-): Promise<Result<Character>> {
-  const url = `/api/characters/${id}`;
+export async function getCharacterById({
+  id,
+  baseUrl,
+}: {
+  id: string;
+  baseUrl: string;
+}): Promise<Result<Character>> {
+  const url = `${baseUrl}/api/characters/${id}`;
 
-  const res = await fetch(url, {
-    next: {
-      revalidate: 86400,
-    },
-  });
+  const res = await fetch(url, { next: { revalidate: 86400 } });
 
   if (!res.ok) {
     if (res.status === 404) {

@@ -1,3 +1,5 @@
+'use client';
+
 import { useAppDispatch, useAppSelector } from '../../store/hooks';
 import { useTheme } from '../../utils/context/useThemeHook';
 import { Character } from '../../utils/interface';

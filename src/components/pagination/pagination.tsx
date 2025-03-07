@@ -1,3 +1,5 @@
+'use client';
+
 import { useTheme } from '../../utils/context/useThemeHook';
 import { PaginationProps } from '../../utils/interface';
 
