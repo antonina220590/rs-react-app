@@ -2,7 +2,7 @@ import { fireEvent, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom';
 
 import { describe, it, expect, vi } from 'vitest';
-import Error404Page from '../app/404/404';
+import Error404Page from '../app/not-found';
 
 describe('Error404Page', () => {
   it('renders the 404 error page with the correct content', () => {

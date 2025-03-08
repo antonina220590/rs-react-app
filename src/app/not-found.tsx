@@ -1,6 +1,6 @@
 'use client';
 
-function Custom404() {
+function NotFoundPage() {
   const refreshPage = () => {
     window.location.replace('/');
   };
@@ -29,4 +29,4 @@ function Custom404() {
   );
 }
 
-export default Custom404;
+export default NotFoundPage;

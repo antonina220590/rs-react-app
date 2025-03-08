@@ -5,21 +5,21 @@ import Cards from '../cards/cards';
 import Flyout from '../flyout/flyout';
 import InputClient from '../input/input';
 import Pagination from '../pagination/pagination';
-import DetailsPage from '../detailsPage/detailsPage';
+// import DetailsPage from '../detailsPage/detailsPage';
 import { useTheme } from '../../utils/context/useThemeHook';
 
 interface CardListProps {
   currentPage: number;
   totalPages: number;
   characters: Character[];
-  characterData: Character | null;
+  // characterData: Character | null;
 }
 
 export default function CardsList({
   currentPage,
   totalPages,
   characters,
-  characterData,
+  // characterData,
 }: CardListProps) {
   const { isDarkTheme } = useTheme();
   return (
@@ -50,7 +50,6 @@ export default function CardsList({
             </div>
           </div>
         </div>
-        {characterData && <DetailsPage character={characterData} />}
       </div>
       <Flyout />
     </div>

@@ -33,7 +33,6 @@ export async function getCharacters({
   const url = `${RICK_AND_MORTY_API}?${params.toString()}`;
   try {
     const res = await fetch(url);
-
     if (!res.ok) {
       if (res.status === 404) {
         return { data: { info: {}, results: [] }, error: null };
@@ -65,6 +64,7 @@ export async function getCharacterById({
 }: {
   id: string;
 }): Promise<Result<Character>> {
+  await new Promise((resolve) => setTimeout(resolve, 2000));
   const url = `${RICK_AND_MORTY_API}/${id}`;
 
   const res = await fetch(url);

@@ -24,9 +24,11 @@ function DetailsPage({
   }, [router, searchParams]);
 
   return (
-    <div className="flex flex-wrap gap-20 pl-[10px] pr-[10px] justify-evenly flex-1">
+    <div
+      className={`flex flex-wrap gap-20 pl-[10px] pr-[10px] justify-evenly flex-1 ${isDarkTheme ? 'bg-[#474b4f]' : 'bg-[#bab2b5]'}`}
+    >
       <div
-        className={`flex flex-col items-center w-[500px] h-[710px] ${isDarkTheme ? 'bg-[#19181A]' : 'bg-[#eee2dc]'}  rounded-xl sticky top-0`}
+        className={`flex flex-col items-center w-[500px] h-[710px] ${isDarkTheme ? 'bg-[#19181A]' : 'bg-[#eee2dc]'}  rounded-xl sticky top-10`}
       >
         {/* {fetching || loading ? ( */}
         {/* <div className="flex justify-center items-center h-full">
