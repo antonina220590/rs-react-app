@@ -1,24 +1,49 @@
 'use client';
 
+import { useRouter, useSearchParams } from 'next/navigation';
 import { useTheme } from '../../utils/context/useThemeHook';
 import { PaginationProps } from '../../utils/interface';
+import { useCallback } from 'react';
 
 export default function Pagination({
   currentPage,
   totalPages,
-  changePage,
 }: PaginationProps) {
   const { isDarkTheme } = useTheme();
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const createQueryString = useCallback(
+    (name: string, value: string) => {
+      const params = new URLSearchParams(searchParams);
+
+      params.set(name, value);
+
+      if (name === 'page' && !value) {
+        params.delete(name);
+      }
+      params.delete('id');
+      return params.toString();
+    },
+    [searchParams]
+  );
+
+  const changePage = useCallback(
+    (newPage: number) => {
+      if (newPage >= 1 && newPage <= totalPages) {
+        const newUrl = `/?${createQueryString('page', newPage.toString())}`;
+        router.push(newUrl);
+      }
+    },
+    [router, totalPages, createQueryString]
+  );
+
   const handlePrevClick = () => {
-    if (currentPage > 1) {
-      changePage(currentPage - 1);
-    }
+    changePage(currentPage - 1);
   };
 
   const handleNextClick = () => {
-    if (currentPage < totalPages) {
-      changePage(currentPage + 1);
-    }
+    changePage(currentPage + 1);
   };
   return (
     <div className="flex gap-14">

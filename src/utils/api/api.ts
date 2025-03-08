@@ -24,7 +24,7 @@ export async function getCharacters({
       ? Array.isArray(searchParamsLoaded.page)
         ? searchParamsLoaded.page[0]
         : searchParamsLoaded.page
-      : '1'
+      : 1
   );
 
   const params = new URLSearchParams();
@@ -32,7 +32,7 @@ export async function getCharacters({
   if (currentPage) params.append('page', currentPage.toString());
   const url = `${RICK_AND_MORTY_API}?${params.toString()}`;
   try {
-    const res = await fetch(url, { next: { revalidate: 86400 } });
+    const res = await fetch(url);
 
     if (!res.ok) {
       if (res.status === 404) {
@@ -64,11 +64,10 @@ export async function getCharacterById({
   id,
 }: {
   id: string;
-  baseUrl: string;
 }): Promise<Result<Character>> {
   const url = `${RICK_AND_MORTY_API}/${id}`;
 
-  const res = await fetch(url, { next: { revalidate: 86400 } });
+  const res = await fetch(url);
 
   if (!res.ok) {
     if (res.status === 404) {

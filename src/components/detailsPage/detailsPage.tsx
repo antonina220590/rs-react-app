@@ -5,7 +5,6 @@ import { useTheme } from '../../utils/context/useThemeHook';
 import { DetailsPageProps } from '../../utils/interface';
 import { useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
-// import Spinner from '../spinner/spinners';
 
 function DetailsPage({
   character,

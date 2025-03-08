@@ -50,7 +50,6 @@ export interface IState {
 export interface PaginationProps {
   currentPage: number;
   totalPages: number;
-  changePage: (_page: number) => void;
 }
 
 export interface InputProps {
@@ -59,7 +58,7 @@ export interface InputProps {
 
 export interface DetailsPageProps {
   character: Character | null;
-  // closeCard: () => void;
+
   // fetching: boolean;
 
   // loading: boolean;
@@ -98,3 +97,10 @@ export interface ApiEmptyResponse {
   info: {};
   results: [];
 }
+
+export type Info = {
+  count: number;
+  pages: number;
+  next: string | null;
+  prev: string | null;
+};
