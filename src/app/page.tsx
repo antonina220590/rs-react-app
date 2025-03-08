@@ -1,12 +1,7 @@
 import { notFound } from 'next/navigation';
-import Cards from '@/components/cards/cards';
 import { getCharacterById, getCharacters } from '@/utils/api/api';
-import InputClient from '@/components/input/input';
 import { Character, Info } from '@/utils/interface';
-import DetailsPage from '@/components/detailsPage/detailsPage';
-import Pagination from '@/components/pagination/pagination';
-import { Suspense } from 'react';
-import Flyout from '@/components/flyout/flyout';
+import CardList from '@/components/cardList/cardList';
 interface HomePageSearchParams {
   name?: string | string[];
   page?: string;
@@ -60,22 +55,14 @@ export default async function HomePage({
   }
 
   const { results: characters, info } = charactersData;
-
   const totalPages = (info as Info)?.pages ?? 1;
 
   return (
-    <div className="flex">
-      <div className="flex-1 border-r p-4 overflow-y-auto">
-        <InputClient />
-
-        <Pagination currentPage={currentPage} totalPages={totalPages} />
-
-        <Suspense fallback={<div>Loading...</div>}>
-          <Cards characters={characters} />
-        </Suspense>
-      </div>
-      {characterData && <DetailsPage character={characterData} />}
-      <Flyout />
-    </div>
+    <CardList
+      currentPage={currentPage}
+      totalPages={totalPages}
+      characters={characters}
+      characterData={characterData}
+    />
   );
 }
