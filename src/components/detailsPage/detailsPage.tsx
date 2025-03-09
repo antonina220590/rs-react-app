@@ -6,12 +6,7 @@ import { DetailsPageProps } from '../../utils/interface';
 import { useCallback } from 'react';
 import { useRouter, useSearchParams } from 'next/navigation';
 
-function DetailsPage({
-  character,
-  // closeCard,
-  // fetching,
-  // loading,
-}: DetailsPageProps) {
+function DetailsPage({ character }: DetailsPageProps) {
   const { isDarkTheme } = useTheme();
 
   const router = useRouter();
@@ -30,11 +25,6 @@ function DetailsPage({
       <div
         className={`flex flex-col items-center w-[500px] h-[710px] ${isDarkTheme ? 'bg-[#19181A]' : 'bg-[#eee2dc]'}  rounded-xl sticky top-10`}
       >
-        {/* {fetching || loading ? ( */}
-        {/* <div className="flex justify-center items-center h-full">
-            <Spinner />
-          </div>
-        ) : ( */}
         <>
           <div className="pb-[10px] pt-[20px]">
             {character?.image ? (
@@ -91,7 +81,6 @@ function DetailsPage({
             Close
           </button>
         </>
-        {/* )} */}
       </div>
     </div>
   );

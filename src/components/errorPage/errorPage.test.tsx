@@ -4,34 +4,20 @@ import '@testing-library/jest-dom';
 import { describe, expect, test } from 'vitest';
 import ErrorPage from './errorPage';
 
-describe.skip('ErrorPage Component', () => {
+describe('ErrorPage Component', () => {
   test('renders error message correctly', () => {
-    const errorMessage = 'This is a test error message.';
-    render(<ErrorPage message={errorMessage} />);
+    render(<ErrorPage />);
 
-    const errorElement = screen.getByText(`Error: ${errorMessage}`);
+    const errorElement = screen.getByText('Error: character not found!');
     expect(errorElement).toBeInTheDocument();
-  });
-
-  test('renders with different error message', () => {
-    const errorMessage = 'Another error occurred.';
-    render(<ErrorPage message={errorMessage} />);
-
-    const errorElement = screen.getByText(`Error: ${errorMessage}`);
-    expect(errorElement).toBeInTheDocument();
-  });
-
-  test('renders error message with special characters', () => {
-    const errorMessage = 'Error with <special> & "characters".';
-    render(<ErrorPage message={errorMessage} />);
-    expect(screen.getByText(`Error: ${errorMessage}`)).toBeInTheDocument();
+    expect(errorElement).toHaveClass('text-4xl');
   });
 
   test('checks for correct background styles', () => {
-    const errorMessage = 'Test Error';
-    render(<ErrorPage message={errorMessage} />);
+    render(<ErrorPage />);
 
-    const container = screen.getByText(`Error: ${errorMessage}`).parentElement;
+    const container = screen.getByText('Error: character not found!')
+      .parentElement?.parentElement;
     expect(container).toHaveClass('min-h-screen');
     expect(container).toHaveClass('justify-center');
     expect(container).toHaveClass('flex');
@@ -39,5 +25,23 @@ describe.skip('ErrorPage Component', () => {
     expect(container).toHaveClass('items-center');
     expect(container).toHaveClass('bg-[#bab2b5]');
     expect(container).toHaveClass('bg-cover');
+  });
+
+  test('button has correct styles and text', () => {
+    render(<ErrorPage />);
+    const button = screen.getByRole('button', { name: /GET ME HOME/i });
+    expect(button).toBeInTheDocument();
+    expect(button).toHaveTextContent('GET ME HOME');
+    expect(button).toHaveClass('bg-[#f96e4d]');
+    expect(button).toHaveClass('cursor-pointer');
+    expect(button).toHaveClass('border-0');
+    expect(button).toHaveClass('px-6');
+    expect(button).toHaveClass('py-3');
+    expect(button).toHaveClass('rounded-full');
+    expect(button).toHaveClass('text-white');
+    expect(button).toHaveClass('font-bold');
+    expect(button).toHaveClass('mt-4');
+    expect(button).toHaveClass('hover:bg-[#e65c3f]');
+    expect(button).toHaveClass('focus:outline-none');
   });
 });
