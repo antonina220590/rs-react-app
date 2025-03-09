@@ -54,7 +54,7 @@ describe('Checkbox Component', () => {
     return render(<Provider store={store}>{component}</Provider>);
   };
 
-  test.skip('renders heart as unchecked initially', () => {
+  test('renders heart as unchecked initially', () => {
     renderWithProviders(<Heart character={mockCharacter} />);
     const heartLabel = screen.getByTestId(`heart-label-${mockCharacter.id}`);
     expect(heartLabel).toHaveClass('text-[#eee2dc]');

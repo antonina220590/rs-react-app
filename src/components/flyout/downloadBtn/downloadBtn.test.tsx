@@ -91,19 +91,19 @@ describe('DownloadBtn Component', () => {
     vi.clearAllMocks();
   });
 
-  test.skip('renders without crashing', () => {
+  test('renders without crashing', () => {
     renderWithProviders(<DownloadBtn />);
     expect(screen.getByTestId('download')).toBeInTheDocument();
   });
 
-  test.skip('applies correct classes based on light theme', () => {
+  test('applies correct classes based on light theme', () => {
     renderWithProviders(<DownloadBtn />);
     const button = screen.getByTestId('download');
     expect(button).toHaveClass('bg-[#ac3b61]');
     expect(button).toHaveClass('text-white');
   });
 
-  test.skip('applies correct classes based on dark theme', () => {
+  test('applies correct classes based on dark theme', () => {
     const useThemeSpy = vi.spyOn(UseThemeHook, 'useTheme');
     useThemeSpy.mockReturnValue({ isDarkTheme: true, toggleTheme: vi.fn() });
     renderWithProviders(<DownloadBtn />);
@@ -113,13 +113,13 @@ describe('DownloadBtn Component', () => {
     useThemeSpy.mockRestore();
   });
 
-  test.skip('creates download link with correct filename', () => {
+  test('creates download link with correct filename', () => {
     renderWithProviders(<DownloadBtn />, mockCharacters);
     const button = screen.getByTestId('download');
     expect(button).toHaveAttribute('download', '2_characters.csv');
   });
 
-  test.skip('creates CSV content correctly and href attribute is set correctly', async () => {
+  test('creates CSV content correctly and href attribute is set correctly', async () => {
     const createObjectURLMock = vi.fn().mockReturnValue('mocked-url');
     global.URL.createObjectURL = createObjectURLMock;
 
@@ -146,13 +146,13 @@ describe('DownloadBtn Component', () => {
     expect(button).toHaveAttribute('download', '2_characters.csv');
   });
 
-  test.skip('prevents downloading if href is not set (empty favorites)', async () => {
+  test('prevents downloading if href is not set (empty favorites)', async () => {
     const createObjectURLMock = vi.fn().mockReturnValue('mocked-url');
     global.URL.createObjectURL = createObjectURLMock;
     renderWithProviders(<DownloadBtn />, []);
     expect(createObjectURLMock).not.toHaveBeenCalled();
   });
-  test.skip('handles different data types in favorites', async () => {
+  test('handles different data types in favorites', async () => {
     const mixedData: Character[] = [
       {
         id: 1,
