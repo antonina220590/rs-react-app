@@ -3,10 +3,7 @@ import { getCharacterById, getCharacters } from '@/utils/api/api';
 import { Character, Info, Result } from '@/utils/interface';
 import CardList from '@/components/cardList/cardList';
 import ErrorPage from '@/components/errorPage/errorPage';
-import { Suspense } from 'react';
-import Loader from '@/components/loader/loader';
 import DetailsPage from '@/components/detailsPage/detailsPage';
-import DetailsSpinner from '@/components/detailsSpinner/detailsSpinner';
 
 interface HomePageSearchParams {
   name?: string | string[];
@@ -15,40 +12,23 @@ interface HomePageSearchParams {
   [key: string]: string | string[] | undefined;
 }
 
-export default function HomePage({
-  searchParams,
-}: {
-  searchParams: { [key: string]: string | string[] | undefined };
-}) {
-  return (
-    <Suspense fallback={<Loader />}>
-      <HomePageContent searchParams={searchParams} />
-    </Suspense>
-  );
-}
+function DetailsPageWrapper({ result }: { result: Result<Character> | null }) {
+  if (!result) {
+    return null;
+  }
 
-async function DetailsPageWrapper({
-  promise,
-}: {
-  promise: Promise<Result<Character>>;
-}) {
-  'use client';
-  const characterResult = await promise;
-
-  if (characterResult.error) {
-    if (characterResult.error.status === 404) {
+  if (result.error) {
+    if (result.error.status === 404) {
       notFound();
     } else {
-      return (
-        <div>Error fetching character: {characterResult.error.message}</div>
-      );
+      return <div>Error fetching character: {result.error.message}</div>;
     }
   }
 
-  return <DetailsPage character={characterResult.data} />;
+  return <DetailsPage character={result.data} />;
 }
 
-async function HomePageContent({
+export default async function HomePage({
   searchParams,
 }: {
   searchParams: HomePageSearchParams;
@@ -61,17 +41,18 @@ async function HomePageContent({
     typeof searchParamsLoaded.page?.[0] === 'string'
       ? parseInt(searchParamsLoaded.page, 10)
       : 1;
-  const { data: charactersData, error: charactersError } = await getCharacters({
-    searchParams: { ...searchParamsLoaded, page: currentPage.toString() },
-    baseUrl,
-  });
 
   const characterId = searchParamsLoaded.id;
-  let characterPromise: Promise<Result<Character>> | null = null;
 
-  if (characterId) {
-    characterPromise = getCharacterById({ id: characterId });
-  }
+  const [charactersResult, characterResult] = await Promise.all([
+    getCharacters({
+      searchParams: { ...searchParamsLoaded, page: currentPage.toString() },
+      baseUrl,
+    }),
+    characterId ? getCharacterById({ id: characterId }) : Promise.resolve(null),
+  ]);
+
+  const { data: charactersData, error: charactersError } = charactersResult;
 
   if (!charactersData || !('results' in charactersData)) {
     return <div>Loading...</div>;
@@ -95,12 +76,7 @@ async function HomePageContent({
         totalPages={totalPages}
         characters={characters}
       />
-
-      {characterPromise && (
-        <Suspense fallback={<DetailsSpinner />}>
-          <DetailsPageWrapper promise={characterPromise} />
-        </Suspense>
-      )}
+      {characterId && <DetailsPageWrapper result={characterResult} />}
     </div>
   );
 }

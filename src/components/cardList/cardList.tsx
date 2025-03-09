@@ -12,19 +12,17 @@ interface CardListProps {
   currentPage: number;
   totalPages: number;
   characters: Character[];
-  // characterData: Character | null;
 }
 
 export default function CardsList({
   currentPage,
   totalPages,
   characters,
-  // characterData,
 }: CardListProps) {
   const { isDarkTheme } = useTheme();
   return (
     <div
-      className={`min-h-screen flex flex-col items-center ${
+      className={`min-h-screen flex w-full flex-col items-center ${
         isDarkTheme ? 'bg-[#474b4f]' : 'bg-[#bab2b5]'
       } bg-cover`}
     >
@@ -45,7 +43,7 @@ export default function CardsList({
           } backdrop-blur-2xl rounded-xl mb-8 gap-15 justify-center items-center flex flex-wrap flex-row`}
         >
           <div className="flex">
-            <div className="w-50% flex flex-wrap">
+            <div className="w-100% flex flex-wrap">
               <Cards characters={characters} />
             </div>
           </div>
