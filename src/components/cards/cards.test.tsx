@@ -83,13 +83,6 @@ describe('Cards Component', () => {
     prefetch: vi.fn(),
     ...overrides,
   });
-  // const pushMock = vi.fn();
-  // (useRouter as MockedFunction<typeof useRouter>).mockReturnValue({
-  //   push: pushMock,
-  // } as Pick<AppRouterInstance, 'push'>);
-  // (useSearchParams as any).mockReturnValue(new URLSearchParams());
-
-  // renderWithProviders(<Cards characters={mockCharacters} />);
   test('renders character cards correctly', async () => {
     const pushMock = vi.fn();
     const mockRouter = createMockRouter({ push: pushMock });
@@ -104,7 +97,6 @@ describe('Cards Component', () => {
         keys: () => searchParams.keys(),
         values: () => searchParams.values(),
         toString: () => searchParams.toString(),
-        // Исправленный forEach: теперь 3 аргумента
         forEach: (
           callback: (
             value: string,
@@ -291,8 +283,6 @@ describe('Cards Component', () => {
 
     const initialSearchParams = new URLSearchParams();
     initialSearchParams.set('page', '2');
-
-    // Мокаем useSearchParams, возвращая объект с методами, работающими с initialSearchParams
     (useSearchParams as MockedFunction<typeof useSearchParams>).mockReturnValue(
       {
         get: (name: string) => initialSearchParams.get(name),

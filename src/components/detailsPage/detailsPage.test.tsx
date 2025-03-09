@@ -195,7 +195,6 @@ describe('DetailsPage Component', () => {
     const pushMock = vi.fn();
     const mockRouter = createMockRouter({ push: pushMock });
     (useRouter as MockedFunction<typeof useRouter>).mockReturnValue(mockRouter);
-    // Параметры не важны в этом тесте
     const searchParams = new URLSearchParams();
     (useSearchParams as MockedFunction<typeof useSearchParams>).mockReturnValue(
       {
