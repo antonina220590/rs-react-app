@@ -1,6 +1,6 @@
 import { combineReducers, configureStore } from '@reduxjs/toolkit';
-import favouritesSlice from '@/utils/slices/favouritesSlice';
-import { apiSlice } from '@/utils/slices/apiSlice';
+import favouritesSlice from '../utils/slices/favouritesSlice';
+import { apiSlice } from '../utils/slices/apiSlice';
 
 const rootReducer = combineReducers({
   favourites: favouritesSlice,

@@ -5,7 +5,6 @@ import Cards from '../cards/cards';
 import Flyout from '../flyout/flyout';
 import InputClient from '../input/input';
 import Pagination from '../pagination/pagination';
-// import DetailsPage from '../detailsPage/detailsPage';
 import { useTheme } from '../../utils/context/useThemeHook';
 
 interface CardListProps {
