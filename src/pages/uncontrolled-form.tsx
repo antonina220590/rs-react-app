@@ -1,3 +1,5 @@
 export default function UncontolledFormPage() {
-  return <div>Hi! I am your Uncontolled Form Page</div>;
+  return (
+    <div className="font-['Roboto']">Hi! I am your Uncontolled Form Page</div>
+  );
 }
