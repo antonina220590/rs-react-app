@@ -6,12 +6,12 @@ export default function Pagination({
   totalPages,
   changePage,
 }: PaginationProps) {
+  const { isDarkTheme } = useTheme();
   const handlePrevClick = () => {
     if (currentPage > 1) {
       changePage(currentPage - 1);
     }
   };
-  const { isDarkTheme } = useTheme();
 
   const handleNextClick = () => {
     if (currentPage < totalPages) {

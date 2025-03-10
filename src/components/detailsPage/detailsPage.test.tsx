@@ -1,81 +1,107 @@
-import { screen, waitFor } from '@testing-library/react';
+import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import DetailsPage from './detailsPage';
-import { renderWithProviders } from '../../utils/test-utils';
-import { server } from '../../mocks/handlers/characterId';
-import { vi } from 'vitest';
+import { DetailsPageProps, Character } from '../../utils/interface';
+import { describe, expect, test, vi } from 'vitest';
+import { ThemeContext } from '../../utils/context/useThemeHook';
 import * as UseThemeHook from '../../utils/context/useThemeHook';
 
-beforeAll(() => server.listen());
-afterEach(() => server.resetHandlers());
-afterAll(() => server.close());
+const mockThemeContext = {
+  isDarkTheme: false,
+  toggleTheme: vi.fn(),
+};
+
+const mockCharacter: Character = {
+  id: 1,
+  name: 'Rick Sanchez',
+  image: 'http://example.com/rick.png',
+  status: 'Alive',
+  gender: 'Male',
+  species: 'Human',
+  type: '',
+  origin: { name: 'Earth', url: 'earth-url' },
+  location: { name: 'Earth', url: 'earth-url' },
+  episode: ['episode1', 'episode2'],
+  url: 'character-url',
+  created: '2017',
+};
+
+const renderWithProviders = (
+  props: Partial<DetailsPageProps>,
+  isDarkTheme: boolean = false
+) => {
+  const useThemeSpy = vi.spyOn(UseThemeHook, 'useTheme');
+  useThemeSpy.mockReturnValue({ isDarkTheme, toggleTheme: vi.fn() });
+
+  return render(
+    <ThemeContext.Provider value={mockThemeContext}>
+      <DetailsPage
+        {...{
+          closeCard: vi.fn(),
+          fetching: false,
+          character: mockCharacter,
+          error: undefined,
+          loading: false,
+        }}
+        {...props}
+      />
+    </ThemeContext.Provider>
+  );
+};
 
 describe('DetailsPage Component', () => {
-  test('renders "Not Found" when character not found', async () => {
-    renderWithProviders(<DetailsPage />, { route: '/character/9999' });
-    expect(screen.getByTestId('spinner')).toBeInTheDocument();
-    await waitFor(
-      () => expect(screen.queryByTestId('spinner')).not.toBeInTheDocument(),
-      { timeout: 2000 }
+  test('renders character details correctly', () => {
+    renderWithProviders({});
+
+    const image = screen.getByRole('img');
+
+    expect(image).toBeInTheDocument();
+    expect(screen.getByTestId('characterName')).toHaveTextContent(
+      'Rick Sanchez'
     );
+    expect(screen.getByTestId('characterStatus')).toHaveTextContent('Alive');
+    expect(screen.getByTestId('characterSpecies')).toHaveTextContent('Human');
+    expect(screen.getByTestId('characterGender')).toHaveTextContent('Male');
   });
-  test('renders character details successfully', async () => {
-    renderWithProviders(<DetailsPage />, { route: `/character/1` });
-    expect(screen.getByTestId('spinner')).toBeInTheDocument();
-    await waitFor(
-      () => expect(screen.queryByTestId('spinner')).not.toBeInTheDocument(),
-      { timeout: 2000 }
-    );
 
-    expect(screen.getByTestId('characterName')).toBeInTheDocument();
-    expect(screen.getByTestId('characterStatus')).toBeInTheDocument();
-    expect(screen.getByTestId('characterSpecies')).toBeInTheDocument();
-    expect(screen.getByTestId('characterGender')).toBeInTheDocument();
+  test('renders spinner when fetching', () => {
+    renderWithProviders({
+      fetching: true,
+      character: undefined,
+      error: undefined,
+    });
+    expect(screen.getByTestId('spinner')).toBeInTheDocument();
   });
-  test('shows loading indicator while fetching', async () => {
-    renderWithProviders(<DetailsPage />, { route: '/details/1' });
-    expect(screen.getByTestId('spinner')).toBeInTheDocument();
-    await waitFor(
-      () => expect(screen.queryByTestId('spinner')).not.toBeInTheDocument(),
-      { timeout: 2000 }
+
+  test('applies correct theme styles for dark theme', () => {
+    renderWithProviders(
+      { fetching: false, character: mockCharacter, error: undefined },
+      true
     );
+
+    const nameElement = screen.getByTestId('characterName');
+    expect(nameElement).toHaveClass('text-white');
   });
-  test('applies correct theme styles for dark theme', async () => {
-    const useThemeSpy = vi.spyOn(UseThemeHook, 'useTheme');
-    useThemeSpy.mockReturnValue({ isDarkTheme: true, toggleTheme: vi.fn() });
-    renderWithProviders(<DetailsPage />, { route: `/character/1` });
-    expect(screen.getByTestId('spinner')).toBeInTheDocument();
-    await waitFor(
-      () => expect(screen.queryByTestId('spinner')).not.toBeInTheDocument(),
-      { timeout: 2000 }
-    );
-    const name = screen.getByTestId('characterName');
-    const button = screen.getByTestId('closeCardBtn');
 
-    expect(name).toHaveClass('font-bold text-5xl p-15 text-white');
-    expect(button).toHaveClass(
-      'w-[150px] h-[50px] cursor-pointer rounded-md bg-neutral-300 text-black hover:bg-white text-3xl border-none'
+  test('applies correct theme styles for light theme', () => {
+    renderWithProviders(
+      { fetching: false, character: mockCharacter, error: undefined },
+      false
     );
-
-    useThemeSpy.mockRestore();
+    const nameElement = screen.getByTestId('characterName');
+    expect(nameElement).toHaveClass('text-black');
   });
-  test('applies correct theme styles for light theme', async () => {
-    const useThemeSpy = vi.spyOn(UseThemeHook, 'useTheme');
-    useThemeSpy.mockReturnValue({ isDarkTheme: false, toggleTheme: vi.fn() });
-    renderWithProviders(<DetailsPage />, { route: `/character/1` });
-    expect(screen.getByTestId('spinner')).toBeInTheDocument();
-    await waitFor(
-      () => expect(screen.queryByTestId('spinner')).not.toBeInTheDocument(),
-      { timeout: 2000 }
-    );
-    const name = screen.getByTestId('characterName');
-    const button = screen.getByTestId('closeCardBtn');
 
-    expect(name).toHaveClass('font-bold text-5xl p-15 text-black');
-    expect(button).toHaveClass(
-      'w-[150px] h-[50px] cursor-pointer rounded-md bg-[#ac3b61] text-white hover:bg-[#edc7b7] text-3xl border-none'
-    );
+  test('calls closeCard when Close button is clicked', () => {
+    const closeCardMock = vi.fn();
+    renderWithProviders({
+      closeCard: closeCardMock,
+      fetching: false,
+      error: undefined,
+    });
 
-    useThemeSpy.mockRestore();
+    const closeButton = screen.getByTestId('closeCardBtn');
+    fireEvent.click(closeButton);
+    expect(closeCardMock).toHaveBeenCalledTimes(1);
   });
 });

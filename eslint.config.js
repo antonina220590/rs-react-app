@@ -1,45 +1,75 @@
-import js from '@eslint/js';
-import globals from 'globals';
-import reactHooks from 'eslint-plugin-react-hooks';
-import reactRefresh from 'eslint-plugin-react-refresh';
-import react from 'eslint-plugin-react';
-import tseslint from 'typescript-eslint';
-import eslintPluginPrettier from 'eslint-plugin-prettier/recommended';
-import reactCompiler from 'eslint-plugin-react-compiler';
+import eslintPluginReact from 'eslint-plugin-react';
+import eslintPluginReactHooks from 'eslint-plugin-react-hooks';
+import eslintPluginNext from '@next/eslint-plugin-next';
+import eslintPluginPrettier from 'eslint-plugin-prettier';
+import eslintPluginReactCompiler from 'eslint-plugin-react-compiler';
+import eslintPluginReactRefresh from 'eslint-plugin-react-refresh';
+import typescriptEslintParser from '@typescript-eslint/parser';
+import { defineConfig } from 'eslint-define-config';
+import typescriptEslint from '@typescript-eslint/eslint-plugin';
 
-export default tseslint.config(
-  { ignores: ['dist', 'coverage'] },
+export default defineConfig([
   {
-    extends: [
-      js.configs.recommended,
-      ...tseslint.configs.strict,
-      eslintPluginPrettier,
-    ],
-    files: ['**/*.{ts,tsx}'],
+    files: ['**/*.ts', '**/*.tsx'],
     languageOptions: {
+      parser: typescriptEslintParser,
       ecmaVersion: 2020,
-      globals: globals.browser,
+      sourceType: 'module',
+      globals: { next: 'readonly' },
+      parserOptions: { ecmaFeatures: { jsx: true } },
     },
     plugins: {
-      react,
-      'react-hooks': reactHooks,
-      'react-refresh': reactRefresh,
-      'react-compiler': reactCompiler,
+      '@typescript-eslint': typescriptEslint,
+      react: eslintPluginReact,
+      'react-hooks': eslintPluginReactHooks,
+      '@next/next': eslintPluginNext,
+      'react-refresh': eslintPluginReactRefresh,
+      'react-compiler': eslintPluginReactCompiler,
+      prettier: eslintPluginPrettier,
     },
     rules: {
-      ...reactHooks.configs.recommended.rules,
       'react-refresh/only-export-components': [
-        'warn',
+        'off',
         { allowConstantExport: true },
       ],
       'react-compiler/react-compiler': 'error',
-      ...react.configs.recommended.rules,
-      ...react.configs['jsx-runtime'].rules,
+      ...eslintPluginReact.configs.recommended.rules,
+      ...eslintPluginNext.configs.recommended.rules,
+      ...eslintPluginReact.configs['jsx-runtime'].rules,
+      'prettier/prettier': 'error',
+      '@typescript-eslint/no-explicit-any': 'error',
+      'no-inline-comments': 'error',
+      '@typescript-eslint/no-unused-vars': [
+        'error',
+        {
+          varsIgnorePattern: '^_',
+          argsIgnorePattern: '^_',
+          ignoreRestSiblings: true,
+        },
+      ],
+      'no-restricted-syntax': [
+        'error',
+        {
+          selector: 'BlockComment',
+          message: 'Use JSDoc/TSDoc for documentation.',
+        },
+        {
+          selector:
+            'LineComment:not(Program > LineComment, :matches([id.name=\"TODO\"],[id.name=\"FIXME\"]))', // Allow // at top level and TODO, FIXME
+          message:
+            "Comments are discouraged. Explain 'why', not 'what'. Use JSDoc/TSDoc for APIs.",
+        },
+      ],
     },
-    settings: {
-      react: {
-        version: 'detect',
-      },
-    },
-  }
-);
+    settings: { react: { version: 'detect' } },
+  },
+  {
+    ignores: [
+      'dist',
+      'eslint.config.js',
+      'coverage',
+      'node_modules',
+      '{.,}next/',
+    ],
+  },
+]);

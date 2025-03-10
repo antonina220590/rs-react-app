@@ -17,8 +17,12 @@ export const favouritesSlice = createSlice({
       }
       return [];
     },
+    setFavourites: (state, action: PayloadAction<Character[]>) => {
+      return action.payload;
+    },
   },
 });
 
-export const { addToFav, deleteFromFav } = favouritesSlice.actions;
+export const { addToFav, deleteFromFav, setFavourites } =
+  favouritesSlice.actions;
 export default favouritesSlice.reducer;
