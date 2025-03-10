@@ -3,7 +3,7 @@ import '@testing-library/jest-dom';
 import { Character } from '../../utils/interface';
 import { vi } from 'vitest';
 import { Provider } from 'react-redux';
-import { AppStore, makeStore } from '../../services/store';
+import { AppStore, makeStore } from '../../store/store';
 import Heart from './checkBox';
 
 const mockCharacter: Character = {

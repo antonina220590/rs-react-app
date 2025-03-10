@@ -1,6 +1,4 @@
 import { ReactElement } from 'react';
-import { FetchBaseQueryError } from '@reduxjs/toolkit/query';
-import { SerializedError } from '@reduxjs/toolkit';
 
 export interface Character {
   id: number;
@@ -25,7 +23,6 @@ export interface Character {
 
 export interface CardsProps {
   characters: Character[];
-  onCardClick: (id: number) => void;
 }
 
 export interface ApiResponse {
@@ -51,7 +48,6 @@ export interface IState {
 export interface PaginationProps {
   currentPage: number;
   totalPages: number;
-  changePage: (_page: number) => void;
 }
 
 export interface InputProps {
@@ -60,11 +56,6 @@ export interface InputProps {
 
 export interface DetailsPageProps {
   character: Character | null;
-  closeCard: () => void;
-  fetching: boolean;
-
-  loading: boolean;
-  error: FetchBaseQueryError | SerializedError | undefined;
 }
 
 export interface SearchPageProps {
@@ -89,3 +80,24 @@ export interface QueryParams {
   id?: string | string[];
   [key: string]: string | string[] | undefined;
 }
+
+export interface ApiError {
+  status: number;
+  message: string;
+}
+
+export interface ApiEmptyResponse {
+  info: {};
+  results: [];
+}
+
+export type Info = {
+  count: number;
+  pages: number;
+  next: string | null;
+  prev: string | null;
+};
+
+export type Result<T> =
+  | { data: T; error: null }
+  | { data: null; error: ApiError };

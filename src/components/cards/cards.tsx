@@ -1,17 +1,37 @@
+'use client';
+
 import Image from 'next/image';
 import { CardsProps } from '../../utils/interface';
 import Heart from '../checkBox/checkBox';
 import { useTheme } from '../../utils/context/useThemeHook';
+import { useRouter } from 'next/navigation';
+import { useSearchParams } from 'next/navigation';
+import { useCallback } from 'react';
 
-function Cards({ characters, onCardClick }: CardsProps) {
+function Cards({ characters }: CardsProps) {
   const { isDarkTheme } = useTheme();
+
+  const router = useRouter();
+  const searchParams = useSearchParams();
+
+  const handleCardClick = useCallback(
+    (id: number) => {
+      const createQueryString = (name: string, value: string) => {
+        const params = new URLSearchParams(searchParams);
+        params.set(name, value);
+        return params.toString();
+      };
+      router.push('/?' + createQueryString('id', id.toString()));
+    },
+    [router, searchParams]
+  );
 
   return (
     <div className="flex flex-wrap gap-20 m-7 p-10 justify-evenly">
       {characters.map((character) => (
         <div
+          onClick={() => handleCardClick(character.id)}
           key={character.id}
-          onClick={() => onCardClick(character.id)}
           className={`flex flex-col items-center w-[300px] h-[450px] ${isDarkTheme ? 'bg-[#474b4f]' : 'bg-[#bab2b5]'} rounded-2xl justify-start`}
         >
           <Heart character={character} />{' '}

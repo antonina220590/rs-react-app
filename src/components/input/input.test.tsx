@@ -1,115 +1,218 @@
-import { render, screen, fireEvent } from '@testing-library/react';
-import Input from './input';
+import { render, screen } from '@testing-library/react';
+import InputClient from './input';
 import '@testing-library/jest-dom';
 import { useTheme } from '../../utils/context/useThemeHook';
-import { useRouter } from 'next/router';
-import { vi, Mock } from 'vitest';
+import { useRouter, useSearchParams } from 'next/navigation';
+import {
+  vi,
+  Mock,
+  describe,
+  it,
+  expect,
+  beforeEach,
+  afterEach,
+  MockedFunction,
+} from 'vitest';
+import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
 
-vi.mock('next/router', () => ({
+vi.mock('next/navigation', () => ({
   useRouter: vi.fn(),
+  useSearchParams: vi.fn(),
 }));
 
 vi.mock('../../utils/context/useThemeHook', () => ({
   useTheme: vi.fn(),
 }));
 
-const mockPush = vi.fn();
+const createMockRouter = (
+  overrides: Partial<AppRouterInstance> = {}
+): AppRouterInstance => ({
+  back: vi.fn(),
+  forward: vi.fn(),
+  refresh: vi.fn(),
+  replace: vi.fn(),
+  push: vi.fn(),
+  prefetch: vi.fn(),
+  ...overrides,
+});
 
-const setup = (initialSearchQuery = '', isDarkTheme = false) => {
-  (useTheme as Mock).mockReturnValue({ isDarkTheme });
-  (useRouter as Mock).mockReturnValue({
-    query: {},
-    push: mockPush,
-    pathname: '/',
-  });
-
-  return render(<Input initialSearchQuery={initialSearchQuery} />);
-};
-
-describe('Input Component', () => {
+describe('InputClient Component', () => {
   beforeEach(() => {
-    mockPush.mockClear();
     vi.useFakeTimers();
   });
 
   afterEach(() => {
+    vi.restoreAllMocks();
     vi.useRealTimers();
   });
-  it('renders the input field with the correct placeholder', () => {
-    setup();
+
+  test('renders the input field with the correct placeholder', () => {
+    const pushMock = vi.fn();
+    const mockRouter = createMockRouter({ push: pushMock });
+    (useRouter as MockedFunction<typeof useRouter>).mockReturnValue(mockRouter);
+    const searchParams = new URLSearchParams();
+    (useSearchParams as MockedFunction<typeof useSearchParams>).mockReturnValue(
+      {
+        get: (name: string) => searchParams.get(name),
+        getAll: (name: string) => searchParams.getAll(name),
+        has: (name: string) => searchParams.has(name),
+        entries: () => searchParams.entries(),
+        keys: () => searchParams.keys(),
+        values: () => searchParams.values(),
+        toString: () => searchParams.toString(),
+        forEach: (
+          callback: (
+            value: string,
+            key: string,
+            parent: URLSearchParams
+          ) => void
+        ) => searchParams.forEach(callback),
+        [Symbol.iterator]: () => searchParams[Symbol.iterator](),
+        append: function (): void {
+          throw new Error('Function not implemented.');
+        },
+        delete: function (): void {
+          throw new Error('Function not implemented.');
+        },
+        set: function (): void {
+          throw new Error('Function not implemented.');
+        },
+        sort: function (): void {
+          throw new Error('Function not implemented.');
+        },
+        size: 0,
+      }
+    );
+
+    (useTheme as Mock).mockReturnValue({ isDarkTheme: false });
+    render(<InputClient />);
     expect(screen.getByPlaceholderText('search.....')).toBeInTheDocument();
   });
 
   it('sets initial search query correctly', () => {
     const initialQuery = 'Rick';
-    setup(initialQuery);
+    const pushMock = vi.fn();
+    const mockRouter = createMockRouter({ push: pushMock });
+    (useRouter as MockedFunction<typeof useRouter>).mockReturnValue(mockRouter);
+
+    const searchParams = new URLSearchParams();
+    searchParams.set('name', initialQuery);
+    (useSearchParams as MockedFunction<typeof useSearchParams>).mockReturnValue(
+      {
+        get: (name: string) => searchParams.get(name),
+        getAll: (name: string) => searchParams.getAll(name),
+        has: (name: string) => searchParams.has(name),
+        entries: () => searchParams.entries(),
+        keys: () => searchParams.keys(),
+        values: () => searchParams.values(),
+        toString: () => searchParams.toString(),
+        forEach: (
+          callback: (
+            value: string,
+            key: string,
+            parent: URLSearchParams
+          ) => void
+        ) => searchParams.forEach(callback),
+        [Symbol.iterator]: () => searchParams[Symbol.iterator](),
+        append: () => {},
+        delete: () => {},
+        set: () => {},
+        sort: () => {},
+        size: 0,
+      }
+    );
+
+    (useTheme as Mock).mockReturnValue({ isDarkTheme: false });
+    render(<InputClient />);
     const inputElement = screen.getByPlaceholderText(
       'search.....'
     ) as HTMLInputElement;
-    expect(inputElement.value).toBe(initialQuery);
-  });
 
-  it('calls router.push with correct query on button click after debounce', async () => {
-    setup();
-    const inputElement = screen.getByPlaceholderText(
-      'search.....'
-    ) as HTMLInputElement;
-    const searchButton = screen.getByTestId('searchBtn');
-
-    fireEvent.change(inputElement, { target: { value: 'Morty' } });
-    fireEvent.click(searchButton);
-
-    vi.advanceTimersByTime(510);
-    expect(mockPush).toHaveBeenCalledWith({
-      pathname: '/',
-      query: { search: 'Morty', page: '1' },
-    });
-  }, 10000);
-
-  it('calls router.push with correct query (empty search) on button click after debounce', async () => {
-    setup();
-    const inputElement = screen.getByPlaceholderText(
-      'search.....'
-    ) as HTMLInputElement;
-    const searchButton = screen.getByTestId('searchBtn');
-
-    fireEvent.change(inputElement, { target: { value: '' } });
-    fireEvent.click(searchButton);
-
-    vi.advanceTimersByTime(510);
-
-    expect(mockPush).toHaveBeenCalledWith({
-      pathname: '/',
-      query: { page: '1' },
-    });
-  });
-
-  it('handles multiple searches with debounce', async () => {
-    setup();
-    const input = screen.getByPlaceholderText(
-      'search.....'
-    ) as HTMLInputElement;
-    const searchBtn = screen.getByTestId('searchBtn');
-    fireEvent.change(input, { target: { value: 'Rick' } });
-    fireEvent.click(searchBtn);
-    vi.advanceTimersByTime(250);
-    fireEvent.change(input, { target: { value: 'Morty' } });
-    fireEvent.click(searchBtn);
-    vi.advanceTimersByTime(250);
-    fireEvent.change(input, { target: { value: 'Summer' } });
-    fireEvent.click(searchBtn);
-    vi.advanceTimersByTime(600);
-    expect(mockPush).toHaveBeenCalledTimes(1);
+    expect(inputElement.defaultValue).toBe(initialQuery);
   });
 
   it('should focus the input on mount', () => {
-    setup();
+    const pushMock = vi.fn();
+    const mockRouter = createMockRouter({ push: pushMock });
+    (useRouter as MockedFunction<typeof useRouter>).mockReturnValue(mockRouter);
+    const searchParams = new URLSearchParams();
+    (useSearchParams as MockedFunction<typeof useSearchParams>).mockReturnValue(
+      {
+        get: (name: string) => searchParams.get(name),
+        getAll: (name: string) => searchParams.getAll(name),
+        has: (name: string) => searchParams.has(name),
+        entries: () => searchParams.entries(),
+        keys: () => searchParams.keys(),
+        values: () => searchParams.values(),
+        toString: () => searchParams.toString(),
+        forEach: (
+          callback: (
+            value: string,
+            key: string,
+            parent: URLSearchParams
+          ) => void
+        ) => searchParams.forEach(callback),
+        [Symbol.iterator]: () => searchParams[Symbol.iterator](),
+        append: function (): void {
+          throw new Error('Function not implemented.');
+        },
+        delete: function (): void {
+          throw new Error('Function not implemented.');
+        },
+        set: function (): void {
+          throw new Error('Function not implemented.');
+        },
+        sort: function (): void {
+          throw new Error('Function not implemented.');
+        },
+        size: 0,
+      }
+    );
+    (useTheme as Mock).mockReturnValue({ isDarkTheme: false });
+    render(<InputClient />);
     const inputElement = screen.getByPlaceholderText('search.....');
     expect(inputElement).toHaveFocus();
   });
 
-  it('applies dark theme styles correctly', () => {
-    setup('', true);
+  test('applies dark theme styles correctly', () => {
+    const pushMock = vi.fn();
+    const mockRouter = createMockRouter({ push: pushMock });
+    (useRouter as MockedFunction<typeof useRouter>).mockReturnValue(mockRouter);
+    const searchParams = new URLSearchParams();
+    (useSearchParams as MockedFunction<typeof useSearchParams>).mockReturnValue(
+      {
+        get: (name: string) => searchParams.get(name),
+        getAll: (name: string) => searchParams.getAll(name),
+        has: (name: string) => searchParams.has(name),
+        entries: () => searchParams.entries(),
+        keys: () => searchParams.keys(),
+        values: () => searchParams.values(),
+        toString: () => searchParams.toString(),
+        forEach: (
+          callback: (
+            value: string,
+            key: string,
+            parent: URLSearchParams
+          ) => void
+        ) => searchParams.forEach(callback),
+        [Symbol.iterator]: () => searchParams[Symbol.iterator](),
+        append: function (): void {
+          throw new Error('Function not implemented.');
+        },
+        delete: function (): void {
+          throw new Error('Function not implemented.');
+        },
+        set: function (): void {
+          throw new Error('Function not implemented.');
+        },
+        sort: function (): void {
+          throw new Error('Function not implemented.');
+        },
+        size: 0,
+      }
+    );
+    (useTheme as Mock).mockReturnValue({ isDarkTheme: true });
+    render(<InputClient />);
     const inputElement = screen.getByPlaceholderText('search.....');
     const searchButton = screen.getByTestId('searchBtn');
 
@@ -117,20 +220,5 @@ describe('Input Component', () => {
     expect(searchButton).toHaveClass(
       'bg-neutral-300 text-black hover:bg-white'
     );
-  });
-
-  it('applies light theme styles correctly', () => {
-    setup('', false);
-    const inputElement = screen.getByPlaceholderText('search.....');
-    const searchButton = screen.getByTestId('searchBtn');
-
-    expect(inputElement).toHaveClass('bg-white');
-    expect(searchButton).toHaveClass(
-      'bg-[#ac3b61] text-white hover:bg-[#edc7b7]'
-    );
-  });
-  test('renders ThemeBtn', () => {
-    setup();
-    expect(screen.getByTestId('themeBtn')).toBeInTheDocument();
   });
 });

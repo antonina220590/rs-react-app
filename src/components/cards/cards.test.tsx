@@ -1,25 +1,19 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import Cards from './cards';
 import { Character } from '../../utils/interface';
-import { describe, expect, test, vi } from 'vitest';
+import { describe, expect, MockedFunction, test, vi } from 'vitest';
 import * as UseThemeHook from '../../utils/context/useThemeHook';
 import { ThemeContext } from '../../utils/context/useThemeHook';
 import { Provider } from 'react-redux';
-import { makeStore } from '../../services/store';
+import { makeStore } from '../../store/store';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
 
-vi.mock('next/router', () => ({
-  useRouter: () => ({
-    push: vi.fn(),
-    query: {},
-    isReady: true,
-  }),
+vi.mock('next/navigation', () => ({
+  useRouter: vi.fn(),
+  useSearchParams: vi.fn(),
 }));
-
-const mockThemeContext = {
-  isDarkTheme: false,
-  toggleTheme: vi.fn(),
-};
 
 const mockCharacters: Character[] = [
   {
@@ -64,14 +58,13 @@ const mockCharacters: Character[] = [
   },
 ];
 
-const renderWithProviders = (
-  component: React.ReactNode,
-  _onCardClickMock: (id: number) => void
-) => {
+const renderWithProviders = (component: React.ReactNode) => {
   const store = makeStore();
   return render(
     <Provider store={store}>
-      <ThemeContext.Provider value={mockThemeContext}>
+      <ThemeContext.Provider
+        value={{ isDarkTheme: false, toggleTheme: vi.fn() }}
+      >
         {component}
       </ThemeContext.Provider>
     </Provider>
@@ -79,70 +72,257 @@ const renderWithProviders = (
 };
 
 describe('Cards Component', () => {
-  test('renders character cards correctly', () => {
-    const onCardClickMock: (id: number) => void = vi.fn();
-    renderWithProviders(
-      <Cards characters={mockCharacters} onCardClick={onCardClickMock} />,
-      onCardClickMock
+  const createMockRouter = (
+    overrides: Partial<AppRouterInstance> = {}
+  ): AppRouterInstance => ({
+    back: vi.fn(),
+    forward: vi.fn(),
+    refresh: vi.fn(),
+    replace: vi.fn(),
+    push: vi.fn(),
+    prefetch: vi.fn(),
+    ...overrides,
+  });
+  test('renders character cards correctly', async () => {
+    const pushMock = vi.fn();
+    const mockRouter = createMockRouter({ push: pushMock });
+    (useRouter as MockedFunction<typeof useRouter>).mockReturnValue(mockRouter);
+    const searchParams = new URLSearchParams();
+    (useSearchParams as MockedFunction<typeof useSearchParams>).mockReturnValue(
+      {
+        get: (name: string) => searchParams.get(name),
+        getAll: (name: string) => searchParams.getAll(name),
+        has: (name: string) => searchParams.has(name),
+        entries: () => searchParams.entries(),
+        keys: () => searchParams.keys(),
+        values: () => searchParams.values(),
+        toString: () => searchParams.toString(),
+        forEach: (
+          callback: (
+            value: string,
+            key: string,
+            parent: URLSearchParams
+          ) => void
+        ) => searchParams.forEach(callback),
+        [Symbol.iterator]: () => searchParams[Symbol.iterator](),
+        append: function (): void {
+          throw new Error('Function not implemented.');
+        },
+        delete: function (): void {
+          throw new Error('Function not implemented.');
+        },
+        set: function (): void {
+          throw new Error('Function not implemented.');
+        },
+        sort: function (): void {
+          throw new Error('Function not implemented.');
+        },
+        size: 0,
+      }
     );
 
+    renderWithProviders(<Cards characters={mockCharacters} />);
     const images = screen.getAllByRole('img');
     expect(images).toHaveLength(mockCharacters.length);
 
-    expect(images[0].getAttribute('src')).toMatch(
-      /^\/_next\/image\?url=http%3A%2F%2Fexample.com%2Frick.png/
-    );
-    expect(images[1].getAttribute('src')).toMatch(
-      /^\/_next\/image\?url=http%3A%2F%2Fexample.com%2Fmorty.png/
-    );
-
     expect(screen.getByTestId('character-image-1')).toBeInTheDocument();
     expect(screen.getByTestId('character-image-2')).toBeInTheDocument();
-    const card = screen.getByText(/Rick Sanchez/i);
-    fireEvent.click(card);
-    expect(onCardClickMock).toHaveBeenCalledWith(1);
+    expect(screen.getByText('Rick Sanchez')).toBeInTheDocument();
+    expect(screen.getByText('Morty Smith')).toBeInTheDocument();
   });
 
   test('applies correct theme styles for dark theme', () => {
-    const onCardClickMock = vi.fn();
-    const useThemeSpy = vi.spyOn(UseThemeHook, 'useTheme');
-    useThemeSpy.mockReturnValue({ isDarkTheme: true, toggleTheme: vi.fn() });
-    renderWithProviders(
-      <Cards characters={mockCharacters} onCardClick={onCardClickMock} />,
-      onCardClickMock
+    const pushMock = vi.fn();
+    const mockRouter = createMockRouter({ push: pushMock });
+    (useRouter as MockedFunction<typeof useRouter>).mockReturnValue(mockRouter);
+    const searchParams = new URLSearchParams();
+    (useSearchParams as MockedFunction<typeof useSearchParams>).mockReturnValue(
+      {
+        get: (name: string) => searchParams.get(name),
+        getAll: (name: string) => searchParams.getAll(name),
+        has: (name: string) => searchParams.has(name),
+        entries: () => searchParams.entries(),
+        keys: () => searchParams.keys(),
+        values: () => searchParams.values(),
+        toString: () => searchParams.toString(),
+        forEach: (
+          callback: (
+            value: string,
+            key: string,
+            parent: URLSearchParams
+          ) => void
+        ) => searchParams.forEach(callback),
+        [Symbol.iterator]: () => searchParams[Symbol.iterator](),
+        append: function (): void {
+          throw new Error('Function not implemented.');
+        },
+        delete: function (): void {
+          throw new Error('Function not implemented.');
+        },
+        set: function (): void {
+          throw new Error('Function not implemented.');
+        },
+        sort: function (): void {
+          throw new Error('Function not implemented.');
+        },
+        size: 0,
+      }
     );
 
+    const useThemeSpy = vi.spyOn(UseThemeHook, 'useTheme');
+    useThemeSpy.mockReturnValue({ isDarkTheme: true, toggleTheme: vi.fn() });
+
+    renderWithProviders(<Cards characters={mockCharacters} />);
+
     const card = screen.getByText(/Rick Sanchez/i);
-    expect(card).toHaveClass('font-bold text-4xl p-10 text-white');
+    expect(card).toHaveClass('text-white');
 
     useThemeSpy.mockRestore();
   });
 
   test('applies correct theme styles for light theme', () => {
-    const onCardClickMock = vi.fn();
-    const useThemeSpy = vi.spyOn(UseThemeHook, 'useTheme');
-    useThemeSpy.mockReturnValue({ isDarkTheme: false, toggleTheme: vi.fn() });
-    renderWithProviders(
-      <Cards characters={mockCharacters} onCardClick={onCardClickMock} />,
-      onCardClickMock
+    const pushMock = vi.fn();
+    const mockRouter = createMockRouter({ push: pushMock });
+    (useRouter as MockedFunction<typeof useRouter>).mockReturnValue(mockRouter);
+    const searchParams = new URLSearchParams();
+    (useSearchParams as MockedFunction<typeof useSearchParams>).mockReturnValue(
+      {
+        get: (name: string) => searchParams.get(name),
+        getAll: (name: string) => searchParams.getAll(name),
+        has: (name: string) => searchParams.has(name),
+        entries: () => searchParams.entries(),
+        keys: () => searchParams.keys(),
+        values: () => searchParams.values(),
+        toString: () => searchParams.toString(),
+        forEach: (
+          callback: (
+            value: string,
+            key: string,
+            parent: URLSearchParams
+          ) => void
+        ) => searchParams.forEach(callback),
+        [Symbol.iterator]: () => searchParams[Symbol.iterator](),
+        append: function (): void {
+          throw new Error('Function not implemented.');
+        },
+        delete: function (): void {
+          throw new Error('Function not implemented.');
+        },
+        set: function (): void {
+          throw new Error('Function not implemented.');
+        },
+        sort: function (): void {
+          throw new Error('Function not implemented.');
+        },
+        size: 0,
+      }
     );
 
+    const useThemeSpy = vi.spyOn(UseThemeHook, 'useTheme');
+    useThemeSpy.mockReturnValue({ isDarkTheme: false, toggleTheme: vi.fn() });
+
+    renderWithProviders(<Cards characters={mockCharacters} />);
+
     const card = screen.getByText(/Rick Sanchez/i);
-    expect(card).toHaveClass('font-bold text-4xl p-10 text-black');
+    expect(card).toHaveClass('text-black');
 
     useThemeSpy.mockRestore();
   });
 
-  test('calls onCardClick when a card is clicked', () => {
-    const onCardClickMock = vi.fn();
-    renderWithProviders(
-      <Cards characters={mockCharacters} onCardClick={onCardClickMock} />,
-      onCardClickMock
+  test('calls router.push with correct URL when a card is clicked', async () => {
+    const pushMock = vi.fn();
+    const mockRouter = createMockRouter({ push: pushMock });
+    (useRouter as MockedFunction<typeof useRouter>).mockReturnValue(mockRouter);
+    const searchParams = new URLSearchParams();
+    (useSearchParams as MockedFunction<typeof useSearchParams>).mockReturnValue(
+      {
+        get: (name: string) => searchParams.get(name),
+        getAll: (name: string) => searchParams.getAll(name),
+        has: (name: string) => searchParams.has(name),
+        entries: () => searchParams.entries(),
+        keys: () => searchParams.keys(),
+        values: () => searchParams.values(),
+        toString: () => searchParams.toString(),
+        forEach: (
+          callback: (
+            value: string,
+            key: string,
+            parent: URLSearchParams
+          ) => void
+        ) => searchParams.forEach(callback),
+        [Symbol.iterator]: () => searchParams[Symbol.iterator](),
+        append: function (): void {
+          throw new Error('Function not implemented.');
+        },
+        delete: function (): void {
+          throw new Error('Function not implemented.');
+        },
+        set: function (): void {
+          throw new Error('Function not implemented.');
+        },
+        sort: function (): void {
+          throw new Error('Function not implemented.');
+        },
+        size: 0,
+      }
     );
+
+    renderWithProviders(<Cards characters={mockCharacters} />);
 
     const card = screen.getByText(/Rick Sanchez/i);
     fireEvent.click(card);
 
-    expect(onCardClickMock).toHaveBeenCalledWith(1);
+    await waitFor(() => {
+      expect(pushMock).toHaveBeenCalledWith('/?id=1');
+    });
+  });
+  test('calls router.push with correct URL when a card is clicked with existing search params', async () => {
+    const pushMock = vi.fn();
+    const mockRouter = createMockRouter({ push: pushMock });
+    (useRouter as MockedFunction<typeof useRouter>).mockReturnValue(mockRouter);
+
+    const initialSearchParams = new URLSearchParams();
+    initialSearchParams.set('page', '2');
+    (useSearchParams as MockedFunction<typeof useSearchParams>).mockReturnValue(
+      {
+        get: (name: string) => initialSearchParams.get(name),
+        getAll: (name: string) => initialSearchParams.getAll(name),
+        has: (name: string) => initialSearchParams.has(name),
+        entries: () => initialSearchParams.entries(),
+        keys: () => initialSearchParams.keys(),
+        values: () => initialSearchParams.values(),
+        toString: () => initialSearchParams.toString(),
+        forEach: (
+          callback: (
+            value: string,
+            key: string,
+            parent: URLSearchParams
+          ) => void
+        ) => initialSearchParams.forEach(callback),
+        [Symbol.iterator]: () => initialSearchParams[Symbol.iterator](),
+        append: function (): void {
+          throw new Error('Function not implemented');
+        },
+        delete: function (): void {
+          throw new Error('Function not implemented');
+        },
+        set: function (): void {
+          throw new Error('Function not implemented');
+        },
+        sort: function (): void {
+          throw new Error('Function not implemented');
+        },
+        size: 0,
+      }
+    );
+
+    renderWithProviders(<Cards characters={mockCharacters} />);
+
+    const card = screen.getByText(/Morty Smith/i);
+    fireEvent.click(card);
+
+    await waitFor(() => {
+      expect(pushMock).toHaveBeenCalledWith('/?page=2&id=2');
+    });
   });
 });

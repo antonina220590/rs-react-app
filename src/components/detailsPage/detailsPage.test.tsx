@@ -1,15 +1,29 @@
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import DetailsPage from './detailsPage';
 import { DetailsPageProps, Character } from '../../utils/interface';
-import { describe, expect, test, vi } from 'vitest';
+import { describe, expect, MockedFunction, test, vi } from 'vitest';
 import { ThemeContext } from '../../utils/context/useThemeHook';
 import * as UseThemeHook from '../../utils/context/useThemeHook';
+import { useRouter, useSearchParams } from 'next/navigation';
+import { AppRouterInstance } from 'next/dist/shared/lib/app-router-context.shared-runtime';
 
-const mockThemeContext = {
-  isDarkTheme: false,
-  toggleTheme: vi.fn(),
-};
+vi.mock('next/navigation', () => ({
+  useRouter: vi.fn(),
+  useSearchParams: vi.fn(),
+}));
+
+const createMockRouter = (
+  overrides: Partial<AppRouterInstance> = {}
+): AppRouterInstance => ({
+  back: vi.fn(),
+  forward: vi.fn(),
+  refresh: vi.fn(),
+  replace: vi.fn(),
+  push: vi.fn(),
+  prefetch: vi.fn(),
+  ...overrides,
+});
 
 const mockCharacter: Character = {
   id: 1,
@@ -25,7 +39,6 @@ const mockCharacter: Character = {
   url: 'character-url',
   created: '2017',
 };
-
 const renderWithProviders = (
   props: Partial<DetailsPageProps>,
   isDarkTheme: boolean = false
@@ -34,23 +47,54 @@ const renderWithProviders = (
   useThemeSpy.mockReturnValue({ isDarkTheme, toggleTheme: vi.fn() });
 
   return render(
-    <ThemeContext.Provider value={mockThemeContext}>
-      <DetailsPage
-        {...{
-          closeCard: vi.fn(),
-          fetching: false,
-          character: mockCharacter,
-          error: undefined,
-          loading: false,
-        }}
-        {...props}
-      />
+    <ThemeContext.Provider value={{ isDarkTheme, toggleTheme: vi.fn() }}>
+      <DetailsPage {...{ character: mockCharacter }} {...props} />
     </ThemeContext.Provider>
   );
 };
 
 describe('DetailsPage Component', () => {
+  beforeEach(() => {
+    vi.restoreAllMocks();
+  });
+
   test('renders character details correctly', () => {
+    const pushMock = vi.fn();
+    const mockRouter = createMockRouter({ push: pushMock });
+    (useRouter as MockedFunction<typeof useRouter>).mockReturnValue(mockRouter);
+    const searchParams = new URLSearchParams();
+    (useSearchParams as MockedFunction<typeof useSearchParams>).mockReturnValue(
+      {
+        get: (name: string) => searchParams.get(name),
+        getAll: (name: string) => searchParams.getAll(name),
+        has: (name: string) => searchParams.has(name),
+        entries: () => searchParams.entries(),
+        keys: () => searchParams.keys(),
+        values: () => searchParams.values(),
+        toString: () => searchParams.toString(),
+        forEach: (
+          callback: (
+            value: string,
+            key: string,
+            parent: URLSearchParams
+          ) => void
+        ) => searchParams.forEach(callback),
+        [Symbol.iterator]: () => searchParams[Symbol.iterator](),
+        append: function (): void {
+          throw new Error('Function not implemented.');
+        },
+        delete: function (): void {
+          throw new Error('Function not implemented.');
+        },
+        set: function (): void {
+          throw new Error('Function not implemented.');
+        },
+        sort: function (): void {
+          throw new Error('Function not implemented.');
+        },
+        size: 0,
+      }
+    );
     renderWithProviders({});
 
     const image = screen.getByRole('img');
@@ -62,46 +106,235 @@ describe('DetailsPage Component', () => {
     expect(screen.getByTestId('characterStatus')).toHaveTextContent('Alive');
     expect(screen.getByTestId('characterSpecies')).toHaveTextContent('Human');
     expect(screen.getByTestId('characterGender')).toHaveTextContent('Male');
+    expect(screen.getByTestId('closeCardBtn')).toBeInTheDocument();
   });
-
-  test('renders spinner when fetching', () => {
-    renderWithProviders({
-      fetching: true,
-      character: undefined,
-      error: undefined,
-    });
-    expect(screen.getByTestId('spinner')).toBeInTheDocument();
-  });
-
   test('applies correct theme styles for dark theme', () => {
-    renderWithProviders(
-      { fetching: false, character: mockCharacter, error: undefined },
-      true
+    const pushMock = vi.fn();
+    const mockRouter = createMockRouter({ push: pushMock });
+    (useRouter as MockedFunction<typeof useRouter>).mockReturnValue(mockRouter);
+    const searchParams = new URLSearchParams();
+    (useSearchParams as MockedFunction<typeof useSearchParams>).mockReturnValue(
+      {
+        get: (name: string) => searchParams.get(name),
+        getAll: (name: string) => searchParams.getAll(name),
+        has: (name: string) => searchParams.has(name),
+        entries: () => searchParams.entries(),
+        keys: () => searchParams.keys(),
+        values: () => searchParams.values(),
+        toString: () => searchParams.toString(),
+        forEach: (
+          callback: (
+            value: string,
+            key: string,
+            parent: URLSearchParams
+          ) => void
+        ) => searchParams.forEach(callback),
+        [Symbol.iterator]: () => searchParams[Symbol.iterator](),
+        append: function (): void {
+          throw new Error('Function not implemented.');
+        },
+        delete: function (): void {
+          throw new Error('Function not implemented.');
+        },
+        set: function (): void {
+          throw new Error('Function not implemented.');
+        },
+        sort: function (): void {
+          throw new Error('Function not implemented.');
+        },
+        size: 0,
+      }
     );
+    renderWithProviders({ character: mockCharacter }, true);
 
     const nameElement = screen.getByTestId('characterName');
     expect(nameElement).toHaveClass('text-white');
   });
-
   test('applies correct theme styles for light theme', () => {
-    renderWithProviders(
-      { fetching: false, character: mockCharacter, error: undefined },
-      false
+    const pushMock = vi.fn();
+    const mockRouter = createMockRouter({ push: pushMock });
+    (useRouter as MockedFunction<typeof useRouter>).mockReturnValue(mockRouter);
+    const searchParams = new URLSearchParams();
+    (useSearchParams as MockedFunction<typeof useSearchParams>).mockReturnValue(
+      {
+        get: (name: string) => searchParams.get(name),
+        getAll: (name: string) => searchParams.getAll(name),
+        has: (name: string) => searchParams.has(name),
+        entries: () => searchParams.entries(),
+        keys: () => searchParams.keys(),
+        values: () => searchParams.values(),
+        toString: () => searchParams.toString(),
+        forEach: (
+          callback: (
+            value: string,
+            key: string,
+            parent: URLSearchParams
+          ) => void
+        ) => searchParams.forEach(callback),
+        [Symbol.iterator]: () => searchParams[Symbol.iterator](),
+        append: function (): void {
+          throw new Error('Function not implemented.');
+        },
+        delete: function (): void {
+          throw new Error('Function not implemented.');
+        },
+        set: function (): void {
+          throw new Error('Function not implemented.');
+        },
+        sort: function (): void {
+          throw new Error('Function not implemented.');
+        },
+        size: 0,
+      }
     );
+    renderWithProviders({ character: mockCharacter }, false);
     const nameElement = screen.getByTestId('characterName');
     expect(nameElement).toHaveClass('text-black');
   });
+  test('calls router.push when Close button is clicked', async () => {
+    const pushMock = vi.fn();
+    const mockRouter = createMockRouter({ push: pushMock });
+    (useRouter as MockedFunction<typeof useRouter>).mockReturnValue(mockRouter);
+    const searchParams = new URLSearchParams();
+    (useSearchParams as MockedFunction<typeof useSearchParams>).mockReturnValue(
+      {
+        get: (name: string) => searchParams.get(name),
+        getAll: (name: string) => searchParams.getAll(name),
+        has: (name: string) => searchParams.has(name),
+        entries: () => searchParams.entries(),
+        keys: () => searchParams.keys(),
+        values: () => searchParams.values(),
+        toString: () => searchParams.toString(),
+        forEach: (
+          callback: (
+            value: string,
+            key: string,
+            parent: URLSearchParams
+          ) => void
+        ) => searchParams.forEach(callback),
+        [Symbol.iterator]: () => searchParams[Symbol.iterator](),
+        append: function (): void {
+          throw new Error('Function not implemented.');
+        },
+        delete: function (): void {
+          throw new Error('Function not implemented.');
+        },
+        set: function (): void {
+          throw new Error('Function not implemented.');
+        },
+        sort: function (): void {
+          throw new Error('Function not implemented.');
+        },
+        size: 0,
+      }
+    );
 
-  test('calls closeCard when Close button is clicked', () => {
-    const closeCardMock = vi.fn();
-    renderWithProviders({
-      closeCard: closeCardMock,
-      fetching: false,
-      error: undefined,
-    });
+    renderWithProviders({});
 
     const closeButton = screen.getByTestId('closeCardBtn');
     fireEvent.click(closeButton);
-    expect(closeCardMock).toHaveBeenCalledTimes(1);
+
+    await waitFor(() => {
+      expect(pushMock).toHaveBeenCalledWith('/?');
+    });
+  });
+  test('calls router.push when Close button is clicked and name exists', async () => {
+    const pushMock = vi.fn();
+    const mockRouter = createMockRouter({ push: pushMock });
+    (useRouter as MockedFunction<typeof useRouter>).mockReturnValue(mockRouter);
+
+    const initialSearchParams = new URLSearchParams();
+    initialSearchParams.set('name', 'Rick');
+    (useSearchParams as MockedFunction<typeof useSearchParams>).mockReturnValue(
+      {
+        get: (name: string) => initialSearchParams.get(name),
+        getAll: (name: string) => initialSearchParams.getAll(name),
+        has: (name: string) => initialSearchParams.has(name),
+        entries: () => initialSearchParams.entries(),
+        keys: () => initialSearchParams.keys(),
+        values: () => initialSearchParams.values(),
+        toString: () => initialSearchParams.toString(),
+        forEach: (
+          callback: (
+            value: string,
+            key: string,
+            parent: URLSearchParams
+          ) => void
+        ) => initialSearchParams.forEach(callback),
+        [Symbol.iterator]: () => initialSearchParams[Symbol.iterator](),
+        append: function (): void {
+          throw new Error('Function not implemented.');
+        },
+        delete: function (): void {
+          throw new Error('Function not implemented.');
+        },
+        set: function (): void {
+          throw new Error('Function not implemented.');
+        },
+        sort: function (): void {
+          throw new Error('Function not implemented.');
+        },
+        size: 0,
+      }
+    );
+
+    renderWithProviders({});
+
+    const closeButton = screen.getByTestId('closeCardBtn');
+    fireEvent.click(closeButton);
+
+    await waitFor(() => {
+      expect(pushMock).toHaveBeenCalledWith('/?name=Rick');
+    });
+  });
+  test('calls router.push when Close button is clicked and name, page exists', async () => {
+    const pushMock = vi.fn();
+    const mockRouter = createMockRouter({ push: pushMock });
+    (useRouter as MockedFunction<typeof useRouter>).mockReturnValue(mockRouter);
+
+    const initialSearchParams = new URLSearchParams();
+    initialSearchParams.set('name', 'Rick');
+    initialSearchParams.set('page', '2');
+    (useSearchParams as MockedFunction<typeof useSearchParams>).mockReturnValue(
+      {
+        get: (name: string) => initialSearchParams.get(name),
+        getAll: (name: string) => initialSearchParams.getAll(name),
+        has: (name: string) => initialSearchParams.has(name),
+        entries: () => initialSearchParams.entries(),
+        keys: () => initialSearchParams.keys(),
+        values: () => initialSearchParams.values(),
+        toString: () => initialSearchParams.toString(),
+        forEach: (
+          callback: (
+            value: string,
+            key: string,
+            parent: URLSearchParams
+          ) => void
+        ) => initialSearchParams.forEach(callback),
+        [Symbol.iterator]: () => initialSearchParams[Symbol.iterator](),
+        append: function (): void {
+          throw new Error('Function not implemented.');
+        },
+        delete: function (): void {
+          throw new Error('Function not implemented.');
+        },
+        set: function (): void {
+          throw new Error('Function not implemented.');
+        },
+        sort: function (): void {
+          throw new Error('Function not implemented.');
+        },
+        size: 0,
+      }
+    );
+
+    renderWithProviders({});
+
+    const closeButton = screen.getByTestId('closeCardBtn');
+    fireEvent.click(closeButton);
+
+    await waitFor(() => {
+      expect(pushMock).toHaveBeenCalledWith('/?name=Rick&page=2');
+    });
   });
 });

@@ -1,3 +1,5 @@
+'use client';
+
 import { Component } from 'react';
 import { IProps, IState } from './interface';
 

@@ -4,7 +4,7 @@ import DownloadBtn from './downloadBtn';
 import * as UseThemeHook from '../../../utils/context/useThemeHook';
 import { vi } from 'vitest';
 import { Provider } from 'react-redux';
-import { makeStore } from '../../../services/store';
+import { makeStore } from '../../../store/store';
 import { Character } from '../../../utils/interface';
 import { setFavourites } from '../../../utils/slices/favouritesSlice';
 

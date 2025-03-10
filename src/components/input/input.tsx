@@ -1,21 +1,35 @@
-import { useEffect, useRef, useCallback } from 'react';
+'use client';
+
+import { useCallback, useRef, useEffect } from 'react';
+import { useRouter, useSearchParams } from 'next/navigation';
 import SearchIcon from '../../icons/searchIcon/searchIcon';
 import ThemeBtn from '../themeButton/themeBtn';
 import { useTheme } from '../../utils/context/useThemeHook';
-import { useRouter } from 'next/router';
-import { QueryParams } from '../../utils/interface';
-
-interface InputProps {
-  initialSearchQuery: string;
-}
 
 const DEBOUNCE_DELAY = 500;
 
-function Input({ initialSearchQuery }: InputProps) {
+function InputClient() {
   const { isDarkTheme } = useTheme();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const inputRef = useRef<HTMLInputElement>(null);
   const timeoutIdRef = useRef<NodeJS.Timeout | null>(null);
+
+  const initialSearchQuery = searchParams.get('name') || '';
+
+  const createQueryString = useCallback(
+    (name: string, value: string) => {
+      const params = new URLSearchParams(searchParams);
+      params.set(name, value);
+      if (name === 'name' && !value) {
+        params.delete('name');
+      }
+      params.delete('id');
+      params.set('page', '1');
+      return params.toString();
+    },
+    [searchParams]
+  );
 
   const handleSearch = useCallback(
     (query: string) => {
@@ -23,25 +37,13 @@ function Input({ initialSearchQuery }: InputProps) {
         clearTimeout(timeoutIdRef.current);
       }
 
-      timeoutIdRef.current = setTimeout(async () => {
+      timeoutIdRef.current = setTimeout(() => {
         const trimmedQuery = query.trim();
-        const newQuery: QueryParams = {
-          ...router.query,
-          search: trimmedQuery,
-          page: '1',
-        };
-        if (trimmedQuery) {
-          newQuery.search = trimmedQuery;
-        } else {
-          delete newQuery.search;
-        }
-
-        delete newQuery.id;
-
-        await router.push({ pathname: router.pathname, query: newQuery });
+        const newUrl = `/?${createQueryString('name', trimmedQuery)}`;
+        router.push(newUrl);
       }, DEBOUNCE_DELAY);
     },
-    [router]
+    [router, createQueryString]
   );
 
   useEffect(() => {
@@ -76,4 +78,4 @@ function Input({ initialSearchQuery }: InputProps) {
   );
 }
 
-export default Input;
+export default InputClient;
