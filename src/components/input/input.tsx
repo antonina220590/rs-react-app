@@ -15,7 +15,7 @@ interface PropsType<T extends FieldValues> {
   children?: React.ReactNode;
   onChangeHandler?: (event: React.ChangeEvent<HTMLInputElement>) => void;
   autoComplete?: string;
-  value?: string;
+  value?: string | number | undefined;
   defaultValue?: string;
   hasValue?: boolean;
 }
@@ -52,8 +52,6 @@ export default function InputField<T extends FieldValues>({
           }
         )}
         type={type}
-        // value={value}
-        // defaultValue={defaultValue}
         id={`${id.toString()}${type === 'radio' ? `-${value}` : ''}`}
         placeholder={placeholder}
         {...(register

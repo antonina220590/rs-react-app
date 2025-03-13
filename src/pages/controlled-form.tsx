@@ -7,6 +7,7 @@ import { FormFields } from '../interfaces/interface';
 import Form from '../components/form/form';
 import { setSubmission } from '../store/slices/forms-slice';
 import { useDispatch } from 'react-redux';
+import AgeInput from '../components/input/age/age';
 
 export default function ContolledFormPage() {
   const {
@@ -22,6 +23,11 @@ export default function ContolledFormPage() {
   const nameValue = useWatch({
     control,
     name: 'name',
+  });
+
+  const ageValue = useWatch({
+    control,
+    name: 'age',
   });
 
   const dispatch = useDispatch();
@@ -53,6 +59,11 @@ export default function ContolledFormPage() {
               errors={errors}
               register={register}
               value={nameValue || ''}
+            />
+            <AgeInput
+              errors={errors}
+              register={register}
+              value={ageValue || ''}
             />
             <button type="submit">Submit</button>
           </Form>

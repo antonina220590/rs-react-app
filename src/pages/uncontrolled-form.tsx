@@ -2,6 +2,7 @@ import { useRef, useState } from 'react';
 import Title from '../components/form-title/title';
 import Form from '../components/form/form';
 import NameInput from '../components/input/name/name';
+import AgeInput from '../components/input/age/age';
 import schema from '../validation/validation';
 import { setSubmission } from '../store/slices/forms-slice';
 import { ValidationError } from 'yup';
@@ -13,19 +14,29 @@ interface IError {
 
 export default function UncontolledFormPage() {
   const nameRef = useRef<HTMLInputElement>(null);
+  const ageRef = useRef<HTMLInputElement>(null);
 
   const [errors, setErrors] = useState<Record<string, string>>({});
-  const [hasValue, setHasValue] = useState(false);
+  const [hasValue, setHasValue] = useState<Record<string, boolean>>({
+    name: false,
+    age: false,
+  });
   const dispatch = useDispatch();
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
     const nameValue = nameRef?.current?.value;
+    const ageValue = ageRef?.current ? Number(ageRef.current.value) : undefined;
     const formData = {
       name: nameValue,
+      age: ageValue,
     };
-    setHasValue(!!nameValue);
+    setHasValue({
+      name: !!nameValue,
+      age: !!ageValue,
+    });
+
     try {
       await schema.validate(formData, { abortEarly: false });
       setErrors({});
@@ -60,7 +71,13 @@ export default function UncontolledFormPage() {
               errors={errors}
               ref={nameRef}
               defaultValue=""
-              hasValue={hasValue}
+              hasValue={hasValue.name}
+            />
+            <AgeInput
+              errors={errors}
+              ref={ageRef}
+              defaultValue=""
+              hasValue={hasValue.age}
             />
             <button type="submit">Submit</button>
           </Form>
