@@ -9,3 +9,20 @@ export interface FormsData {
   conditions?: boolean;
   image?: string[];
 }
+
+export interface FormFields {
+  name: string;
+  age: number;
+  email: string;
+  gender: 'male' | 'female';
+  password: string;
+  confirmPassword: string;
+  country: string;
+  image: FileList | File;
+  conditionsForm: boolean;
+}
+
+export type ErrorType = Record<
+  string,
+  { message?: string } | string | undefined
+>;

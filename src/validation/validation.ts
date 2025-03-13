@@ -1,7 +1,7 @@
 import * as Yup from 'yup';
 
 const schema = Yup.object().shape({
-  validName: Yup.string()
+  name: Yup.string()
     .matches(/^[A-Z][a-zA-Z]*$/, 'Name must start with an uppercase letter')
     .required('Name is required'),
   age: Yup.number()
@@ -35,12 +35,17 @@ const schema = Yup.object().shape({
   gender: Yup.string()
     .oneOf(['male', 'female'], 'Please select a valid gender option.')
     .required('Gender is required.'),
-  image: Yup.mixed()
+  image: Yup.mixed<File | FileList>()
     .required('A file is required')
     .test('fileSize', 'File size should not weight more than 1MB', (value) => {
-      if (!value || !(value instanceof FileList)) return false;
-      const file = value[0];
-      return file && file.size <= 1 * 1024 * 1024;
+      if (
+        !value ||
+        (value instanceof FileList && !value.length) ||
+        (value instanceof File && value.name === '')
+      )
+        return true;
+      const file = value instanceof FileList ? value[0] : value;
+      return file.size <= 2 * 1024 * 1024;
     })
     .test('fileFormat', 'Only PNG and JPEG formats are allowed', (value) => {
       if (!value || !(value instanceof FileList)) return false;
