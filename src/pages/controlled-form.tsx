@@ -8,6 +8,7 @@ import Form from '../components/form/form';
 import { setSubmission } from '../store/slices/forms-slice';
 import { useDispatch } from 'react-redux';
 import AgeInput from '../components/input/age/age';
+import GenderInput from '../components/input/gender/gender';
 
 export default function ContolledFormPage() {
   const {
@@ -30,23 +31,20 @@ export default function ContolledFormPage() {
     name: 'age',
   });
 
+  const genderValue = useWatch({
+    control,
+    name: 'gender',
+  });
+
   const dispatch = useDispatch();
 
   const onSubmit = async (data: FieldValues) => {
-    if (data.image && data.image[0]) {
-      const file = data.image[0];
-      const reader = new FileReader();
+    console.log(data.gender);
 
-      reader.onloadend = () => {
-        if (reader.result) {
-          const submission: Record<string, string[]> = {
-            ...data,
-          };
-          dispatch(setSubmission(submission));
-        }
-      };
-      reader.readAsDataURL(file);
-    }
+    const submission: Record<string, string[]> = {
+      ...data,
+    };
+    dispatch(setSubmission(submission));
   };
 
   return (
@@ -64,6 +62,12 @@ export default function ContolledFormPage() {
               errors={errors}
               register={register}
               value={ageValue || ''}
+            />
+            <GenderInput
+              register={register}
+              errors={errors}
+              value={genderValue}
+              control={control}
             />
             <button type="submit">Submit</button>
           </Form>

@@ -3,6 +3,7 @@ import ErrorDisplay from '../../error/error';
 import { ErrorType, FormFields } from '../../../interfaces/interface';
 import InputField from '../input';
 import { ForwardedRef } from 'react';
+import { Label } from '../../label/label';
 
 interface Props {
   register?: UseFormRegister<FormFields>;
@@ -24,8 +25,8 @@ const AgeInput = ({
   return (
     <div>
       <div className="space-y-1">
+        <Label htmlFor={'age'}> Age </Label>
         <InputField
-          label="Age"
           id={id}
           autoComplete={id}
           type={'number'}

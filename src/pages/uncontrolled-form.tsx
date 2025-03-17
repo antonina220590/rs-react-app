@@ -7,6 +7,7 @@ import schema from '../validation/validation';
 import { setSubmission } from '../store/slices/forms-slice';
 import { ValidationError } from 'yup';
 import { useDispatch } from 'react-redux';
+import GenderInput from '../components/input/gender/gender';
 
 interface IError {
   [key: string]: string;
@@ -20,6 +21,7 @@ export default function UncontolledFormPage() {
   const [hasValue, setHasValue] = useState<Record<string, boolean>>({
     name: false,
     age: false,
+    gender: false,
   });
   const dispatch = useDispatch();
 
@@ -28,15 +30,33 @@ export default function UncontolledFormPage() {
 
     const nameValue = nameRef?.current?.value;
     const ageValue = ageRef?.current ? Number(ageRef.current.value) : undefined;
+    const genderValue = document.querySelector(
+      'input[name="gender"]:checked'
+    ) as HTMLInputElement | null;
+    console.log(
+      'Checked gender value:',
+      genderValue ? genderValue.value : 'none'
+    );
+
     const formData = {
       name: nameValue,
       age: ageValue,
+      // gender: genderValue,
+      gender: genderValue ? genderValue.value : undefined,
     };
     setHasValue({
       name: !!nameValue,
       age: !!ageValue,
+      gender: !!genderValue,
     });
-
+    console.log(
+      'name:',
+      nameValue,
+      'age:',
+      ageValue,
+      'gender:',
+      genderValue ? genderValue.value : 'not selected'
+    );
     try {
       await schema.validate(formData, { abortEarly: false });
       setErrors({});
@@ -79,6 +99,7 @@ export default function UncontolledFormPage() {
               defaultValue=""
               hasValue={hasValue.age}
             />
+            <GenderInput errors={errors} />
             <button type="submit">Submit</button>
           </Form>
         </div>

@@ -3,6 +3,7 @@ import ErrorDisplay from '../../error/error';
 import { UseFormRegister } from 'react-hook-form';
 import { ForwardedRef } from 'react';
 import { ErrorType, FormFields } from '../../../interfaces/interface';
+import { Label } from '../../label/label';
 
 interface Props {
   register?: UseFormRegister<FormFields>;
@@ -24,8 +25,8 @@ const NameInput = ({
   return (
     <div>
       <div className="space-y-1">
+        <Label htmlFor={'name'}>Name</Label>
         <InputField
-          label="Name"
           id={id}
           autoComplete={id}
           type={'text'}
