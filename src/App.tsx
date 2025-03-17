@@ -1,5 +1,4 @@
 function App() {
-  const a = 0;
   return (
     <>
       <div className="flex justify-center">
