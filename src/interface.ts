@@ -15,3 +15,11 @@ export interface Country {
 export interface CountryCardProps {
   country: Country;
 }
+
+export interface DropDownProps {
+  options: string[];
+  selectedValue: string;
+  onSelect: (value: string) => void;
+  placeholder?: string;
+  id?: string;
+}

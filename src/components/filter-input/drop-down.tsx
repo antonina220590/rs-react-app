@@ -1,0 +1,27 @@
+import { DropDownProps } from '../../interface';
+
+export default function DropDownElement({
+  options,
+  selectedValue,
+  onSelect,
+  placeholder,
+}: DropDownProps) {
+  return (
+    <select
+      className="w-[150px] bg-[#2E3944] p-2 rounded-md m-5"
+      value={selectedValue}
+      onChange={(e) => onSelect(e.target.value)}
+    >
+      {placeholder && (
+        <option value="" disabled>
+          {placeholder}
+        </option>
+      )}
+      {options.map((option) => (
+        <option key={option} value={option}>
+          {option}
+        </option>
+      ))}
+    </select>
+  );
+}
