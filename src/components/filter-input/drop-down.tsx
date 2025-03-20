@@ -8,7 +8,7 @@ export default function DropDownElement({
 }: DropDownProps) {
   return (
     <select
-      className="w-[150px] bg-[#2E3944] p-2 rounded-md m-5"
+      className="w-[150px] bg-[#2E3944] p-2 rounded-md m-5 text-[#D3D9D4]"
       value={selectedValue}
       onChange={(e) => onSelect(e.target.value)}
     >

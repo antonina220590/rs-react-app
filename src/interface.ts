@@ -23,3 +23,8 @@ export interface DropDownProps {
   placeholder?: string;
   id?: string;
 }
+
+export interface SortControlsProps {
+  sortOrder: 'asc' | 'desc';
+  onSortOrderChange: (value: 'asc' | 'desc') => void;
+}
