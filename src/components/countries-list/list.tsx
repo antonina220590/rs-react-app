@@ -5,10 +5,12 @@ import { regions } from '../../constants';
 import CountryCard from '../coutry-card/cards';
 import DropDownElement from '../filter-input/drop-down';
 import SortCountries from '../sort-input/sorting';
+import SearchInput from '../search-input/search';
 export default function CoutriesList() {
   const [countries, setCountries] = useState<Country[]>([]);
   const [selectedRegion, setSelectedRegion] = useState<string>('All');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const [searchQuery, setSearchQuery] = useState<string>('');
 
   useEffect(() => {
     fetchData()
@@ -16,10 +18,16 @@ export default function CoutriesList() {
       .catch((error) => console.error('Error fetching data:', error));
   }, []);
 
+  const searchedCountries = countries.filter((country) =>
+    country.name.common.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   const filteredCountries =
     selectedRegion === 'All'
-      ? countries
-      : countries.filter((country) => country.region === selectedRegion);
+      ? searchedCountries
+      : searchedCountries.filter(
+          (country) => country.region === selectedRegion
+        );
 
   const sortedCountries = [...filteredCountries].sort((a, b) => {
     return sortOrder === 'asc'
@@ -29,6 +37,7 @@ export default function CoutriesList() {
 
   return (
     <main>
+      <SearchInput searchQuery={searchQuery} onSearch={setSearchQuery} />
       <div className="flex flex-col">
         <div className="flex justify-around">
           <DropDownElement

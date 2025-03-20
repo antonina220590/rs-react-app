@@ -28,3 +28,8 @@ export interface SortControlsProps {
   sortOrder: 'asc' | 'desc';
   onSortOrderChange: (value: 'asc' | 'desc') => void;
 }
+
+export interface SearchProps {
+  searchQuery: string;
+  onSearch: (value: string) => void;
+}
