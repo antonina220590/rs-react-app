@@ -1,12 +1,29 @@
 import { CountryCardProps } from '../../interface';
-export default function CountryCard({ country }: CountryCardProps) {
+import classNames from 'classnames';
+export default function CountryCard({
+  country,
+  isVisited,
+  onToggleVisited,
+}: CountryCardProps) {
   return (
-    <div className="flex flex-col max-h-[350px] rounded-md shadow-md hover:scale-105 hover:shadow-xl transition duration-300">
-      <h2 className="text-center font-bold text-[#D3D9D4] max-w-[300px] bg-[#2E3944] rounded-t-md items-center p-3">
-        {country.name.common}
-      </h2>
+    <div
+      className={classNames(
+        `${isVisited ? 'border-2 border-blue-500' : ''}`,
+        'flex flex-col max-h-[350px] rounded-md shadow-md hover:scale-105 hover:shadow-xl transition duration-300 bg-[#2E3944]'
+      )}
+    >
+      <div className="flex justify-center flex-col mt-2">
+        <input
+          type="checkbox"
+          checked={isVisited}
+          onChange={(e) => onToggleVisited(country.cca3, e.target.checked)}
+        />
+        <h2 className="text-center font-bold text-[#D3D9D4] max-w-[300px] bg-[#2E3944] rounded-t-md items-center p-3">
+          {country.name.common}
+        </h2>
+      </div>
       <img
-        className="h-[200px] w-[300px]"
+        className="h-[150px] w-[300px]"
         src={country.flags.png}
         alt={country.name.common}
       />

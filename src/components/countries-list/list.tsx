@@ -11,12 +11,31 @@ export default function CoutriesList() {
   const [selectedRegion, setSelectedRegion] = useState<string>('All');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [searchQuery, setSearchQuery] = useState<string>('');
+  const [visitedCountries, setVisitedCountries] = useState<string[]>([]);
 
   useEffect(() => {
     fetchData()
       .then((data) => setCountries(data))
       .catch((error) => console.error('Error fetching data:', error));
+
+    const savedVisitedCountries = localStorage.getItem('visitedCountries');
+    if (savedVisitedCountries) {
+      setVisitedCountries(JSON.parse(savedVisitedCountries));
+    }
   }, []);
+
+  const handleToggleVisited = (cca3: string, isVisited: boolean) => {
+    setVisitedCountries((prev) => {
+      let newVisited;
+      if (isVisited) {
+        newVisited = [...prev, cca3];
+      } else {
+        newVisited = prev.filter((id) => id !== cca3);
+      }
+      localStorage.setItem('visitedCountries', JSON.stringify(newVisited));
+      return newVisited;
+    });
+  };
 
   const searchedCountries = countries.filter((country) =>
     country.name.common.toLowerCase().includes(searchQuery.toLowerCase())
@@ -55,7 +74,11 @@ export default function CoutriesList() {
           {sortedCountries.map((country) => {
             return (
               <div key={country.cca3}>
-                <CountryCard country={country} />
+                <CountryCard
+                  country={country}
+                  isVisited={visitedCountries.includes(country.cca3)}
+                  onToggleVisited={handleToggleVisited}
+                />
               </div>
             );
           })}

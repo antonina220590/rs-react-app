@@ -14,6 +14,8 @@ export interface Country {
 
 export interface CountryCardProps {
   country: Country;
+  isVisited?: boolean;
+  onToggleVisited: (countryId: string, isVisited: boolean) => void;
 }
 
 export interface DropDownProps {
