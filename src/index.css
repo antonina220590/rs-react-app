@@ -1,0 +1,10 @@
+@import 'tailwindcss';
+
+body {
+  font-family: 'Montserrat', system-ui, sans-serif;
+  margin: 0;
+  display: flex;
+  place-items: center;
+  min-width: 100vw;
+  min-height: 100vh;
+}
