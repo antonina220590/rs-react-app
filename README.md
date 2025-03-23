@@ -30,7 +30,7 @@ This section details the profiling results for filtering the country list by reg
 
 ### Searching by name (search for the Island as example)
 
-In my application searching is implemented using `filter` method, making it directly analogous to the region filtering.
+In my application searching is implemented using `filter` method, making it directly analogous to the region filtering. As my search is happening on Input change and I receive 6 commits (1 commit for each letter), I will analize only the first one.
 
 - **Commit duration** - 9.1 ms
 - **Render Duration:**
@@ -40,3 +40,54 @@ In my application searching is implemented using `filter` method, making it dire
 - **Interactions:** Typing into the `SearchInput` triggers "search" interactions, updating the `searchQuery` state in `CountriesList`.
 - **Flame Graph** - [Flamegraph](/public/searhing1_Flamegraph.jpg)
 - **Ranked Chart** - [RankedChart](/public/searching1_RanckedChart.jpg)
+
+## After optimization profiling
+
+- `useMemo` was used to memoize the `searchedCountries`, `filteredCountries`, and `sortedCountries` calculations in `CountriesList`.
+- `useCallback` was used to memoize the `handleToggleVisited` function in `CountriesList`.
+- `React.memo` was used to memoize the `CountryCard`, `SearchInput`,`SortCountries` and `DropDownElement` components.
+- The application was profiled while clicking the sort button (ascending/descending population).
+- All countries were set as "unvisited".
+
+### Sorting by population
+
+- **Commit duration** - ~7.5ms. This is a significant improvement compared to the ~25.1 ms commit duration observed _without_ memoization.
+- **Render Duration:**
+  - **CountriesList:** ~3.3ms.
+  - **CountryCard:** The Flame Graph shows a significant reduction in `CountryCard` re-renders. Only components that actually change position due to sorting will re-render. In this particular commit we don't see any re-renders of `CountryCard`. This is because the list was likely already sorted in the desired order, so the `sortedCountries` array didn't change, and `React.memo` correctly prevented unnecessary re-renders.
+  - **SortCountries (Memoized):** ~0.1ms. The component re-renders because the `sortOrder` prop changes, but its render time is very small.
+- **Interactions:** Clicking the sort button triggers a "sort" interaction,updating the `sortOrder` state in `CountriesList`.
+- **Flame Graph** - [Flamegraph](/public/sorting2_Flamechart.jpg)
+- **Ranked Chart** - [RankedChart](/public/sorting2_Ranckedchart.jpg)
+
+### Filtering by region (from All to Americas)
+
+- **Commit duration** - ~3.3ms which is significantly less than it was in initial profiling (~31.5ms);
+- **Render Duration:**
+  - **CountriesList:** ~1.5ms.
+- **CountryCard:** - In this particular commit we don't see any re-renders of `CountryCard`. This is because the list was likely already sorted in the desired order, so the `sortedCountries` array didn't change, and `React.memo` correctly prevented unnecessary re-renders.
+- **DropDownElement (Memoized):** ~0.3ms
+  **Interactions:** Changing the selected region in the `DropDownElement` triggers a "region selection" interaction, updating the `selectedRegion` state in `CountriesList`.
+- **Flame Graph** - [Flamegraph](/public/filtering2_Flamegraph.jpg)
+- **Ranked Chart** - [RankedChart](/public/filtering2_RankedChart.jpg)
+
+### Searching by name (search for the Island as example)
+
+As my search is happening on Input change and I receive 6 commits (1 commit for each letter), I will analize only the first one.
+
+- **Commit duration** - ~5.3ms. Initially it was 9.1 ms.
+- **Render Duration:**
+  - **CountriesList:** ~3.2ms.This includes the time to run the memoized search logic (which only re-executes when `searchQuery` or the base `countries` data changes) and to render the component structure.
+  - **CountryCard:** - In this particular commit we don't see any re-renders of `CountryCard`. This is because the list was likely already sorted in the desired order, so the `sortedCountries` array didn't change, and `React.memo` correctly prevented unnecessary re-renders.
+  - **SearchInput2` (Memoized):** ~0.2ms.
+- **Interactions:** Typing into the `SearchInput` triggers a "search" interaction, updating the `searchQuery` state in `CountriesList`.
+- **Flame Graph** - [Flamegraph](/public/searching2_Flamegraph.jpg)
+- **Ranked Chart** - [RankedChart](/public/searching2_Rankedchart.jpg)
+
+### Conclusion:
+
+The implemented optimizations (useMemo, useCallback, and React.memo) have effectively addressed the main performance bottlenecks:
+
+- Prevented unnecessary re-renders of CountryCard components.
+- Memoized expensive calculations in CountriesList.
+- Optimized the handleToggleVisited function to prevent it from causing re-renders.
