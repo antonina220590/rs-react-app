@@ -1,6 +1,7 @@
+import { memo } from 'react';
 import { DropDownProps } from '../../interface';
 
-export default function DropDownElement({
+const DropDownElement = memo(function DropDownElement({
   options,
   selectedValue,
   onSelect,
@@ -24,4 +25,6 @@ export default function DropDownElement({
       ))}
     </select>
   );
-}
+});
+
+export default DropDownElement;

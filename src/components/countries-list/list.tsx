@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import fetchData from '../../api/api';
 import { Country } from '../../interface';
 import { regions } from '../../constants';
@@ -24,72 +24,70 @@ export default function CoutriesList() {
     }
   }, []);
 
-  const handleToggleVisited = (cca3: string, isVisited: boolean) => {
-    setVisitedCountries((prev) => {
-      let newVisited;
-      if (isVisited) {
-        newVisited = [...prev, cca3];
-      } else {
-        newVisited = prev.filter((id) => id !== cca3);
-      }
-      localStorage.setItem('visitedCountries', JSON.stringify(newVisited));
-      return newVisited;
-    });
-  };
-
-  const searchedCountries = countries.filter((country) =>
-    country.name.common.toLowerCase().includes(searchQuery.toLowerCase())
+  const handleToggleVisited = useCallback(
+    (cca3: string, isVisited: boolean) => {
+      setVisitedCountries((prev) => {
+        let newVisited;
+        if (isVisited) {
+          newVisited = [...prev, cca3];
+        } else {
+          newVisited = prev.filter((id) => id !== cca3);
+        }
+        localStorage.setItem('visitedCountries', JSON.stringify(newVisited));
+        return newVisited;
+      });
+    },
+    []
   );
 
-  // const searchedCountries = useMemo(() => {
-  //   return countries.filter((country) =>
-  //     country.name.common.toLowerCase().includes(searchQuery.toLowerCase())
-  //   );
-  // }, [countries, searchQuery]);
+  const searchedCountries = useMemo(() => {
+    return countries.filter((country) =>
+      country.name.common.toLowerCase().includes(searchQuery.toLowerCase())
+    );
+  }, [countries, searchQuery]);
 
-  const filteredCountries =
-    selectedRegion === 'All'
+  const filteredCountries = useMemo(() => {
+    return selectedRegion === 'All'
       ? searchedCountries
       : searchedCountries.filter(
           (country) => country.region === selectedRegion
         );
+  }, [searchedCountries, selectedRegion]);
 
-  // const filteredCountries = useMemo(() => {
-  //   return selectedRegion === 'All'
-  //     ? searchedCountries
-  //     : searchedCountries.filter(
-  //         (country) => country.region === selectedRegion
-  //       );
-  // }, [searchedCountries, selectedRegion]);
+  const sortedCountries = useMemo(() => {
+    return [...filteredCountries].sort((a, b) => {
+      return sortOrder === 'asc'
+        ? a.population - b.population
+        : b.population - a.population;
+    });
+  }, [filteredCountries, sortOrder]);
 
-  const sortedCountries = [...filteredCountries].sort((a, b) => {
-    return sortOrder === 'asc'
-      ? a.population - b.population
-      : b.population - a.population;
-  });
+  const handleSearch = useCallback((query: string) => {
+    setSearchQuery(query);
+  }, []);
 
-  // const sortedCountries = useMemo(() => {
-  //   return [...filteredCountries].sort((a, b) => {
-  //     return sortOrder === 'asc'
-  //       ? a.population - b.population
-  //       : b.population - a.population;
-  //   });
-  // }, [filteredCountries, sortOrder]);
+  const handleRegionSelect = useCallback((region: string) => {
+    setSelectedRegion(region);
+  }, []);
+
+  const handleSortOrderChange = useCallback((order: 'asc' | 'desc') => {
+    setSortOrder(order);
+  }, []);
 
   return (
     <main>
-      <SearchInput searchQuery={searchQuery} onSearch={setSearchQuery} />
+      <SearchInput searchQuery={searchQuery} onSearch={handleSearch} />
       <div className="flex flex-col">
         <div className="flex justify-around">
           <DropDownElement
             options={regions}
             selectedValue={selectedRegion}
-            onSelect={setSelectedRegion}
+            onSelect={handleRegionSelect}
             placeholder="Filter by region"
           />
           <SortCountries
             sortOrder={sortOrder}
-            onSortOrderChange={setSortOrder}
+            onSortOrderChange={handleSortOrderChange}
           />
         </div>
         <div className="flex flex-wrap gap-8 justify-evenly m-5">

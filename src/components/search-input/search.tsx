@@ -1,6 +1,10 @@
+import { memo } from 'react';
 import { SearchProps } from '../../interface';
 
-export default function SearchInput({ searchQuery, onSearch }: SearchProps) {
+const SearchInput = memo(function SearchInput({
+  searchQuery,
+  onSearch,
+}: SearchProps) {
   return (
     <div className="flex justify-center m-5">
       <input
@@ -12,4 +16,6 @@ export default function SearchInput({ searchQuery, onSearch }: SearchProps) {
       />
     </div>
   );
-}
+});
+
+export default SearchInput;

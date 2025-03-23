@@ -1,6 +1,7 @@
+import { memo } from 'react';
 import { SortControlsProps } from '../../interface';
 
-export default function SortCountries({
+const SortCountries = memo(function SortCountries({
   sortOrder,
   onSortOrderChange,
 }: SortControlsProps) {
@@ -16,4 +17,6 @@ export default function SortCountries({
       </select>
     </div>
   );
-}
+});
+
+export default SortCountries;

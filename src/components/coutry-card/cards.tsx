@@ -1,6 +1,8 @@
+import { memo } from 'react';
 import { CountryCardProps } from '../../interface';
 import classNames from 'classnames';
-export default function CountryCard({
+
+const CountryCard = memo(function CountryCard({
   country,
   isVisited,
   onToggleVisited,
@@ -38,4 +40,6 @@ export default function CountryCard({
       </div>
     </div>
   );
-}
+});
+
+export default CountryCard;
