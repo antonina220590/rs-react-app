@@ -41,6 +41,12 @@ export default function CoutriesList() {
     country.name.common.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  // const searchedCountries = useMemo(() => {
+  //   return countries.filter((country) =>
+  //     country.name.common.toLowerCase().includes(searchQuery.toLowerCase())
+  //   );
+  // }, [countries, searchQuery]);
+
   const filteredCountries =
     selectedRegion === 'All'
       ? searchedCountries
@@ -48,11 +54,27 @@ export default function CoutriesList() {
           (country) => country.region === selectedRegion
         );
 
+  // const filteredCountries = useMemo(() => {
+  //   return selectedRegion === 'All'
+  //     ? searchedCountries
+  //     : searchedCountries.filter(
+  //         (country) => country.region === selectedRegion
+  //       );
+  // }, [searchedCountries, selectedRegion]);
+
   const sortedCountries = [...filteredCountries].sort((a, b) => {
     return sortOrder === 'asc'
       ? a.population - b.population
       : b.population - a.population;
   });
+
+  // const sortedCountries = useMemo(() => {
+  //   return [...filteredCountries].sort((a, b) => {
+  //     return sortOrder === 'asc'
+  //       ? a.population - b.population
+  //       : b.population - a.population;
+  //   });
+  // }, [filteredCountries, sortOrder]);
 
   return (
     <main>
